@@ -6,21 +6,24 @@ export type Guide = {
   title: string;
   excerpt: string;
   body?: string;   // optional so builds don't fail if missing
-  date?: string;   // optional display date (ISO string preferred)
+  date?: string;   // optional (ISO string recommended)
 };
 
 export type BlogPost = {
   slug: string;
   title: string;
   excerpt: string;
-  body?: string;   // optional body; list/detail pages can show excerpt if missing
-  date?: string;   // optional display date
+  // Some pages use "content" (for md -> html); others may read "body".
+  // Keep both optional and feel free to use either. Prefer "content".
+  content?: string;
+  body?: string;
+  date?: string;
   author?: string;
   tags?: string[];
-  cover?: string;  // <-- add this (optional)
+  cover?: string;
 };
 
-// ===== Seed Data (edit freely) =====
+// ===== Seed Data =====
 export const guides: Guide[] = [
   {
     slug: 'getting-started',
@@ -59,14 +62,23 @@ export const posts: BlogPost[] = [
     title: 'Save More with Bulk Purchase (Up to 15% Off)',
     excerpt:
       'Get discounted pricing on switches, sockets, LED panels and more when you buy in volume.',
+    // Use "content" for markdown/HTML rendering pages
+    content:
+      `Planning a project or outfitting a property? **Trucast** offers tiered discounts
+for bulk purchases across our premium electrical accessories and lighting.
+
+- Switches & sockets  
+- LED panels & strip lights  
+- Accessories
+
+> Talk to our sales team for a tailored quote.`,
+    // Keep body too (harmless); some components might read it.
     body:
       `Planning a project or outfitting a property? Trucast offers tiered discounts for bulk purchases across our premium electrical accessories and lighting.
 
 Talk to our sales team for a tailored quote.`,
     date: '2025-08-20',
     tags: ['promotions', 'pricing'],
-    // Optional cover image in /public/images/blog/
-    // e.g. '/images/blog/bulk-pricing.jpg'
     // cover: '/images/blog/bulk-pricing.jpg',
   },
   {
@@ -74,6 +86,13 @@ Talk to our sales team for a tailored quote.`,
     title: 'Why Electricians Prefer Trucast Switches & Sockets',
     excerpt:
       'Safe, durable, reliable — discover what makes our fittings a favorite among installers.',
+    content:
+      `From materials to design, **Trucast** switches and sockets are engineered
+for safety and longevity. Certified and trusted nationwide.
+
+- Robust internal components  
+- Clean, modern styling  
+- Excellent value`,
     body:
       `From materials to design, Trucast switches and sockets are engineered for safety and longevity. Certified and trusted nationwide.`,
     date: '2025-07-10',
