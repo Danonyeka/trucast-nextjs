@@ -1,20 +1,18 @@
 // lib/content.ts
 
-// ===== Types =====
 export type Guide = {
   slug: string;
   title: string;
   excerpt: string;
-  body?: string;   // optional so builds don't fail if missing
-  date?: string;   // optional (ISO string recommended)
+  body?: string;
+  date?: string;
+  category?: string; // <-- add this
 };
 
 export type BlogPost = {
   slug: string;
   title: string;
   excerpt: string;
-  // Some pages use "content" (for md -> html); others may read "body".
-  // Keep both optional and feel free to use either. Prefer "content".
   content?: string;
   body?: string;
   date?: string;
@@ -23,7 +21,6 @@ export type BlogPost = {
   cover?: string;
 };
 
-// ===== Seed Data =====
 export const guides: Guide[] = [
   {
     slug: 'getting-started',
@@ -41,6 +38,7 @@ This quick guide walks you through:
 
 Tip: you can WhatsApp us any time via the green button in the header.`,
     date: '2025-09-01',
+    category: 'Onboarding', // <-- added
   },
   {
     slug: 'warranty-and-returns',
@@ -53,16 +51,17 @@ Tip: you can WhatsApp us any time via the green button in the header.`,
 • Keep your invoice for warranty claims
 • Report defects within the warranty window
 • We’ll guide you on repair or replacement`,
+    date: '2025-09-05',
+    category: 'Support', // <-- added
   },
 ];
 
-export const posts: BlogPost[] = [
+export const posts = [
   {
     slug: 'bulk-pricing-savings',
     title: 'Save More with Bulk Purchase (Up to 15% Off)',
     excerpt:
       'Get discounted pricing on switches, sockets, LED panels and more when you buy in volume.',
-    // Use "content" for markdown/HTML rendering pages
     content:
       `Planning a project or outfitting a property? **Trucast** offers tiered discounts
 for bulk purchases across our premium electrical accessories and lighting.
@@ -72,7 +71,6 @@ for bulk purchases across our premium electrical accessories and lighting.
 - Accessories
 
 > Talk to our sales team for a tailored quote.`,
-    // Keep body too (harmless); some components might read it.
     body:
       `Planning a project or outfitting a property? Trucast offers tiered discounts for bulk purchases across our premium electrical accessories and lighting.
 
@@ -99,12 +97,12 @@ for safety and longevity. Certified and trusted nationwide.
     tags: ['product', 'quality'],
     // cover: '/images/blog/why-switches.jpg',
   },
-];
+] as const;
 
-// ===== Helpers =====
-export function getGuide(slug: string): Guide | undefined {
+// Helpers
+export function getGuide(slug: string) {
   return guides.find(g => g.slug === slug);
 }
-export function getPost(slug: string): BlogPost | undefined {
+export function getPost(slug: string) {
   return posts.find(p => p.slug === slug);
 }
