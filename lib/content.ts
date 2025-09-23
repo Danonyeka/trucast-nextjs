@@ -13,10 +13,11 @@ export type BlogPost = {
   slug: string;
   title: string;
   excerpt: string;
-  body?: string;   // optional body; list pages can show excerpt
+  body?: string;   // optional body; list/detail pages can show excerpt if missing
   date?: string;   // optional display date
   author?: string;
   tags?: string[];
+  cover?: string;  // <-- add this (optional)
 };
 
 // ===== Seed Data (edit freely) =====
@@ -49,7 +50,6 @@ Tip: you can WhatsApp us any time via the green button in the header.`,
 • Keep your invoice for warranty claims
 • Report defects within the warranty window
 • We’ll guide you on repair or replacement`,
-    // date is optional; omit if not needed
   },
 ];
 
@@ -65,6 +65,9 @@ export const posts: BlogPost[] = [
 Talk to our sales team for a tailored quote.`,
     date: '2025-08-20',
     tags: ['promotions', 'pricing'],
+    // Optional cover image in /public/images/blog/
+    // e.g. '/images/blog/bulk-pricing.jpg'
+    // cover: '/images/blog/bulk-pricing.jpg',
   },
   {
     slug: 'why-trucast-switches',
@@ -75,14 +78,14 @@ Talk to our sales team for a tailored quote.`,
       `From materials to design, Trucast switches and sockets are engineered for safety and longevity. Certified and trusted nationwide.`,
     date: '2025-07-10',
     tags: ['product', 'quality'],
+    // cover: '/images/blog/why-switches.jpg',
   },
 ];
 
-// ===== Helpers (optional but handy) =====
+// ===== Helpers =====
 export function getGuide(slug: string): Guide | undefined {
   return guides.find(g => g.slug === slug);
 }
-
 export function getPost(slug: string): BlogPost | undefined {
   return posts.find(p => p.slug === slug);
 }
