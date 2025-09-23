@@ -1,100 +1,88 @@
 // lib/content.ts
 
-export type Post = {
-  slug: string;
-  title: string;
-  excerpt: string;
-  date: string;        // ISO date
-  author?: string;
-  cover?: string;      // public path to an image (optional)
-  tags?: string[];
-  content: string;     // plain text or simple markdown (##, ###, *, **, lists)
-};
-
+// ===== Types =====
 export type Guide = {
   slug: string;
   title: string;
   excerpt: string;
-  category: string;
-  date?: string;
+  body?: string;   // optional so builds don't fail if missing
+  date?: string;   // optional display date (ISO string preferred)
 };
 
-/** --- BLOG POSTS --- */
-export const posts: Post[] = [
-  {
-    slug: "welcome-to-trucast",
-    title: "Welcome to Trucast — Quality Electrical Accessories & LED Lighting",
-    excerpt:
-      "We’ve refreshed our catalog and streamlined ordering for retail and wholesale customers.",
-    author: "Trucast Team",
-    cover: "/images/hero/hero-5.png",
-    tags: ["Company", "Updates"],
-    content: `
-## Welcome to Trucast
+export type BlogPost = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  body?: string;   // optional body; list pages can show excerpt
+  date?: string;   // optional display date
+  author?: string;
+  tags?: string[];
+};
 
-Thanks for visiting! We supply **premium wall switches & sockets**, POP/panel lights, downlights, bulbs and accessories designed for Nigerian homes and projects.
-
-- Wholesale pricing with transparent quotes
-- Nationwide delivery within 24–72h
-- Responsive support via WhatsApp, phone & email
-
-If you’re a contractor or distributor, check our **Wholesale** page to get started.
-    `.trim(),
-  },
-  {
-    slug: "bulk-pricing-and-distributor-support",
-    title: "Bulk Pricing & Distributor Support",
-    excerpt:
-      "Get up to 15% discount on bulk purchases with fast nationwide fulfillment and responsive support.",
-    date: "2025-02-01",
-    author: "Sales",
-    cover: "/images/hero/hero-8.png",
-    tags: ["Wholesale", "Pricing"],
-    content: `
-### Bulk Pricing
-
-We offer tiered discounts for distributors and project buyers. Typical benefits:
-
-- Up to **15%** off on qualifying bulk orders
-- Consolidated invoicing
-- Delivery coordination to site
-
-Contact Sales for a tailored quote and availability.
-    `.trim(),
-  },
-];
-
-/** --- GUIDES (used by /guides) --- */
+// ===== Seed Data (edit freely) =====
 export const guides: Guide[] = [
   {
-    slug: "choosing-led-lights",
-    title: "Choosing the Right LED Lights for Your Home",
+    slug: 'getting-started',
+    title: 'Getting Started with Trucast',
     excerpt:
-      "How to pick energy-efficient LEDs that fit your space and reduce energy costs.",
-    category: "Lighting",
+      'How to place orders, payment options, delivery, and getting support.',
+    body:
+      `Welcome to Trucast Nigeria Limited.
+
+This quick guide walks you through:
+• Browsing products and using search/filters
+• Adding items to cart and requesting quotes
+• Payment and delivery options
+• How to reach our sales team
+
+Tip: you can WhatsApp us any time via the green button in the header.`,
+    date: '2025-09-01',
   },
   {
-    slug: "smart-home-basics",
-    title: "Smart Home Basics with Trucast",
+    slug: 'warranty-and-returns',
+    title: 'Warranty & Returns',
     excerpt:
-      "Intro to smart plugs, motion sensors, and smart breakers for modern living.",
-    category: "Smart Devices",
-  },
-  {
-    slug: "safe-electrical-install",
-    title: "Safe Electrical Installations",
-    excerpt:
-      "Best practices for installing switches and sockets safely in Nigerian homes.",
-    category: "Safety",
+      'Understand our product warranty coverage and the simple steps to request a return or exchange.',
+    body:
+      `All Trucast products are backed by our quality guarantee.
+
+• Keep your invoice for warranty claims
+• Report defects within the warranty window
+• We’ll guide you on repair or replacement`,
+    // date is optional; omit if not needed
   },
 ];
 
-/** Helpers */
-export function getPosts(): Post[] {
-  // newest first
-  return [...posts].sort((a, b) => (a.date < b.date ? 1 : -1));
+export const posts: BlogPost[] = [
+  {
+    slug: 'bulk-pricing-savings',
+    title: 'Save More with Bulk Purchase (Up to 15% Off)',
+    excerpt:
+      'Get discounted pricing on switches, sockets, LED panels and more when you buy in volume.',
+    body:
+      `Planning a project or outfitting a property? Trucast offers tiered discounts for bulk purchases across our premium electrical accessories and lighting.
+
+Talk to our sales team for a tailored quote.`,
+    date: '2025-08-20',
+    tags: ['promotions', 'pricing'],
+  },
+  {
+    slug: 'why-trucast-switches',
+    title: 'Why Electricians Prefer Trucast Switches & Sockets',
+    excerpt:
+      'Safe, durable, reliable — discover what makes our fittings a favorite among installers.',
+    body:
+      `From materials to design, Trucast switches and sockets are engineered for safety and longevity. Certified and trusted nationwide.`,
+    date: '2025-07-10',
+    tags: ['product', 'quality'],
+  },
+];
+
+// ===== Helpers (optional but handy) =====
+export function getGuide(slug: string): Guide | undefined {
+  return guides.find(g => g.slug === slug);
 }
 
-export function getPost(slug: string): Post | undefined {
-  return posts.find((p) => p.slug === slug);
+export function getPost(slug: string): BlogPost | undefined {
+  return posts.find(p => p.slug === slug);
 }
