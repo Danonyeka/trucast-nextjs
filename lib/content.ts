@@ -16,6 +16,7 @@ export type Guide = {
   title: string;
   excerpt: string;
   category: string;
+  date?: string;
 };
 
 /** --- BLOG POSTS --- */
@@ -25,7 +26,6 @@ export const posts: Post[] = [
     title: "Welcome to Trucast — Quality Electrical Accessories & LED Lighting",
     excerpt:
       "We’ve refreshed our catalog and streamlined ordering for retail and wholesale customers.",
-    date: "2025-01-15",
     author: "Trucast Team",
     cover: "/images/hero/hero-5.png",
     tags: ["Company", "Updates"],
