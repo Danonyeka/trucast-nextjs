@@ -73,7 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </header>
 
-          <main>{children}</main>
+          <main className="mt-3 sm:mt-4">{children}</main>
 
           <footer className="mt-16 bg-zinc-900 text-white py-10">
             <div className="container grid sm:grid-cols-2 gap-8">
