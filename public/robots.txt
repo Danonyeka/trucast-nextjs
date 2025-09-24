@@ -1,0 +1,6 @@
+# robots.txt for Trucast Nigeria Limited
+User-agent: *
+Allow: /
+
+Sitemap: https://trucast-ng.com/sitemap.xml
+Host: trucast-ng.com
