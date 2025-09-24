@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased pt-28 md:pt-32">
         <CartProvider>
           {/* ANNOUNCEMENT BAR */}
-          <div className="fixed inset-x-0 top-0 z-50 bg-brand text-white text-xs h-8 flex items-center">
+          <div className="bg-brand text-white text-xs h-6 sm:h-8 flex items-center">
             <div className="container flex justify-between items-center">
               {/* RC number fixed on the left */}
               <span className="font-semibold">RC {site.rc}</span>
