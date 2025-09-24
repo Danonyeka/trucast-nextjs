@@ -9,12 +9,20 @@ import SmartImage from '@/components/SmartImage';
 export const metadata: Metadata = {
   title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
   description: site.tagline,
-  metadataBase: new URL('https://example.com'),
+  // Use apex as canonical base to avoid www/non-www duplicates
+  metadataBase: new URL('https://trucast-ng.com'),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* SEO & PWA */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className="antialiased pt-28 md:pt-32">
         <CartProvider>
           {/* ANNOUNCEMENT BAR */}
