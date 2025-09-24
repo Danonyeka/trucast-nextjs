@@ -6,29 +6,29 @@ export type Guide = {
   excerpt: string;
   body?: string;
   date?: string;
-  category?: string; // <-- add this
+  category?: string;
 };
 
 export type BlogPost = {
   slug: string;
   title: string;
   excerpt: string;
-  content?: string;
-  body?: string;
+  content?: string;   // markdown or html string (we convert on render)
+  body?: string;      // plain text fallback
   date?: string;
   author?: string;
   tags?: string[];
   cover?: string;
 };
 
+// ------- Guides -------
 export const guides: Guide[] = [
   {
     slug: 'getting-started',
     title: 'Getting Started with Trucast',
     excerpt:
       'How to place orders, payment options, delivery, and getting support.',
-    body:
-      `Welcome to Trucast Nigeria Limited.
+    body: `Welcome to Trucast Nigeria Limited.
 
 This quick guide walks you through:
 • Browsing products and using search/filters
@@ -38,32 +38,31 @@ This quick guide walks you through:
 
 Tip: you can WhatsApp us any time via the green button in the header.`,
     date: '2025-09-01',
-    category: 'Onboarding', // <-- added
+    category: 'Onboarding',
   },
   {
     slug: 'warranty-and-returns',
     title: 'Warranty & Returns',
     excerpt:
       'Understand our product warranty coverage and the simple steps to request a return or exchange.',
-    body:
-      `All Trucast products are backed by our quality guarantee.
+    body: `All Trucast products are backed by our quality guarantee.
 
 • Keep your invoice for warranty claims
 • Report defects within the warranty window
 • We’ll guide you on repair or replacement`,
     date: '2025-09-05',
-    category: 'Support', // <-- added
+    category: 'Support',
   },
 ];
 
-export const posts = [
+// ------- Blog -------
+export const posts: BlogPost[] = [
   {
     slug: 'bulk-pricing-savings',
     title: 'Save More with Bulk Purchase (Up to 15% Off)',
     excerpt:
       'Get discounted pricing on switches, sockets, LED panels and more when you buy in volume.',
-    content:
-      `Planning a project or outfitting a property? **Trucast** offers tiered discounts
+    content: `Planning a project or outfitting a property? **Trucast** offers tiered discounts
 for bulk purchases across our premium electrical accessories and lighting.
 
 - Switches & sockets  
@@ -76,6 +75,7 @@ for bulk purchases across our premium electrical accessories and lighting.
 
 Talk to our sales team for a tailored quote.`,
     date: '2025-08-20',
+    author: 'Trucast Team',
     tags: ['promotions', 'pricing'],
     // cover: '/images/blog/bulk-pricing.jpg',
   },
@@ -84,8 +84,7 @@ Talk to our sales team for a tailored quote.`,
     title: 'Why Electricians Prefer Trucast Switches & Sockets',
     excerpt:
       'Safe, durable, reliable — discover what makes our fittings a favorite among installers.',
-    content:
-      `From materials to design, **Trucast** switches and sockets are engineered
+    content: `From materials to design, **Trucast** switches and sockets are engineered
 for safety and longevity. Certified and trusted nationwide.
 
 - Robust internal components  
@@ -94,15 +93,16 @@ for safety and longevity. Certified and trusted nationwide.
     body:
       `From materials to design, Trucast switches and sockets are engineered for safety and longevity. Certified and trusted nationwide.`,
     date: '2025-07-10',
+    author: 'Trucast Team',
     tags: ['product', 'quality'],
     // cover: '/images/blog/why-switches.jpg',
   },
-] as const;
+];
 
 // Helpers
 export function getGuide(slug: string) {
-  return guides.find(g => g.slug === slug);
+  return guides.find((g) => g.slug === slug);
 }
 export function getPost(slug: string) {
-  return posts.find(p => p.slug === slug);
+  return posts.find((p) => p.slug === slug);
 }
