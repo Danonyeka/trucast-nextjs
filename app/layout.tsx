@@ -6,7 +6,7 @@ import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://trucast-ng.com'),
+  metadataBase: new URL('https://www.trucast-ng.com'),
   title: {
     default: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
     template: '%s | Trucast Nigeria',
@@ -14,11 +14,18 @@ export const metadata: Metadata = {
   description: site.tagline,
   openGraph: {
     type: 'website',
-    url: 'https://trucast-ng.com',
+    url: 'https://www.trucast-ng.com',
     siteName: 'Trucast Nigeria',
     title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
     description: site.tagline,
-    images: [{ url: '/og.jpg', width: 1200, height: 630 }],
+    images: [
+      {
+        url: '/og.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Trucast Nigeria – LED lights, switches & electrical fittings in Nigeria.',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
