@@ -6,9 +6,33 @@ import { CartProvider } from '@/components/cart/CartContext';
 import SiteHeader from '@/components/site/SiteHeader';
 
 export const metadata: Metadata = {
-  title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
-  description: site.tagline,
   metadataBase: new URL('https://trucast-ng.com'),
+  title: {
+    default: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
+    template: '%s | Trucast Nigeria',
+  },
+  description: site.tagline,
+  openGraph: {
+    type: 'website',
+    url: 'https://trucast-ng.com',
+    siteName: 'Trucast Nigeria',
+    title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
+    description: site.tagline,
+    images: [
+      {
+        url: '/og.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Trucast Nigeria – LED lights, switches & electrical fittings in Nigeria.',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
+    description: site.tagline,
+    images: ['/og.jpg'],
+  },
 };
 
 export const viewport: Viewport = {
@@ -30,18 +54,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         <CartProvider>
           {/* ANNOUNCEMENT BAR */}
-        <div className="bg-brand text-white text-[11px] sm:text-xs h-6 sm:h-8 flex items-center">
-          <div className="container flex items-center gap-3">
-            {/* RC number pinned left; never shrinks */}
+          <div className="bg-brand text-white text-[11px] sm:text-xs h-6 sm:h-8 flex items-center">
+            <div className="container flex items-center gap-3">
+              {/* RC number pinned left; never shrinks */}
               <span className="font-semibold shrink-0">RC {site.rc}</span>
 
-                {/* Scroller — fills remaining width only */}
-                <div className="marquee-wrap flex-1">
+              {/* Scroller — fills remaining width only */}
+              <div className="marquee-wrap flex-1">
                 <div className="marquee-track">
-                    <span>{site.announcement} • </span>
-                    <span>{site.announcement} • </span>
-                    <span>{site.announcement} • </span>
-                    <span>{site.announcement} • </span>
+                  <span>{site.announcement} • </span>
+                  <span>{site.announcement} • </span>
+                  <span>{site.announcement} • </span>
+                  <span>{site.announcement} • </span>
                 </div>
               </div>
             </div>
