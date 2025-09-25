@@ -1,43 +1,67 @@
-// app/wholesale/page.tsx
-import Link from "next/link";
-import { site } from "@/lib/site";
+import Link from 'next/link';
+
+export const metadata = {
+  title: 'Wholesale & Bulk Orders',
+  description: 'Bulk pricing for contractors, distributors and projects across Nigeria.',
+};
 
 export default function WholesalePage() {
-  // Build mailto without ever typing against `emailSecondary`
-  const subject = `Wholesale Inquiry - ${site.name}`;
-
-  // Read optional secondary email *at runtime* only
-  const ccValue = (site as any)?.emailSecondary as string | undefined;
-
-  // Compose the query string safely
-  const qp = new URLSearchParams();
-  qp.set("subject", subject);
-  if (ccValue) qp.set("cc", ccValue);
-
-  const mailto = `mailto:${site.emailPrimary}?${qp.toString()}`;
-
   return (
-    <div className="container py-12">
-      <h1 className="text-3xl font-bold">Wholesale</h1>
+    <div className="container">
+      {/* Hero */}
+      <section className="py-10 md:py-14">
+        <h1 className="text-2xl md:text-4xl font-bold leading-tight">
+          Wholesale & Bulk Orders
+        </h1>
+        <p className="mt-3 text-zinc-600 max-w-2xl">
+          Get factory-level pricing on LED lights, switches, sockets and fittings.
+          Ideal for contractors, distributors and large projects.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link className="btn-primary" href="/categories">Browse Catalogue</Link>
+          <a className="btn-outline" href="https://wa.me/2347026921633" target="_blank" rel="noreferrer">
+            Chat Sales on WhatsApp
+          </a>
+        </div>
+      </section>
 
-      <p className="text-zinc-600 mt-3 max-w-prose">
-        For bulk pricing on switches, sockets, LED panels and more, reach out and our
-        sales team will get back to you quickly.
-      </p>
+      {/* Value props */}
+      <section className="grid md:grid-cols-3 gap-4">
+        <div className="card p-5">
+          <h3 className="font-semibold">Distributor Pricing</h3>
+          <p className="mt-2 text-sm text-zinc-600">
+            Tiered discounts for volume orders and recurring buys.
+          </p>
+        </div>
+        <div className="card p-5">
+          <h3 className="font-semibold">Reliable Stock</h3>
+          <p className="mt-2 text-sm text-zinc-600">
+            Core SKUs kept in stock for quick turnarounds.
+          </p>
+        </div>
+        <div className="card p-5">
+          <h3 className="font-semibold">Warranty & Support</h3>
+          <p className="mt-2 text-sm text-zinc-600">
+            SON-registered, with responsive after-sales support.
+          </p>
+        </div>
+      </section>
 
-      <div className="mt-8 flex flex-wrap gap-3">
-        <a href={mailto} className="btn-primary">
-          Email for a Quote
-        </a>
-
-        <a href={site.waLink} target="_blank" rel="noreferrer" className="btn-outline">
-          Chat on WhatsApp
-        </a>
-
-        <Link href="/categories" className="btn-outline">
-          Browse Categories
-        </Link>
-      </div>
+      {/* CTA */}
+      <section className="py-10">
+        <div className="card p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h3 className="font-semibold">Ready to place a bulk order?</h3>
+            <p className="text-sm text-zinc-600 mt-1">
+              Send your BOQ or list to get a same-day quote.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <a className="btn-primary" href="mailto:sales@trucast-ng.com">Email BOQ</a>
+            <a className="btn-outline" href="https://wa.me/2347026921633" target="_blank" rel="noreferrer">WhatsApp Sales</a>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
