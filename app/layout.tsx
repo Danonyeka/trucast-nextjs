@@ -6,7 +6,7 @@ import { CartProvider } from '@/components/cart/CartContext';
 import SiteHeader from '@/components/site/SiteHeader';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://trucast-ng.com'),
+  metadataBase: new URL('https://www.trucast-ng.com'),
   title: {
     default: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
     template: '%s | Trucast Nigeria',
