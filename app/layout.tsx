@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import './(site)/_styles/globals.css';
 import { site } from '@/lib/site';
@@ -9,29 +9,36 @@ import SmartImage from '@/components/SmartImage';
 export const metadata: Metadata = {
   title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
   description: site.tagline,
-  // Use apex as canonical base to avoid www/non-www duplicates
   metadataBase: new URL('https://trucast-ng.com'),
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#16a34a',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        {/* SEO & PWA */}
-        <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
-        <link rel="icon" href="/icon.svg?v=3" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3" />
+        {/* Icons / PWA */}
+        <link rel="icon" href="/favicon.ico?v=4" sizes="any" />
+        <link rel="icon" href="/icon.svg?v=4" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="antialiased pt-6 sm:pt-8">
+      {/* No top padding; header is NOT fixed */}
+      <body className="antialiased">
         <CartProvider>
-          {/* ANNOUNCEMENT BAR */}
-          <div className="bg-brand text-white text-xs h-6 sm:h-8 flex items-center">
+          {/* ANNOUNCEMENT BAR (static, slim) */}
+          <div className="bg-brand text-white text-[11px] sm:text-xs h-6 sm:h-8 flex items-center">
             <div className="container flex justify-between items-center">
-              {/* RC number fixed on the left */}
+              {/* RC number on the left */}
               <span className="font-semibold">RC {site.rc}</span>
 
-              {/* Continuous scrolling announcement from site.ts */}
+              {/* Marquee message from site.ts */}
               <div className="overflow-hidden flex-1 ml-6">
                 <div className="marquee">
                   <span>{site.announcement} • </span>
@@ -41,10 +48,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
 
-          {/* FIXED header below announcement */}
+          {/* HEADER (not fixed) */}
           <header
             id="top"
-            className="sticky inset-x-0 top-6 sm:top-8 z-40 border-b border-zinc-200 bg-white/90 backdrop-blur"
+            className="border-b border-zinc-200 bg-white/90 backdrop-blur"
           >
             <div className="container flex items-center justify-between py-3 md:py-4 gap-4">
               <Link href="/" className="flex items-center gap-3">
@@ -57,7 +64,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
                 <div>
                   <p className="font-bold leading-tight">{site.name}</p>
-                  <p className="text-xs text-zinc-600 leading-tight">{site.tagline}</p>
+                  {/* Hide tagline on very small screens to prevent wrapping */}
+                  <p className="hidden sm:block text-xs text-zinc-600 leading-tight">
+                    {site.tagline}
+                  </p>
                 </div>
               </Link>
 
@@ -73,7 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </header>
 
-          <main className="mt-3 sm:mt-4">{children}</main>
+          <main>{children}</main>
 
           <footer className="mt-16 bg-zinc-900 text-white py-10">
             <div className="container grid sm:grid-cols-2 gap-8">
