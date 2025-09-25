@@ -29,14 +29,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased">
         <CartProvider>
-          {/* Announcement bar (static, slim) */}
-          <div className="bg-brand text-white text-[11px] sm:text-xs h-6 sm:h-8 flex items-center">
-            <div className="container flex justify-between items-center">
-              <span className="font-semibold">RC {site.rc}</span>
-              <div className="overflow-hidden flex-1 ml-6">
-                <div className="marquee">
-                  <span>{site.announcement} • </span>
-                  <span>{site.announcement} • </span>
+          {/* ANNOUNCEMENT BAR */}
+        <div className="bg-brand text-white text-[11px] sm:text-xs h-6 sm:h-8 flex items-center">
+          <div className="container flex items-center gap-3">
+            {/* RC number pinned left; never shrinks */}
+              <span className="font-semibold shrink-0">RC {site.rc}</span>
+
+                {/* Scroller — fills remaining width only */}
+                <div className="marquee-wrap flex-1">
+                <div className="marquee-track">
+                    <span>{site.announcement} • </span>
+                    <span>{site.announcement} • </span>
+                    <span>{site.announcement} • </span>
+                    <span>{site.announcement} • </span>
                 </div>
               </div>
             </div>
