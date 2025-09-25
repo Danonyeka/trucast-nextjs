@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="antialiased pt-28 md:pt-32">
+      <body className="antialiased pt-6 sm:pt-8">
         <CartProvider>
           {/* ANNOUNCEMENT BAR */}
           <div className="bg-brand text-white text-xs h-6 sm:h-8 flex items-center">
@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* FIXED header below announcement */}
           <header
             id="top"
-            className="fixed inset-x-0 top-8 z-40 border-b border-zinc-200 bg-white/90 backdrop-blur"
+            className="sticky inset-x-0 top-6 sm:top-8 z-40 border-b border-zinc-200 bg-white/90 backdrop-blur"
           >
             <div className="container flex items-center justify-between py-3 md:py-4 gap-4">
               <Link href="/" className="flex items-center gap-3">
