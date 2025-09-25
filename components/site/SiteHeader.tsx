@@ -10,19 +10,21 @@ export default function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="relative z-10 border-b border-zinc-200 bg-white/90 backdrop-blur">
+    <header className="border-b border-zinc-200 bg-white/90 backdrop-blur">
       <div className="container flex items-center justify-between py-2 md:py-4 gap-3">
-        <Link href="/" className="flex items-center gap-2">
+        {/* Brand block */}
+        <Link href="/" className="flex items-center gap-2 min-w-0">
           <SmartImage
             src="/images/logo.png"
             alt="Trucast logo"
             width={36}
             height={36}
-            className="h-9 w-auto md:h-10"
+            className="h-9 w-auto sm:h-10"
           />
-          <div className="leading-tight">
-            <p className="font-bold">{site.name}</p>
-            <p className="hidden sm:block text-xs text-zinc-600">{site.tagline}</p>
+          <div className="leading-tight min-w-0">
+            {/* Truncate on tiny screens so it never collides with the menu button */}
+            <p className="font-bold truncate sm:whitespace-normal">{site.name}</p>
+            <p className="hidden sm:block text-xs text-zinc-600 leading-tight">{site.tagline}</p>
           </div>
         </Link>
 
@@ -41,7 +43,7 @@ export default function SiteHeader() {
         <button
           type="button"
           className="md:hidden p-2 rounded-lg border border-zinc-300"
-          aria-label="Open menu"
+          aria-label={open ? 'Close menu' : 'Open menu'}
           onClick={() => setOpen(v => !v)}
         >
           <div className="w-5 h-0.5 bg-zinc-900 mb-1" />
@@ -50,7 +52,7 @@ export default function SiteHeader() {
         </button>
       </div>
 
-      {/* Mobile panel */}
+      {/* Mobile slide-down panel */}
       {open && (
         <div className="md:hidden border-t border-zinc-200 bg-white shadow-sm">
           <div className="container py-3 grid gap-3 text-sm">
@@ -60,7 +62,9 @@ export default function SiteHeader() {
             <Link href="/wholesale" className="link" onClick={() => setOpen(false)}>Wholesale</Link>
             <Link href="/guides" className="link" onClick={() => setOpen(false)}>Guides</Link>
             <Link href="/contact" className="link" onClick={() => setOpen(false)}>Contact</Link>
-            <div className="pt-2"><CartButton /></div>
+            <div className="pt-2">
+              <CartButton />
+            </div>
           </div>
         </div>
       )}
