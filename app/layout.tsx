@@ -3,8 +3,7 @@ import Link from 'next/link';
 import './(site)/_styles/globals.css';
 import { site } from '@/lib/site';
 import { CartProvider } from '@/components/cart/CartContext';
-import CartButton from '@/components/cart/CartButton';
-import SmartImage from '@/components/SmartImage';
+import SiteHeader from '@/components/site/SiteHeader';
 
 export const metadata: Metadata = {
   title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
@@ -23,22 +22,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        {/* Icons / PWA */}
         <link rel="icon" href="/favicon.ico?v=4" sizes="any" />
         <link rel="icon" href="/icon.svg?v=4" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      {/* No top padding; header is NOT fixed */}
       <body className="antialiased">
         <CartProvider>
-          {/* ANNOUNCEMENT BAR (static, slim) */}
+          {/* Announcement bar (static, slim) */}
           <div className="bg-brand text-white text-[11px] sm:text-xs h-6 sm:h-8 flex items-center">
             <div className="container flex justify-between items-center">
-              {/* RC number on the left */}
               <span className="font-semibold">RC {site.rc}</span>
-
-              {/* Marquee message from site.ts */}
               <div className="overflow-hidden flex-1 ml-6">
                 <div className="marquee">
                   <span>{site.announcement} • </span>
@@ -48,40 +42,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
 
-          {/* HEADER (not fixed) */}
-          <header
-            id="top"
-            className="border-b border-zinc-200 bg-white/90 backdrop-blur"
-          >
-            <div className="container flex items-center justify-between py-3 md:py-4 gap-4">
-              <Link href="/" className="flex items-center gap-3">
-                <SmartImage
-                  src="/images/logo.png"
-                  alt="Trucast logo"
-                  width={40}
-                  height={40}
-                  className="h-10 w-auto"
-                />
-                <div>
-                  <p className="font-bold leading-tight">{site.name}</p>
-                  {/* Hide tagline on very small screens to prevent wrapping */}
-                  <p className="hidden sm:block text-xs text-zinc-600 leading-tight">
-                    {site.tagline}
-                  </p>
-                </div>
-              </Link>
-
-              <nav className="flex items-center gap-5 text-sm">
-                <Link href="/" className="link" aria-current="page">Home</Link>
-                <Link href="/categories" className="link">Shop</Link>
-                <Link href="/search" className="link">Search</Link>
-                <Link href="/wholesale" className="link">Wholesale</Link>
-                <Link href="/guides" className="link">Guides</Link>
-                <Link href="/contact" className="link">Contact</Link>
-                <CartButton />
-              </nav>
-            </div>
-          </header>
+          {/* New responsive header with hamburger on mobile */}
+          <SiteHeader />
 
           <main>{children}</main>
 
