@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://trucast-ng.com/</loc>
-    <lastmod>2025-09-24</lastmod>
+    <loc>https://www.trucast-ng.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://trucast-ng.com/wholesale</loc>
-    <lastmod>2025-09-24</lastmod>
+    <loc>https://www.trucast-ng.com/wholesale</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://trucast-ng.com/categories</loc>
-    <lastmod>2025-09-24</lastmod>
+    <loc>https://www.trucast-ng.com/categories</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://trucast-ng.com/shop</loc>
-    <lastmod>2025-09-24</lastmod>
+    <loc>https://www.trucast-ng.com/shop</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
