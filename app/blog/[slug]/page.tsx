@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import SmartImage from "@/components/SmartImage";
 import { getPost } from "@/lib/content";
+import { BlogPostingLd } from "@/components/seo/JsonLd";
 
 /** Tiny markdown → HTML (safe for our own static strings) */
 function mdToHtml(src: string): string {
@@ -41,6 +42,17 @@ function mdToHtml(src: string): string {
   return s;
 }
 
+/** Helpers for JSON-LD */
+function isoDate(d: string) {
+  // Prefer YYYY-MM-DD
+  return new Date(d).toISOString().split("T")[0];
+}
+function summarize(text: string, fallback = "Trucast Nigeria blog post") {
+  // crude markdown symbol strip + collapse whitespace, limit ~160 chars
+  const plain = text.replace(/[#*_>`~\-]/g, " ").replace(/\s+/g, " ").trim();
+  return (plain || fallback).slice(0, 160);
+}
+
 type PageProps = { params: { slug: string } };
 
 export default function BlogDetailPage({ params }: PageProps) {
@@ -48,38 +60,56 @@ export default function BlogDetailPage({ params }: PageProps) {
   if (!post) return notFound();
 
   const dateStr = new Date(post.date).toLocaleDateString();
+  const canonical = `https://trucast-ng.com/blog/${params.slug}`;
+  const image = post.cover || "/og.jpg";
+  const description = post.excerpt || summarize(post.content);
 
   return (
-    <div className="container py-10">
-      <nav className="text-sm text-zinc-600 mb-4">
-        <Link className="link" href="/blog">← Back to Blog</Link>
-      </nav>
-
-      <h1 className="text-3xl font-bold">{post.title}</h1>
-      <div className="text-xs text-zinc-500 mt-1">
-        {post.author ? `${post.author} • ` : ""}{dateStr}
-      </div>
-
-      {post.tags?.length ? (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {post.tags.map((t) => (
-            <span key={t} className="px-2 py-0.5 rounded-full text-xs bg-brand/10 text-brand ring-1 ring-brand/20">
-              {t}
-            </span>
-          ))}
-        </div>
-      ) : null}
-
-      {post.cover ? (
-        <div className="relative aspect-[16/9] rounded-xl overflow-hidden mt-6 ring-1 ring-zinc-200 bg-white">
-          <SmartImage src={post.cover} alt={post.title} fill className="object-cover" />
-        </div>
-      ) : null}
-
-      <article
-        className="prose prose-zinc mt-6 max-w-none"
-        dangerouslySetInnerHTML={{ __html: mdToHtml(post.content) }}
+    <>
+      {/* BlogPosting structured data */}
+      <BlogPostingLd
+        headline={post.title}
+        description={description}
+        url={canonical}
+        image={image}
+        datePublished={isoDate(post.date)}
+        dateModified={isoDate(post.updated ?? post.date)}
+        authorName={post.author || "Trucast Nigeria"}
+        publisherName="Trucast Nigeria"
+        publisherLogo="/og.jpg"
       />
-    </div>
+
+      <div className="container py-10">
+        <nav className="text-sm text-zinc-600 mb-4">
+          <Link className="link" href="/blog">← Back to Blog</Link>
+        </nav>
+
+        <h1 className="text-3xl font-bold">{post.title}</h1>
+        <div className="text-xs text-zinc-500 mt-1">
+          {post.author ? `${post.author} • ` : ""}{dateStr}
+        </div>
+
+        {post.tags?.length ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {post.tags.map((t: string) => (
+              <span key={t} className="px-2 py-0.5 rounded-full text-xs bg-brand/10 text-brand ring-1 ring-brand/20">
+                {t}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        {post.cover ? (
+          <div className="relative aspect-[16/9] rounded-xl overflow-hidden mt-6 ring-1 ring-zinc-200 bg-white">
+            <SmartImage src={post.cover} alt={post.title} fill className="object-cover" />
+          </div>
+        ) : null}
+
+        <article
+          className="prose prose-zinc mt-6 max-w-none"
+          dangerouslySetInnerHTML={{ __html: mdToHtml(post.content) }}
+        />
+      </div>
+    </>
   );
 }
