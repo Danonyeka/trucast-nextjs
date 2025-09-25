@@ -27,3 +27,23 @@ html, body { @apply bg-white text-zinc-900; }
   width: 50%;
   white-space: nowrap;
 }
+/* --- Fixed top sizes for announcement + header --- */
+:root {
+  /* 2rem = 32px (announcement bar), 3.5rem = 56px (header on phones) */
+  --ann-h: 2rem;
+  --head-h: 3.5rem;
+}
+
+/* On small screens and up, keep the bar same height, give header a bit more room */
+@media (min-width: 640px) {
+  :root {
+    --ann-h: 2rem;     /* unchanged */
+    --head-h: 4rem;    /* 64px header on sm+ */
+  }
+}
+
+/* Make sure the marquee never wraps */
+.marquee {
+  white-space: nowrap;
+  overflow: hidden;
+}
