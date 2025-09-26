@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   verification: {
     google: 'b8wUw2zlZ-4qhPLB40QRMOJS1Nk5ctyNk0ql424it84',
     other: {
-      <meta name="msvalidate.01" content="4C1D61B1DFA11D28F74422CEABFCC06D" />, // Bing
+      'msvalidate.01': '4C1D61B1DFA11D28F74422CEABFCC06D', // Bing
     },
   },
 };
