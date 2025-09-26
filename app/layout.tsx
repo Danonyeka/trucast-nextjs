@@ -53,6 +53,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="antialiased">
+        {/* ✅ Skip link (first focusable element) */}
+        <a href="#main-content" className="skip-link">Skip to content</a>
+
         <CartProvider>
           {/* Anchor for "Back to top" links */}
           <div id="top" />
@@ -78,8 +81,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <SiteHeader />
           </div>
 
-          {/* Page content — padded down so it doesn't hide behind the fixed top */}
-          <main className="pt-20 sm:pt-24">{children}</main>
+          {/* ✅ Main target: focusable + scroll margin so fixed header doesn't cover it */}
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="pt-20 sm:pt-24 scroll-mt-24 sm:scroll-mt-28"
+          >
+            {children}
+          </main>
 
           {/* Unified footer */}
           <SiteFooter />
