@@ -1,15 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import SmartImage from '@/components/SmartImage';
+import Image, { type StaticImageData } from 'next/image';
 import { OrganizationLd, LocalBusinessLd } from '@/components/seo/JsonLd';
 import { site } from '@/lib/site';
 
-/** ---------- Simple fade slider (autoplay + dots) ---------- */
+// ✅ Static import for slide 1 gives automatic blur placeholder
+import hero1 from '@/public/images/hero/hero-1.png';
+
+/** ---------- Optimized fade slider (LCP-friendly) ---------- */
 function HeroSlider() {
-  const slides = [
-    { src: '/images/hero/hero-1.png', alt: 'Premium Trucast switches' },
+  // Keep slide 1 as a static import; others can be paths
+  const slides: { src: StaticImageData | string; alt: string }[] = useMemo(() => ([
+    { src: hero1, alt: 'Premium Trucast switches' },              // static import (blur + priority)
     { src: '/images/hero/hero-2.png', alt: 'Sockets and panels' },
     { src: '/images/hero/hero-3.png', alt: 'Discount promotion' },
     { src: '/images/hero/hero-4.png', alt: 'Wall switches showcase' },
@@ -19,25 +23,57 @@ function HeroSlider() {
     { src: '/images/hero/hero-8.png', alt: 'Special sales promotion' },
     { src: '/images/hero/hero-9.png', alt: 'SON certified quality' },
     { src: '/images/hero/hero-10.png', alt: 'Trucast smart devices' },
-  ];
+  ]), []);
 
   const [i, setI] = useState(0);
+  const [reduced, setReduced] = useState(false);
 
+  // Respect prefers-reduced-motion: reduce
   useEffect(() => {
-    const id = setInterval(() => setI((p) => (p + 1) % slides.length), 6000); // 6s per slide
+    const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    const update = () => setReduced(!!mq?.matches);
+    update();
+    mq?.addEventListener?.('change', update);
+    return () => mq?.removeEventListener?.('change', update);
+  }, []);
+
+  // Autoplay (disabled for reduced motion)
+  useEffect(() => {
+    if (reduced) return;
+    const id = setInterval(() => setI(p => (p + 1) % slides.length), 6000);
     return () => clearInterval(id);
-  }, [slides.length]);
+  }, [reduced, slides.length]);
+
+  const next = (i + 1) % slides.length;
+  const visible = [i, next]; // render only current + next for smooth crossfade
 
   return (
     <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-lg bg-white">
-      {slides.map((s, idx) => (
-        <div
-          key={s.src}
-          className={`absolute inset-0 transition-opacity duration-1000 ${idx === i ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <SmartImage src={s.src} alt={s.alt} fill className="object-cover" />
-        </div>
-      ))}
+      {visible.map((idx) => {
+        const s = slides[idx];
+        const isActive = idx === i;
+
+        return (
+          <div
+            key={`${idx}-${typeof s.src === 'string' ? s.src : 'static'}`}
+            className={`absolute inset-0 transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <Image
+              src={s.src}
+              alt={s.alt}
+              fill
+              className="object-cover"
+              sizes="100vw"                  // ✅ critical for responsive LCP
+              quality={75}                  // lighter bytes
+              // Only the very first slide is LCP-critical:
+              {...(idx === 0
+                ? { priority: true, placeholder: 'blur' as const } // blur works because slide 1 is a static import
+                : { loading: 'lazy' })}
+            />
+          </div>
+        );
+      })}
+
       {/* Dots */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
         {slides.map((_, idx) => (
@@ -62,19 +98,16 @@ export default function HomePage() {
         name={site.legalName}
         url="https://trucast-ng.com"
         logo="/og.jpg"         // ensure /public/og.jpg exists
-        sameAs={[]}            // add social URLs later if you have them
+        sameAs={[]}
       />
       <LocalBusinessLd
         name={site.legalName}
         url="https://trucast-ng.com"
         streetAddress={site.address}
-        // addressLocality="Port Harcourt"
-        // addressRegion="Rivers State"
         addressCountry="NG"
         email={site.emailPrimary}
-        // telephone="+2347026921633"
         image="/og.jpg"
-        openingHours={site.hours} // e.g., "Mo-Fr 09:00-17:00"
+        openingHours={site.hours}
       />
 
       <div>
