@@ -6,11 +6,17 @@ import Image, { type StaticImageData } from 'next/image';
 import { OrganizationLd, LocalBusinessLd } from '@/components/seo/JsonLd';
 import { site } from '@/lib/site';
 
-// ✅ add this import
+// cards
 import CategoryCard from '@/components/cards/CategoryCard';
 
-// ✅ Static import for slide 1 gives automatic blur placeholder
+// hero (slide 1 as static import for blur/LCP)
 import hero1 from '@/public/images/hero/hero-1.png';
+
+// ✅ category cover images (exact filenames from /public/images/categories)
+import catSwitches   from '@/public/images/categories/switches.png';
+import catSockets    from '@/public/images/categories/sockets.png';
+import catSmartLocks from '@/public/images/categories/smart-locks.png';
+import catPanelLight from '@/public/images/categories/panel-light.png';
 
 /** ---------- Optimized fade slider (LCP-friendly) ---------- */
 function HeroSlider() {
@@ -88,12 +94,12 @@ function HeroSlider() {
 
 /** ----------------------- Home Page ----------------------- */
 export default function HomePage() {
-  // ✅ define categories once; easy to add/remove later
+  // ✅ categories using your PNGs (static imports)
   const categories = [
-    { href: '/categories/switches',       title: 'Switches & Sockets', image: '/images/categories/switches.jpg' },
-    { href: '/categories/recessed-light', title: 'POP / Panel Lights', image: '/images/categories/recessed.jpg' },
-    { href: '/categories/smart-lock',     title: 'Smart Locks',        image: '/images/categories/smart-lock.jpg' },
-    { href: '/categories/smart-breaker',  title: 'Smart Breaker',      image: '/images/categories/smart-breaker.jpg' },
+    { href: '/categories/switches',       title: 'Switches',            image: catSwitches },
+    { href: '/categories/sockets',        title: 'Sockets',             image: catSockets },
+    { href: '/categories/smart-lock',     title: 'Smart Locks',         image: catSmartLocks },
+    { href: '/categories/recessed-light', title: 'POP / Panel Lights',  image: catPanelLight },
   ];
 
   return (
