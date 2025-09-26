@@ -177,7 +177,7 @@ export default function HomePage() {
           <div className="container py-4 flex flex-wrap items-center justify-between gap-3">
             <p id="trust" className="text-sm text-zinc-600 shrink-0">Brands &amp; certifications</p>
             <ul className="flex items-center gap-6">
-              <li aria-label="Standards Organisation of Nigeria (SON) compliant">
+              <li aria-label="Standards Organisation of Nigeria (SON) compliant)">
                 <Image
                   src="/images/certs/son.png"
                   alt="Standards Organisation of Nigeria (SON) compliant"
@@ -186,7 +186,6 @@ export default function HomePage() {
                   className="h-10 w-auto sm:h-12"
                 />
               </li>
-              {/* Add more logos later */}
             </ul>
           </div>
         </section>
@@ -285,7 +284,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ✅ CTA with WhatsApp + Call (tap-to-call) */}
+        {/* ✅ CTA with WhatsApp + Call (mobile-only Call) */}
         <section className="bg-white">
           <div className="container py-12 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
@@ -295,7 +294,8 @@ export default function HomePage() {
             <div className="flex flex-wrap gap-3">
               <Link className="btn-primary" href="/wholesale">Wholesale Enquiry</Link>
               <a className="btn-outline" href={site.waLink} target="_blank" rel="noopener">Chat on WhatsApp</a>
-              <a className="btn-outline" href={`tel:${tel}`}>Call</a>
+              {/* Mobile-only Call button */}
+              <a className="btn-outline md:hidden" href={`tel:${tel}`} aria-label="Call Trucast Nigeria">Call</a>
             </div>
           </div>
         </section>
