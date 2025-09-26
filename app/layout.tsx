@@ -19,12 +19,7 @@ export const metadata: Metadata = {
     title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
     description: site.tagline,
     images: [
-      {
-        url: '/og.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Trucast Nigeria – LED lights, switches & electrical fittings in Nigeria.',
-      },
+      { url: '/og.jpg', width: 1200, height: 630, alt: 'Trucast Nigeria – LED lights, switches & electrical fittings in Nigeria.' },
     ],
   },
   twitter: {
@@ -32,6 +27,13 @@ export const metadata: Metadata = {
     title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
     description: site.tagline,
     images: ['/og.jpg'],
+  },
+  // ✅ Verification tokens
+  verification: {
+    google: 'b8wUw2zlZ-4qhPLB40QRMOJS1Nk5ctyNk0ql424it84',
+    other: {
+      'msvalidate.01': '4C1D6B1DFA11D28F74422CEABFCC06D', // Bing
+    },
   },
 };
 
@@ -82,11 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
 
           {/* ✅ Main target: focusable + scroll margin so fixed header doesn't cover it */}
-          <main
-            id="main-content"
-            tabIndex={-1}
-            className="pt-20 sm:pt-24 scroll-mt-24 sm:scroll-mt-28"
-          >
+          <main id="main-content" tabIndex={-1} className="pt-20 sm:pt-24 scroll-mt-24 sm:scroll-mt-28">
             {children}
           </main>
 
