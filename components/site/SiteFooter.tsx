@@ -10,9 +10,24 @@ export default function SiteFooter() {
           <p className="text-sm text-zinc-300 mt-1">{site.address}</p>
           <p className="text-sm text-zinc-300 mt-1">Hours: {site.hours}</p>
           <p className="text-sm text-zinc-300 mt-1">RC: {site.rc}</p>
-          <div className="mt-3 flex gap-3">
-            <a className="btn-primary" href={site.waLink} target="_blank" rel="noreferrer">Chat on WhatsApp</a>
-            <a className="btn-outline" href={`mailto:${site.emailPrimary}`}>Email</a>
+
+          <div className="mt-3 flex flex-wrap gap-3">
+            <a className="btn-primary" href={site.waLink} target="_blank" rel="noreferrer">
+              Chat on WhatsApp
+            </a>
+
+            {/* Mobile-only Call button */}
+            <a
+              className="btn-outline md:hidden"
+              href={`tel:${(site as any).phone ?? '+2347026921633'}`}
+              aria-label="Call Trucast Nigeria"
+            >
+              Call
+            </a>
+
+            <a className="btn-outline" href={`mailto:${site.emailPrimary}`}>
+              Email
+            </a>
           </div>
         </div>
 
@@ -34,4 +49,3 @@ export default function SiteFooter() {
     </footer>
   );
 }
-
