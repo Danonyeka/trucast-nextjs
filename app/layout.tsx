@@ -57,26 +57,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {/* Anchor for "Back to top" links */}
           <div id="top" />
 
-          {/* ANNOUNCEMENT BAR (pairs with .marquee-* CSS you added) */}
-          <div className="bg-brand text-white text-[11px] sm:text-xs h-6 sm:h-8 flex items-center">
-            <div className="container flex items-center gap-3">
-              <span className="font-semibold shrink-0">RC {site.rc}</span>
-              <div className="marquee-wrap flex-1">
-                <div className="marquee-track">
-                  <span>{site.announcement} • </span>
-                  <span>{site.announcement} • </span>
-                  <span>{site.announcement} • </span>
-                  <span>{site.announcement} • </span>
+          {/* FIXED: announcement + header (never scroll) */}
+          <div className="fixed inset-x-0 top-0 z-50">
+            {/* Announcement bar */}
+            <div className="bg-brand text-white text-[11px] sm:text-xs h-6 sm:h-8 flex items-center">
+              <div className="container flex items-center gap-3">
+                <span className="font-semibold shrink-0">RC {site.rc}</span>
+                <div className="marquee-wrap flex-1">
+                  <div className="marquee-track">
+                    <span>{site.announcement} • </span>
+                    <span>{site.announcement} • </span>
+                    <span>{site.announcement} • </span>
+                    <span>{site.announcement} • </span>
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Header (hamburger on mobile) */}
+            <SiteHeader />
           </div>
 
-          {/* Unified header (hamburger on mobile) */}
-          <SiteHeader />
-
-          {/* Page content */}
-          <main>{children}</main>
+          {/* Page content — padded down so it doesn't hide behind the fixed top */}
+          <main className="pt-20 sm:pt-24">{children}</main>
 
           {/* Unified footer */}
           <SiteFooter />
