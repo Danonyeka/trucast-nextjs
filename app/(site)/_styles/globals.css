@@ -6,12 +6,50 @@
 html, body { @apply bg-white text-zinc-900; }
 
 /* ---------- Reusable UI ---------- */
-.btn-primary { @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium bg-brand text-white hover:opacity-90 transition; }
-.btn-outline { @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium border border-zinc-300 hover:bg-zinc-50 transition; }
-.link        { @apply text-brand hover:underline; }
+/* Added strong focus-visible rings to buttons/links */
+.btn-primary {
+  @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium bg-brand text-white hover:opacity-90 transition
+         focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+}
+.btn-outline {
+  @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium border border-zinc-300 hover:bg-zinc-50 transition
+         focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+}
+.link {
+  @apply text-brand hover:underline rounded
+         focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-white;
+}
 .card        { @apply rounded-2xl border border-zinc-200 bg-white shadow-sm; }
-.footer-link { @apply text-sm text-zinc-300 hover:text-white hover:underline; }
+.footer-link {
+  @apply text-sm text-zinc-300 hover:text-white hover:underline rounded
+         focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900;
+}
 .container   { @apply max-w-6xl mx-auto px-4; }
+
+/* ---------- Skip link (keyboard users) ---------- */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-120%);
+  background: #16a34a; /* brand green */
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  z-index: 1000;
+  transition: transform .15s ease-in-out;
+}
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Global safety net so anything focusable still shows a clear outline */
+:focus-visible {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
+}
 
 /* ---------- Marquee (no overlap on mobile) ---------- */
 /* Smooth, width-safe scrolling: requires duplicated message spans in markup */
