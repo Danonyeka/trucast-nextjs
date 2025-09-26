@@ -15,10 +15,11 @@ export type BlogPost = {
   excerpt: string;
   content?: string;   // markdown or html string (we convert on render)
   body?: string;      // plain text fallback
-  date?: string;
+  date?: string;      // original publish date (YYYY-MM-DD)
+  updated?: string;   // optional last-updated date (YYYY-MM-DD)
   author?: string;
   tags?: string[];
-  cover?: string;
+  cover?: string;     // optional image path (e.g., /images/blog/foo.jpg)
 };
 
 // ------- Guides -------
@@ -75,6 +76,7 @@ for bulk purchases across our premium electrical accessories and lighting.
 
 Talk to our sales team for a tailored quote.`,
     date: '2025-08-20',
+    updated: '2025-09-01', // optional; remove or change as needed
     author: 'Trucast Team',
     tags: ['promotions', 'pricing'],
     // cover: '/images/blog/bulk-pricing.jpg',
@@ -93,6 +95,7 @@ for safety and longevity. Certified and trusted nationwide.
     body:
       `From materials to design, Trucast switches and sockets are engineered for safety and longevity. Certified and trusted nationwide.`,
     date: '2025-07-10',
+    updated: '2025-07-15', // optional
     author: 'Trucast Team',
     tags: ['product', 'quality'],
     // cover: '/images/blog/why-switches.jpg',
