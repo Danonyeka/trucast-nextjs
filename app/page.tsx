@@ -92,6 +92,15 @@ function HeroSlider() {
   );
 }
 
+/** Simple check icon for bullet lists */
+function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" className="h-4 w-4 text-brand" {...props}>
+      <path d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.6a1 1 0 0 1 1.4-1.4l3.3 3.3 6.8-6.8a1 1 0 0 1 1.4 0Z" />
+    </svg>
+  );
+}
+
 /** ----------------------- Home Page ----------------------- */
 export default function HomePage() {
   // ✅ categories using your PNGs (static imports)
@@ -101,6 +110,8 @@ export default function HomePage() {
     { href: '/categories/smart-lock',     title: 'Smart Locks',         image: catSmartLocks },
     { href: '/categories/recessed-light', title: 'POP / Panel Lights',  image: catPanelLight },
   ];
+
+  const tel = (site as any).phone ?? '+2347026921633'; // fallback if site.phone not defined
 
   return (
     <>
@@ -161,6 +172,25 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ✅ BRANDS / CERTIFICATIONS STRIP (just under hero) */}
+        <section aria-labelledby="trust" className="bg-zinc-50 border-y border-zinc-200">
+          <div className="container py-4 flex flex-wrap items-center justify-between gap-3">
+            <p id="trust" className="text-sm text-zinc-600 shrink-0">Brands &amp; certifications</p>
+            <ul className="flex items-center gap-6">
+              <li aria-label="Standards Organisation of Nigeria (SON) compliant">
+                <Image
+                  src="/images/certs/son.png"
+                  alt="Standards Organisation of Nigeria (SON) compliant"
+                  width={96}
+                  height={96}
+                  className="h-10 w-auto sm:h-12"
+                />
+              </li>
+              {/* Add more logos later */}
+            </ul>
+          </div>
+        </section>
+
         {/* VALUE PROPS */}
         <section className="container py-14">
           <h2 className="text-2xl font-semibold">Why Choose Trucast</h2>
@@ -180,6 +210,36 @@ export default function HomePage() {
             <div className="card p-5">
               <p className="font-semibold">Responsive Support</p>
               <p className="text-sm text-zinc-600 mt-1">Quick assistance via WhatsApp, phone, and email.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ✅ PAYMENTS & DELIVERY + PROOF POINTS (below Why Choose) */}
+        <section aria-labelledby="assurance-title" className="container pb-14">
+          <h2 id="assurance-title" className="sr-only">Payments, delivery and guarantees</h2>
+
+          <div className="grid gap-6 sm:grid-cols-2">
+            {/* Payments & Delivery */}
+            <div className="card p-5">
+              <p className="font-semibold mb-3">Payment &amp; Delivery</p>
+              <ul className="space-y-2 text-sm text-zinc-700">
+                <li className="flex items-start gap-2"><CheckIcon /> Secure payments (Transfer / POS / Paystack)</li>
+                <li className="flex items-start gap-2"><CheckIcon /> Nationwide delivery in 1–5 business days</li>
+                <li className="flex items-start gap-2"><CheckIcon /> Pay on delivery in select locations</li>
+              </ul>
+            </div>
+
+            {/* Proof points / Guarantees */}
+            <div className="card p-5">
+              <p className="font-semibold mb-3">Why shop with Trucast</p>
+              <ul className="space-y-2 text-sm text-zinc-700">
+                <li className="flex items-start gap-2"><CheckIcon /> Genuine products, SON compliant</li>
+                <li className="flex items-start gap-2"><CheckIcon /> Warranty: 12-month limited warranty on select items</li>
+                <li className="flex items-start gap-2">
+                  <CheckIcon /> 7-day returns — <Link href="/returns" className="link">see policy</Link>
+                </li>
+                <li className="flex items-start gap-2"><CheckIcon /> Dedicated support for projects & wholesale</li>
+              </ul>
             </div>
           </div>
         </section>
@@ -225,16 +285,17 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* CTA */}
+        {/* ✅ CTA with WhatsApp + Call (tap-to-call) */}
         <section className="bg-white">
           <div className="container py-12 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
               <p className="text-lg font-semibold">Ready to order or become a distributor?</p>
               <p className="text-sm text-zinc-600">Ask for bulk pricing and timelines. We’ll respond quickly.</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Link className="btn-primary" href="/wholesale">Wholesale Enquiry</Link>
-              <Link className="btn-outline" href="/contact">Talk to Sales</Link>
+              <a className="btn-outline" href={site.waLink} target="_blank" rel="noopener">Chat on WhatsApp</a>
+              <a className="btn-outline" href={`tel:${tel}`}>Call</a>
             </div>
           </div>
         </section>
