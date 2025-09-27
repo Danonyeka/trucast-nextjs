@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image, { type StaticImageData } from 'next/image';
 import { OrganizationLd, LocalBusinessLd } from '@/components/seo/JsonLd';
 import { site } from '@/lib/site';
+import { track } from '@/lib/analytics';
 
 // cards
 import CategoryCard from '@/components/cards/CategoryCard';
