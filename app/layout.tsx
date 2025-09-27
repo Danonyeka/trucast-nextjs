@@ -2,9 +2,10 @@ import type { Metadata, Viewport } from 'next';
 import './(site)/_styles/globals.css';
 import { site } from '@/lib/site';
 import { CartProvider } from '@/components/cart/CartContext';
+import { ToastProvider } from '@/components/ui/Toast'; // ✅ add
 import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
-import Analytics from '@/components/analytics/Analytics'; // ✅ add
+import Analytics from '@/components/analytics/Analytics'; // ✅
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.trucast-ng.com'),
@@ -53,44 +54,46 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="antialiased">
-        {/* ✅ Analytics loader (Plausible or GA4 via env vars) */}
+        {/* Analytics */}
         <Analytics />
 
-        {/* ✅ Skip link (first focusable element) */}
+        {/* Skip link */}
         <a href="#main-content" className="skip-link">Skip to content</a>
 
         <CartProvider>
-          {/* Anchor for "Back to top" links */}
-          <div id="top" />
+          <ToastProvider>
+            {/* Anchor for "Back to top" links */}
+            <div id="top" />
 
-          {/* FIXED: announcement + header (never scroll) */}
-          <div className="fixed inset-x-0 top-0 z-50">
-            {/* Announcement bar */}
-            <div className="bg-brand text-white text-[11px] sm:text-xs h-6 sm:h-8 flex items-center">
-              <div className="container flex items-center gap-3">
-                <span className="font-semibold shrink-0">RC {site.rc}</span>
-                <div className="marquee-wrap flex-1">
-                  <div className="marquee-track">
-                    <span>{site.announcement} • </span>
-                    <span>{site.announcement} • </span>
-                    <span>{site.announcement} • </span>
-                    <span>{site.announcement} • </span>
+            {/* FIXED: announcement + header */}
+            <div className="fixed inset-x-0 top-0 z-50">
+              {/* Announcement bar */}
+              <div className="bg-brand text-white text-[11px] sm:text-xs h-6 sm:h-8 flex items-center">
+                <div className="container flex items-center gap-3">
+                  <span className="font-semibold shrink-0">RC {site.rc}</span>
+                  <div className="marquee-wrap flex-1">
+                    <div className="marquee-track">
+                      <span>{site.announcement} • </span>
+                      <span>{site.announcement} • </span>
+                      <span>{site.announcement} • </span>
+                      <span>{site.announcement} • </span>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Header */}
+              <SiteHeader />
             </div>
 
-            {/* Header (hamburger on mobile) */}
-            <SiteHeader />
-          </div>
+            {/* Main */}
+            <main id="main-content" tabIndex={-1} className="pt-20 sm:pt-24 scroll-mt-24 sm:scroll-mt-28">
+              {children}
+            </main>
 
-          {/* ✅ Main target: focusable + scroll margin so fixed header doesn't cover it */}
-          <main id="main-content" tabIndex={-1} className="pt-20 sm:pt-24 scroll-mt-24 sm:scroll-mt-28">
-            {children}
-          </main>
-
-          {/* Unified footer */}
-          <SiteFooter />
+            {/* Footer */}
+            <SiteFooter />
+          </ToastProvider>
         </CartProvider>
       </body>
     </html>
