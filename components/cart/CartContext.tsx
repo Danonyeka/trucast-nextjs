@@ -55,12 +55,15 @@ function reducer(state: CartState, action: Action): CartState {
 
 type CartCtx = {
   state: CartState;
+  /** direct convenience accessors */
+  items: CartItem[];          // ← add
+  subtotal: number;           // ← add (sum of price * qty)
   add: (item: CartItem) => void;
   setQty: (id: string, qty: number, variant?: string) => void;
   remove: (id: string, variant?: string) => void;
   clear: () => void;
-  ready: boolean; // true after hydration
-  count: number;  // total items
+  ready: boolean;
+  count: number;
 };
 
 const Context = createContext<CartCtx | null>(null);
@@ -101,18 +104,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('storage', onStorage);
   }, []);
 
-  const api = useMemo<CartCtx>(() => {
-    const count = state.items.reduce((n, i) => n + i.qty, 0);
-    return {
-      state,
-      add: (item) => dispatch({ type: 'ADD', item }),
-      setQty: (id, qty, variant) => dispatch({ type: 'SET_QTY', id, qty, variant }),
-      remove: (id, variant) => dispatch({ type: 'REMOVE', id, variant }),
-      clear: () => dispatch({ type: 'CLEAR' }),
-      ready,
-      count,
-    };
-  }, [state, ready]);
+const api = useMemo<CartCtx>(() => {
+  const items = state.items;
+  const count = items.reduce((n, i) => n + i.qty, 0);
+  // If your prices are in naira, this is naira; if in kobo, this is kobo.
+  const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+
+  return {
+    state,
+    items,          // ← expose
+    subtotal,       // ← expose
+    add: (item) => dispatch({ type: 'ADD', item }),
+    setQty: (id, qty, variant) => dispatch({ type: 'SET_QTY', id, qty, variant }),
+    remove: (id, variant) => dispatch({ type: 'REMOVE', id, variant }),
+    clear: () => dispatch({ type: 'CLEAR' }),
+    ready,
+    count,
+  };
+}, [state, ready]);
 
   return <Context.Provider value={api}>{children}</Context.Provider>;
 }
