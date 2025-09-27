@@ -1,70 +1,124 @@
 'use client';
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import type { Product } from '@/lib/products';
 
-type CartItem = { sku: string; name: string; priceNGN: number; img: string; qty: number };
-type CartState = {
-  items: CartItem[];
-  add: (p: Product, qty?: number) => void;
-  remove: (sku: string) => void;
-  setQty: (sku: string, qty: number) => void;
-  clear: () => void;
-  count: number;
-  subtotal: number;
+import React, { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import { readJSON, writeJSON } from '@/lib/storage';
+
+export type CartItem = {
+  id: string;
+  name: string;
+  price: number;      // store in NGN kobo if you want exactness
+  qty: number;
+  image?: string;
+  variant?: string;   // e.g., color/size
 };
 
-const CartCtx = createContext<CartState | null>(null);
-const KEY = 'trucast.cart.v1';
+type CartState = { items: CartItem[] };
+type Action =
+  | { type: 'ADD'; item: CartItem }
+  | { type: 'REMOVE'; id: string; variant?: string }
+  | { type: 'SET_QTY'; id: string; variant?: string; qty: number }
+  | { type: 'CLEAR' };
 
-function safeLoad(): CartItem[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return [];
-    const data = JSON.parse(raw);
-    if (Array.isArray(data)) return data as CartItem[];
-    return [];
-  } catch {
-    return [];
+const CART_KEY = 'trucast_cart_v1';
+
+function reducer(state: CartState, action: Action): CartState {
+  switch (action.type) {
+    case 'ADD': {
+      const items = [...state.items];
+      const idx = items.findIndex(
+        i => i.id === action.item.id && i.variant === action.item.variant
+      );
+      if (idx > -1) {
+        items[idx] = { ...items[idx], qty: items[idx].qty + action.item.qty };
+      } else {
+        items.push(action.item);
+      }
+      return { items };
+    }
+    case 'SET_QTY': {
+      const items = state.items.map(i =>
+        i.id === action.id && i.variant === action.variant ? { ...i, qty: action.qty } : i
+      ).filter(i => i.qty > 0);
+      return { items };
+    }
+    case 'REMOVE': {
+      return {
+        items: state.items.filter(i => !(i.id === action.id && i.variant === action.variant)),
+      };
+    }
+    case 'CLEAR':
+      return { items: [] };
+    default:
+      return state;
   }
 }
 
-function safeSave(items: CartItem[]) {
-  if (typeof window === 'undefined') return;
-  try { window.localStorage.setItem(KEY, JSON.stringify(items)); } catch {}
-}
+type CartCtx = {
+  state: CartState;
+  add: (item: CartItem) => void;
+  setQty: (id: string, qty: number, variant?: string) => void;
+  remove: (id: string, variant?: string) => void;
+  clear: () => void;
+  ready: boolean; // true after hydration
+  count: number;  // total items
+};
+
+const Context = createContext<CartCtx | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [ready, setReady] = useState(false);
+  const [state, dispatch] = useReducer(reducer, { items: [] });
 
-  useEffect(() => { setItems(safeLoad()); }, []);
-  useEffect(() => { safeSave(items); }, [items]);
+  // 1) Re-hydrate once on the client
+  useEffect(() => {
+    const saved = readJSON<CartState>(CART_KEY, { items: [] });
+    if (saved.items?.length) {
+      // replace initial state
+      dispatch({ type: 'CLEAR' });
+      for (const item of saved.items) dispatch({ type: 'ADD', item });
+    }
+    setReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  function add(p: Product, qty = 1) {
-    setItems(prev => {
-      const i = prev.findIndex(x => x.sku === p.sku);
-      if (i >= 0) {
-        const next = [...prev];
-        next[i] = { ...next[i], qty: next[i].qty + qty };
-        return next;
+  // 2) Persist on every change (debounced by microtask is fine)
+  useEffect(() => {
+    if (!ready) return; // avoid overwriting with empty state during first render
+    writeJSON(CART_KEY, state);
+  }, [state, ready]);
+
+  // 3) Keep tabs in sync (if user has multiple windows open)
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === CART_KEY && e.newValue) {
+        const latest = readJSON<CartState>(CART_KEY, { items: [] });
+        // replace local state with latest from another tab
+        dispatch({ type: 'CLEAR' });
+        for (const item of latest.items) dispatch({ type: 'ADD', item });
       }
-      return [...prev, { sku: p.sku, name: p.name, priceNGN: p.priceNGN, img: p.img, qty }];
-    });
-  }
-  function remove(sku: string) { setItems(prev => prev.filter(x => x.sku !== sku)); }
-  function setQty(sku: string, qty: number) {
-    setItems(prev => prev.map(x => x.sku === sku ? { ...x, qty: Math.max(1, qty) } : x));
-  }
-  function clear() { setItems([]); safeSave([]); }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
 
-  const count = items.reduce((a, b) => a + b.qty, 0);
-  const subtotal = items.reduce((a, b) => a + b.qty * b.priceNGN, 0);
-  const value = useMemo(() => ({ items, add, remove, setQty, clear, count, subtotal }), [items]);
-  return <CartCtx.Provider value={value}>{children}</CartCtx.Provider>;
+  const api = useMemo<CartCtx>(() => {
+    const count = state.items.reduce((n, i) => n + i.qty, 0);
+    return {
+      state,
+      add: (item) => dispatch({ type: 'ADD', item }),
+      setQty: (id, qty, variant) => dispatch({ type: 'SET_QTY', id, qty, variant }),
+      remove: (id, variant) => dispatch({ type: 'REMOVE', id, variant }),
+      clear: () => dispatch({ type: 'CLEAR' }),
+      ready,
+      count,
+    };
+  }, [state, ready]);
+
+  return <Context.Provider value={api}>{children}</Context.Provider>;
 }
 
 export function useCart() {
-  const ctx = useContext(CartCtx);
-  if (!ctx) throw new Error('useCart must be used within CartProvider');
+  const ctx = useContext(Context);
+  if (!ctx) throw new Error('useCart must be used within <CartProvider>');
   return ctx;
 }
