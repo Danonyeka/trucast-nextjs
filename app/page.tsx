@@ -140,7 +140,7 @@ export default function HomePage() {
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-brand">• Be Green, Be Smart</p>
               <h1 className="mt-2 text-4xl font-bold leading-tight">
-                Premium Electrical Accessories & LED Lighting — Built for Nigeria
+                Premium Electrical Accessories, LED Lighting & Smart Devices — Built for Nigeria
               </h1>
               <p className="mt-3 text-zinc-700 max-w-2xl">
                 We supply reliable <strong>mechanical wall switches & sockets</strong>, energy-efficient
