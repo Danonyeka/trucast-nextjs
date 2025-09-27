@@ -147,10 +147,29 @@ export default function HomePage() {
                 <strong> LED lighting</strong>, and accessories for homes, offices, and projects.
                 Retail and <strong>wholesale</strong> support with fast nationwide fulfillment.
               </p>
+              {/* ✅ HERO CTAs with tracking */}
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/categories" className="btn-primary">Shop Now</Link>
-                <Link href="/wholesale" className="btn-outline">Wholesale &amp; Bulk</Link>
-                <Link href="/contact" className="btn-outline">Contact Sales</Link>
+                <Link
+                  href="/categories"
+                  className="btn-primary"
+                  onClick={() => track('shop_now_click', { place: 'hero' })}
+                >
+                  Shop Now
+                </Link>
+                <Link
+                  href="/wholesale"
+                  className="btn-outline"
+                  onClick={() => track('wholesale_enquiry_click', { place: 'hero' })}
+                >
+                  Wholesale &amp; Bulk
+                </Link>
+                <Link
+                  href="/contact"
+                  className="btn-outline"
+                  onClick={() => track('contact_sales_click', { place: 'hero' })}
+                >
+                  Contact Sales
+                </Link>
               </div>
               <div className="mt-6 grid grid-cols-3 gap-4 text-center">
                 <div>
@@ -178,7 +197,7 @@ export default function HomePage() {
           <div className="container py-4 flex flex-wrap items-center justify-between gap-3">
             <p id="trust" className="text-sm text-zinc-600 shrink-0">Brands &amp; certifications</p>
             <ul className="flex items-center gap-6">
-              <li aria-label="Standards Organisation of Nigeria (SON) compliant)">
+              <li aria-label="Standards Organisation of Nigeria (SON) compliant">
                 <Image
                   src="/images/certs/son.png"
                   alt="Standards Organisation of Nigeria (SON) compliant"
@@ -285,7 +304,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ✅ CTA with WhatsApp + Call (mobile-only Call) */}
+        {/* ✅ CTA with WhatsApp + Call (mobile-only Call) + tracking */}
         <section className="bg-white">
           <div className="container py-12 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
@@ -294,9 +313,24 @@ export default function HomePage() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link className="btn-primary" href="/wholesale">Wholesale Enquiry</Link>
-              <a className="btn-outline" href={site.waLink} target="_blank" rel="noopener">Chat on WhatsApp</a>
+              <a
+                className="btn-outline"
+                href={site.waLink}
+                target="_blank"
+                rel="noopener"
+                onClick={() => track('whatsapp_click', { place: 'cta' })}
+              >
+                Chat on WhatsApp
+              </a>
               {/* Mobile-only Call button */}
-              <a className="btn-outline md:hidden" href={`tel:${tel}`} aria-label="Call Trucast Nigeria">Call</a>
+              <a
+                className="btn-outline md:hidden"
+                href={`tel:${tel}`}
+                aria-label="Call Trucast Nigeria"
+                onClick={() => track('call_click', { place: 'cta' })}
+              >
+                Call
+              </a>
             </div>
           </div>
         </section>
