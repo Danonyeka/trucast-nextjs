@@ -4,6 +4,7 @@ import { site } from '@/lib/site';
 import { CartProvider } from '@/components/cart/CartContext';
 import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
+import Analytics from '@/components/analytics/Analytics'; // ✅ add
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.trucast-ng.com'),
@@ -28,12 +29,9 @@ export const metadata: Metadata = {
     description: site.tagline,
     images: ['/og.jpg'],
   },
-  // ✅ Verification tokens
   verification: {
     google: 'b8wUw2zlZ-4qhPLB40QRMOJS1Nk5ctyNk0ql424it84',
-    other: {
-      'msvalidate.01': '4C1D61B1DFA11D28F74422CEABFCC06D', // Bing
-    },
+    other: { 'msvalidate.01': '4C1D61B1DFA11D28F74422CEABFCC06D' },
   },
 };
 
@@ -55,6 +53,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="antialiased">
+        {/* ✅ Analytics loader (Plausible or GA4 via env vars) */}
+        <Analytics />
+
         {/* ✅ Skip link (first focusable element) */}
         <a href="#main-content" className="skip-link">Skip to content</a>
 
