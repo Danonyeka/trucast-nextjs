@@ -3,14 +3,23 @@
 import React, { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import { readJSON, writeJSON } from '@/lib/storage';
 
+// Allow either price or priceNGN (both NGN units)
 export type CartItem = {
   id: string;
   name: string;
-  price: number;      // store in NGN kobo if you want exactness
   qty: number;
+  // Either of these may exist based on your product model:
+  price?: number;      // NGN
+  priceNGN?: number;   // NGN
   image?: string;
-  variant?: string;   // e.g., color/size
+  variant?: string;
 };
+
+// Helper to read unit price regardless of which field is present
+function unitPrice(i: CartItem) {
+  // prefer `price`, fall back to `priceNGN`, else 0
+  return (typeof i.price === 'number' ? i.price : i.priceNGN) ?? 0;
+}
 
 type CartState = { items: CartItem[] };
 type Action =
@@ -26,7 +35,7 @@ function reducer(state: CartState, action: Action): CartState {
     case 'ADD': {
       const items = [...state.items];
       const idx = items.findIndex(
-        i => i.id === action.item.id && i.variant === action.item.variant
+        (i) => i.id === action.item.id && i.variant === action.item.variant
       );
       if (idx > -1) {
         items[idx] = { ...items[idx], qty: items[idx].qty + action.item.qty };
@@ -36,14 +45,16 @@ function reducer(state: CartState, action: Action): CartState {
       return { items };
     }
     case 'SET_QTY': {
-      const items = state.items.map(i =>
-        i.id === action.id && i.variant === action.variant ? { ...i, qty: action.qty } : i
-      ).filter(i => i.qty > 0);
+      const items = state.items
+        .map((i) =>
+          i.id === action.id && i.variant === action.variant ? { ...i, qty: action.qty } : i
+        )
+        .filter((i) => i.qty > 0);
       return { items };
     }
     case 'REMOVE': {
       return {
-        items: state.items.filter(i => !(i.id === action.id && i.variant === action.variant)),
+        items: state.items.filter((i) => !(i.id === action.id && i.variant === action.variant)),
       };
     }
     case 'CLEAR':
@@ -56,8 +67,8 @@ function reducer(state: CartState, action: Action): CartState {
 type CartCtx = {
   state: CartState;
   /** direct convenience accessors */
-  items: CartItem[];          // ← add
-  subtotal: number;           // ← add (sum of price * qty)
+  items: CartItem[];
+  subtotal: number; // sum of unitPrice * qty (NGN)
   add: (item: CartItem) => void;
   setQty: (id: string, qty: number, variant?: string) => void;
   remove: (id: string, variant?: string) => void;
@@ -76,7 +87,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const saved = readJSON<CartState>(CART_KEY, { items: [] });
     if (saved.items?.length) {
-      // replace initial state
       dispatch({ type: 'CLEAR' });
       for (const item of saved.items) dispatch({ type: 'ADD', item });
     }
@@ -84,18 +94,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 2) Persist on every change (debounced by microtask is fine)
+  // 2) Persist on every change
   useEffect(() => {
     if (!ready) return; // avoid overwriting with empty state during first render
     writeJSON(CART_KEY, state);
   }, [state, ready]);
 
-  // 3) Keep tabs in sync (if user has multiple windows open)
+  // 3) Keep tabs in sync
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === CART_KEY && e.newValue) {
         const latest = readJSON<CartState>(CART_KEY, { items: [] });
-        // replace local state with latest from another tab
         dispatch({ type: 'CLEAR' });
         for (const item of latest.items) dispatch({ type: 'ADD', item });
       }
@@ -104,24 +113,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('storage', onStorage);
   }, []);
 
-const api = useMemo<CartCtx>(() => {
-  const items = state.items;
-  const count = items.reduce((n, i) => n + i.qty, 0);
-  // If your prices are in naira, this is naira; if in kobo, this is kobo.
-  const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const api = useMemo<CartCtx>(() => {
+    const items = state.items;
+    const count = items.reduce((n, i) => n + i.qty, 0);
+    // NGN subtotal using either price or priceNGN
+    const subtotal = items.reduce((sum, i) => sum + unitPrice(i) * i.qty, 0);
 
-  return {
-    state,
-    items,          // ← expose
-    subtotal,       // ← expose
-    add: (item) => dispatch({ type: 'ADD', item }),
-    setQty: (id, qty, variant) => dispatch({ type: 'SET_QTY', id, qty, variant }),
-    remove: (id, variant) => dispatch({ type: 'REMOVE', id, variant }),
-    clear: () => dispatch({ type: 'CLEAR' }),
-    ready,
-    count,
-  };
-}, [state, ready]);
+    return {
+      state,
+      items,
+      subtotal,
+      add: (item) => dispatch({ type: 'ADD', item }),
+      setQty: (id, qty, variant) => dispatch({ type: 'SET_QTY', id, qty, variant }),
+      remove: (id, variant) => dispatch({ type: 'REMOVE', id, variant }),
+      clear: () => dispatch({ type: 'CLEAR' }),
+      ready,
+      count,
+    };
+  }, [state, ready]);
 
   return <Context.Provider value={api}>{children}</Context.Provider>;
 }
@@ -130,4 +139,9 @@ export function useCart() {
   const ctx = useContext(Context);
   if (!ctx) throw new Error('useCart must be used within <CartProvider>');
   return ctx;
+}
+
+// (Optional) currency formatter you can import where needed
+export function formatNGN(n: number) {
+  return n.toLocaleString('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 });
 }
