@@ -192,7 +192,50 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ✅ BRANDS / CERTIFICATIONS STRIP (just under hero) */}
+        {/* ✅ NEW: Catalog QR block (right under hero) */}
+        <section className="container py-6">
+          <div className="card p-6 flex flex-col sm:flex-row items-center gap-6">
+            <div className="shrink-0">
+              <Image
+                src="/images/qr/catalog.png"
+                alt="Scan to view the Trucast product catalog"
+                width={180}
+                height={180}
+                priority
+                className="rounded-md bg-white"
+              />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-semibold">View our catalog</h3>
+              <p className="text-sm text-zinc-600">
+                Scan the QR with your phone, or open it directly to browse the digital flipbook.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/go/catalog"
+                  className="btn-primary"
+                  onClick={() => track('catalog_open_click', { place: 'home_qr' })}
+                >
+                  Open Catalog
+                </Link>
+                <a
+                  href="/images/qr/catalog.png"
+                  download
+                  className="btn-outline"
+                  onClick={() => track('catalog_qr_download', { place: 'home_qr' })}
+                >
+                  Download QR
+                </a>
+              </div>
+              <p className="text-xs text-zinc-500">
+                Short link:{' '}
+                <span className="font-mono">trucast-ng.com/go/catalog</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ✅ BRANDS / CERTIFICATIONS STRIP (just under hero+QR) */}
         <section aria-labelledby="trust" className="bg-zinc-50 border-y border-zinc-200">
           <div className="container py-4 flex flex-wrap items-center justify-between gap-3">
             <p id="trust" className="text-sm text-zinc-600 shrink-0">Brands &amp; certifications</p>
