@@ -1,8 +1,16 @@
-import Link from "next/link";
-import { posts as allPosts } from "@/lib/content";
+// app/blog/page.tsx
+import Link from "next/link"
+import type { Metadata } from "next"
+import { posts as allPosts } from "@/lib/content"
+
+export const metadata: Metadata = {
+  title: "Blog | Trucast Nigeria",
+  description:
+    "Insights and updates from Trucast Nigeria on electrical accessories in Nigeria, LED lighting and smart devices—bulk buying tips, product launches and how-to guides.",
+}
 
 export default function BlogPage() {
-  const posts = allPosts ?? []; // defensive: never undefined
+  const posts = allPosts ?? [] // defensive: never undefined
 
   return (
     <div className="container py-12">
@@ -32,5 +40,5 @@ export default function BlogPage() {
         </div>
       )}
     </div>
-  );
+  )
 }
