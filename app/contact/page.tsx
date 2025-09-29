@@ -1,21 +1,19 @@
-'use client';
+// app/contact/page.tsx
+'use client'
 
-import { site } from '@/lib/site';
-import { useState } from 'react';
+import { site } from '@/lib/site'
+import { useState } from 'react'
 
 export default function ContactPage() {
-  const [name, setName] = useState('');
-  const [reply, setReply] = useState('');
-  const [msg, setMsg] = useState('');
+  const [name, setName] = useState('')
+  const [reply, setReply] = useState('')
+  const [msg, setMsg] = useState('')
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const subject = encodeURIComponent(`Website inquiry from ${name || 'Customer'}`);
-    const body = encodeURIComponent(`Name: ${name}\nReply to: ${reply}\n\n${msg}`);
-
-    // ✅ Only primary email, no cc
-    window.location.href = `mailto:${site.emailPrimary}?subject=${subject}&body=${body}`;
+    e.preventDefault()
+    const subject = encodeURIComponent(`Website inquiry from ${name || 'Customer'}`)
+    const body = encodeURIComponent(`Name: ${name}\nReply to: ${reply}\n\n${msg}`)
+    window.location.href = `mailto:${site.emailPrimary}?subject=${subject}&body=${body}`
   }
 
   return (
@@ -46,5 +44,5 @@ export default function ContactPage() {
         <button className="btn" type="submit">Send</button>
       </form>
     </div>
-  );
+  )
 }
