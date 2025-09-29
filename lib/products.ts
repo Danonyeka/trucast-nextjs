@@ -1,11 +1,21 @@
+// Inventory-aware Product model (backward-compatible with your current data)
+export type StockStatus = 'in_stock' | 'out_of_stock' | 'preorder' | 'discontinued';
+
 export type Product = {
   sku: string;
   name: string;
   desc: string;
-  priceNGN: number;
+  priceNGN: number;          // keep using 0 for OOS if you like
   img: string;
   category: string;
   slug?: string;
+
+  // Optional explicit stock info. If omitted, we derive status from priceNGN.
+  stock?: {
+    status: StockStatus;
+    qty?: number;
+    eta?: string;            // e.g. "2025-10-05" or "2–3 weeks"
+  };
 };
 
 export const categoryMap: Record<string, string> = {
@@ -184,6 +194,31 @@ export const catalog: Product[] = [
   { sku: "TRC-SBRK-63A-2P-WIFI", name: "63A 2P Tongou WiFi smart Circuit Breaker", desc: "Smart DIN-rail circuit breaker 63A 2P (TONGOU); remote control via Wi-Fi/Tuya; status monitoring.", priceNGN: 90846, img: "/images/products/TRC-SBRK-63A-2P-WIFI.png", category: "smart-breaker", slug: "63a-2p-tongou-wifi-smart-circuit-breaker" },
 ];
 
+// ---------- Helpers for stock handling ----------
+
+// If explicit stock status exists, use it. Otherwise, derive from price:
+// - priceNGN > 0   => 'in_stock'
+// - priceNGN === 0 => 'out_of_stock'
+export const deriveStatus = (p: Product): StockStatus =>
+  p.stock?.status ?? (p.priceNGN > 0 ? 'in_stock' : 'out_of_stock');
+
+export const isOutOfStock = (p: Product) => deriveStatus(p) !== 'in_stock';
+
+// If item is not in stock, hide price by returning undefined.
+export const displayPriceNGN = (p: Product) =>
+  deriveStatus(p) === 'in_stock' ? p.priceNGN : undefined;
+
+// Keep your original byCategory (shows everything)
 export function byCategory(slug: string) {
   return catalog.filter(p => p.category === slug);
 }
+
+// New: only the items that are actually available
+export function byCategoryAvailable(slug: string) {
+  return catalog.filter(p => p.category === slug && deriveStatus(p) === 'in_stock');
+}
+
+// New: handy list for admin/alerts
+export const outOfStockSkus = catalog
+  .filter(p => deriveStatus(p) !== 'in_stock')
+  .map(p => p.sku);
