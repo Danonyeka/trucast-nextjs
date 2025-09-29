@@ -1,34 +1,46 @@
-'use client';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useMemo, useState } from 'react';
-import { catalog } from '@/lib/products';
+// app/search/page.tsx
+'use client'
 
-function NGN(n: number) { return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(n); }
+import Link from 'next/link'
+import Image from 'next/image'
+import { useMemo, useState } from 'react'
+import { catalog } from '@/lib/products'
 
-import type { Metadata } from 'next'
-export const metadata: Metadata = { robots: { index: false, follow: true } }
+function NGN(n: number) {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    maximumFractionDigits: 0,
+  }).format(n)
+}
 
-export default function SearchPage(){
-  const [q, setQ] = useState('');
+export default function SearchPage() {
+  const [q, setQ] = useState('')
+
   const results = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    if (!s) return catalog;
-    return catalog.filter(p =>
+    const s = q.trim().toLowerCase()
+    if (!s) return catalog
+    return catalog.filter((p) =>
       p.name.toLowerCase().includes(s) ||
       p.desc.toLowerCase().includes(s) ||
       p.sku.toLowerCase().includes(s) ||
       p.category.toLowerCase().includes(s)
-    );
-  }, [q]);
+    )
+  }, [q])
 
   return (
     <div className="container py-12">
       <h1 className="text-3xl font-bold">Search</h1>
-      <input autoFocus value={q} onChange={e=>setQ(e.target.value)} placeholder="Search all products by name, SKU, or category…" className="mt-4 w-full border rounded-xl px-4 py-3" />
+      <input
+        autoFocus
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Search all products by name, SKU, or category…"
+        className="mt-4 w-full border rounded-xl px-4 py-3"
+      />
       <p className="text-sm text-zinc-500 mt-2">{results.length} result(s)</p>
       <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {results.map(p => (
+        {results.map((p) => (
           <Link key={p.sku} href={`/product/${p.sku}`} className="card overflow-hidden">
             <div className="relative aspect-square bg-zinc-100">
               <Image src={p.img} alt={p.name} fill className="object-contain" />
@@ -43,5 +55,5 @@ export default function SearchPage(){
         ))}
       </div>
     </div>
-  );
+  )
 }
