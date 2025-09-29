@@ -1,43 +1,48 @@
 // app/sitemap.ts
-import type { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next'
+import { categories, catalog } from '@/lib/products' // adjust to your paths
 
-const BASE_URL = 'https://www.trucast-ng.com';
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://www.trucast-ng.com'
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
+// Create a stable timestamp per build/deploy, not per request
+const BUILD_TIME = new Date()
+const url = (path: string) => `${BASE_URL}${path}`
 
-  // Core static pages
+export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/`,              lastModified: now, changeFrequency: 'weekly',  priority: 1.0 },
-    { url: `${BASE_URL}/categories`,    lastModified: now, changeFrequency: 'weekly',  priority: 0.8 },
-    { url: `${BASE_URL}/wholesale`,     lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/contact`,       lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
-    { url: `${BASE_URL}/returns`,       lastModified: now, changeFrequency: 'yearly',  priority: 0.5 },
-    { url: `${BASE_URL}/search`,        lastModified: now, changeFrequency: 'weekly',  priority: 0.3 },
-    { url: `${BASE_URL}/accessibility`, lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${BASE_URL}/blog`,          lastModified: now, changeFrequency: 'weekly',  priority: 0.6 },
-    { url: `${BASE_URL}/guides`,        lastModified: now, changeFrequency: 'weekly',  priority: 0.6 },
-    // Keep /shop ONLY if it’s a real page (not just an alias of /categories)
-    { url: `${BASE_URL}/shop`,          lastModified: now, changeFrequency: 'weekly',  priority: 0.6 },
-  ];
+    { url: url('/'),              lastModified: BUILD_TIME, changeFrequency: 'weekly',  priority: 1.0 },
+    { url: url('/categories'),    lastModified: BUILD_TIME, changeFrequency: 'weekly',  priority: 0.8 },
+    { url: url('/wholesale'),     lastModified: BUILD_TIME, changeFrequency: 'monthly', priority: 0.7 },
+    { url: url('/contact'),       lastModified: BUILD_TIME, changeFrequency: 'yearly',  priority: 0.5 },
+    { url: url('/returns'),       lastModified: BUILD_TIME, changeFrequency: 'yearly',  priority: 0.5 },
+    { url: url('/accessibility'), lastModified: BUILD_TIME, changeFrequency: 'yearly',  priority: 0.3 },
+    { url: url('/guides'),        lastModified: BUILD_TIME, changeFrequency: 'weekly',  priority: 0.6 },
+    { url: url('/blog'),          lastModified: BUILD_TIME, changeFrequency: 'weekly',  priority: 0.6 },
+    // NOTE: intentionally excluding /search from sitemap
+    // If /shop is only an alias/redirect, remove it; otherwise include the canonical one only.
+    // { url: url('/shop'),        lastModified: BUILD_TIME, changeFrequency: 'weekly',  priority: 0.6 },
+  ]
 
-  // Category detail routes you’re using in the homepage grid
-  const categorySlugs = ['switches', 'sockets', 'smart-lock', 'recessed-light'];
-  const categoryRoutes: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
-    url: `${BASE_URL}/categories/${slug}`,
-    lastModified: now,
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }));
+  // Categories from your actual data
+  const categoryRoutes: MetadataRoute.Sitemap =
+    (categories || []).map(c => ({
+      url: url(`/categories/${c.slug}`),
+      lastModified: BUILD_TIME,
+      changeFrequency: 'weekly',
+      priority: 0.6,
+    }))
 
-  // If you have dynamic posts/products, map them the same way:
-  // const posts = await getAllBlogPosts(); // your data source
-  // const blogRoutes = posts.map(p => ({
-  //   url: `${BASE_URL}/blog/${p.slug}`,
-  //   lastModified: new Date(p.updatedAt ?? p.publishedAt ?? now),
-  //   changeFrequency: 'monthly',
-  //   priority: 0.5,
-  // }));
+  // Products (only if you have product detail pages and slugs)
+  const productRoutes: MetadataRoute.Sitemap =
+    (catalog || [])
+      .filter(p => p.slug) // ensure slug exists
+      .map(p => ({
+        url: url(`/product/${p.slug}`), // adjust to your real product route
+        lastModified: BUILD_TIME,       // use p.updatedAt if you have it
+        changeFrequency: 'monthly',
+        priority: 0.5,
+      }))
 
-  return [...staticRoutes, ...categoryRoutes /*, ...blogRoutes */];
+  return [...staticRoutes, ...categoryRoutes, ...productRoutes]
 }
