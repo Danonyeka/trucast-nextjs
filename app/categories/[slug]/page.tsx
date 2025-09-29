@@ -1,20 +1,22 @@
-'use client';
-import SmartImage from '@/components/SmartImage';
-import Link from 'next/link';
-import { categoryMap, byCategory } from '@/lib/products';
-import { useCart } from '@/components/cart/CartContext';
+// app/categories/[slug]/page.tsx
+'use client'
+
+import SmartImage from '@/components/SmartImage'
+import Link from 'next/link'
+import { categoryMap, byCategory } from '@/lib/products'
+import { useCart } from '@/components/cart/CartContext'
 
 function NGN(n: number) {
   return new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
     maximumFractionDigits: 0,
-  }).format(n);
+  }).format(n)
 }
 
 export default function CategoryPage({ params }: { params: { slug: string } }) {
-  const category = (categoryMap as any)[params.slug];
-  const { add } = useCart();
+  const category = categoryMap[params.slug]
+  const { add } = useCart()
 
   if (!category) {
     return (
@@ -24,10 +26,10 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
           ← Back to Categories
         </Link>
       </div>
-    );
+    )
   }
 
-  const items = byCategory(params.slug);
+  const items = byCategory(params.slug)
 
   return (
     <div className="container py-16">
@@ -48,10 +50,10 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                   className="btn-primary"
                   onClick={() =>
                     add({
-                      id: p.sku,          // use sku as the cart item id
+                      id: p.sku,
                       name: p.name,
                       qty: 1,
-                      priceNGN: p.priceNGN, // keep the same field your products use
+                      priceNGN: p.priceNGN,
                       image: p.img,
                     })
                   }
@@ -64,5 +66,5 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
         ))}
       </div>
     </div>
-  );
+  )
 }
