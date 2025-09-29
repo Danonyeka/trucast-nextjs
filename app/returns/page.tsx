@@ -1,34 +1,41 @@
 // app/returns/page.tsx
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { site } from '@/lib/site';
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { site } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Returns & Refunds Policy (7-Day) | Trucast Nigeria',
   description:
-    'Request a return, exchange, or refund within 7 calendar days of delivery or pickup. Learn eligibility, steps and timelines.',
+    'Returns & refunds for electrical accessories in Nigeria—request an exchange or refund within 7 days of delivery or pickup. See eligibility, steps and timelines.',
   openGraph: {
     title: 'Returns & Refunds Policy (7-Day) | Trucast Nigeria',
     description:
-      'Request a return, exchange, or refund within 7 calendar days of delivery or pickup. Learn eligibility, steps and timelines.',
+      'Returns & refunds for electrical accessories in Nigeria—request an exchange or refund within 7 days of delivery or pickup. See eligibility, steps and timelines.',
     url: 'https://www.trucast-ng.com/returns',
     type: 'article',
-    images: [{ url: '/og.jpg', width: 1200, height: 630 }],
+    images: [{ url: 'https://www.trucast-ng.com/og.jpg', width: 1200, height: 630 }],
   },
-  alternates: { canonical: '/returns' },
-};
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Returns & Refunds Policy (7-Day) | Trucast Nigeria',
+    description:
+      'Returns & refunds for electrical accessories in Nigeria—request an exchange or refund within 7 days of delivery or pickup. See eligibility, steps and timelines.',
+    images: ['https://www.trucast-ng.com/og.jpg'],
+  },
+  alternates: { canonical: 'https://www.trucast-ng.com/returns' },
+}
 
 function firstEmail(v?: string) {
-  if (!v) return 'sales@trucast-ng.com';
-  return v.split(/[;,]/)[0].trim();
+  if (!v) return 'sales@trucast-ng.com'
+  return v.split(/[;,]/)[0].trim()
 }
 
 export default function ReturnsPage() {
-  const email = firstEmail(site.emailPrimary);
-  const waBase = (site.waLink || 'https://wa.me/2347026921633').split('?')[0];
+  const email = firstEmail(site.emailPrimary)
+  const waBase = (site.waLink || 'https://wa.me/2347026921633').split('?')[0]
   const waReturnLink = `${waBase}?text=${encodeURIComponent(
     'Return request: Order #_____ • Item(s): _____ • Reason: _____ • Photos: (attach if possible)'
-  )}`;
+  )}`
 
   // JSON-LD (rendered as a plain <script> to avoid client-only imports)
   const faqJsonLd = {
@@ -81,7 +88,7 @@ export default function ReturnsPage() {
         },
       },
     ],
-  };
+  }
 
   return (
     <>
@@ -110,84 +117,3 @@ export default function ReturnsPage() {
           {/* Mobile-only call shortcut */}
           <a className="btn-outline md:hidden" href={`tel:${site.phone ?? '+2347026921633'}`}>
             Call
-          </a>
-        </div>
-
-        {/* Policy details */}
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <div className="card p-5">
-            <p className="font-semibold">Eligibility</p>
-            <ul className="mt-2 space-y-2 text-sm text-zinc-700">
-              <li>• Request within 7 days of delivery/pickup.</li>
-              <li>• Item is unused, uninstalled and in original packaging with all accessories.</li>
-              <li>• Serial numbers, labels and protective films remain intact.</li>
-              <li>• Provide proof of purchase (order number, receipt or invoice).</li>
-            </ul>
-          </div>
-
-          <div className="card p-5">
-            <p className="font-semibold">Not returnable</p>
-            <ul className="mt-2 space-y-2 text-sm text-zinc-700">
-              <li>• Final-sale/clearance items or custom orders (e.g., cut cables).</li>
-              <li>• Installed, modified or physically damaged items.</li>
-              <li>• Consumables that show use (e.g., used bulbs, opened batteries).</li>
-              <li>• Items missing packaging, parts, or accessories.</li>
-            </ul>
-          </div>
-
-          <div className="card p-5">
-            <p className="font-semibold">Damaged / Faulty on arrival</p>
-            <ul className="mt-2 space-y-2 text-sm text-zinc-700">
-              <li>• Report within <strong>48 hours</strong> of delivery with photos/video.</li>
-              <li>• We arrange a replacement or refund; Trucast covers return shipping for confirmed faults.</li>
-              <li>• After 7 days, eligible products continue under our limited warranty window.</li>
-            </ul>
-          </div>
-
-          <div className="card p-5">
-            <p className="font-semibold">How to start a return</p>
-            <ol className="mt-2 space-y-2 text-sm text-zinc-700 list-decimal pl-5">
-              <li>Contact us by WhatsApp or email with your order number, item(s) and reason.</li>
-              <li>Share photos/video (packaging, item condition, and any fault/damage).</li>
-              <li>We’ll confirm eligibility and provide the return address or pickup instructions.</li>
-              <li>Return the item securely packed; include all accessories and invoice copy.</li>
-            </ol>
-          </div>
-
-          <div className="card p-5">
-            <p className="font-semibold">Return shipping &amp; costs</p>
-            <ul className="mt-2 space-y-2 text-sm text-zinc-700">
-              <li>• Wrong/defective item sent by Trucast: <strong>we cover</strong> return shipping and replacement.</li>
-              <li>• Change-of-mind or ordering error: <strong>customer covers</strong> return shipping.</li>
-              <li>• Inspection typically within 24–48h of arrival at our facility.</li>
-            </ul>
-          </div>
-
-          <div className="card p-5">
-            <p className="font-semibold">Refunds &amp; exchanges</p>
-            <ul className="mt-2 space-y-2 text-sm text-zinc-700">
-              <li>• Refund to original payment method after inspection approval.</li>
-              <li>• Bank transfer refunds: 1–3 business days; POS/processor reversals: 3–10 business days (bank-dependent).</li>
-              <li>• Store credit or like-for-like exchange available on request.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <p className="text-sm text-zinc-600">
-            Drop-offs / courier returns accepted at: <span className="font-medium">{site.address}</span>
-          </p>
-        </div>
-
-        <p className="mt-8 text-xs text-zinc-500">
-          Trucast Nigeria Limited reserves the right to refuse returns that do not meet this policy. This policy does not limit
-          your statutory rights. Last updated: {new Date().toLocaleDateString('en-GB')}.
-        </p>
-
-        <div className="mt-6">
-          <Link href="/" className="link">← Back to Home</Link>
-        </div>
-      </section>
-    </>
-  );
-}
