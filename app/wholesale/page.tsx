@@ -1,9 +1,12 @@
-import Link from 'next/link';
+// app/wholesale/page.tsx
+import Link from 'next/link'
+import type { Metadata } from 'next'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Wholesale & Bulk Orders',
-  description: 'Bulk pricing for contractors, distributors and projects across Nigeria.',
-};
+  description:
+    'Wholesale electrical accessories in Nigeria—bulk pricing on switches, sockets, LED lighting & smart devices. Nationwide delivery, SON-compliant, expert support.',
+}
 
 export default function WholesalePage() {
   return (
@@ -63,5 +66,5 @@ export default function WholesalePage() {
         </div>
       </section>
     </div>
-  );
+  )
 }
