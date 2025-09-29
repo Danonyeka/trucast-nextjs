@@ -1,5 +1,13 @@
-import Link from 'next/link';
-import { guides } from '@/lib/content';
+// app/guides/page.tsx
+import Link from 'next/link'
+import type { Metadata } from 'next'
+import { guides } from '@/lib/content'
+
+export const metadata: Metadata = {
+  title: 'Guides | Trucast Nigeria',
+  description:
+    'Guides to buying electrical accessories in Nigeria: ordering, payments, delivery, warranty and returns. Clear steps for retail and wholesale customers.',
+}
 
 export default function GuidesPage() {
   return (
@@ -21,5 +29,5 @@ export default function GuidesPage() {
         ))}
       </div>
     </div>
-  );
+  )
 }
