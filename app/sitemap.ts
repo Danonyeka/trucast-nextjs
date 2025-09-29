@@ -22,6 +22,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // NOTE: intentionally excluding /search from sitemap
     // If /shop is only an alias/redirect, remove it; otherwise include the canonical one only.
     // { url: url('/shop'),        lastModified: BUILD_TIME, changeFrequency: 'weekly',  priority: 0.6 },
+    // in app/sitemap.ts static routes:
+    { url: `${BASE_URL}/about`, lastModified: now, changeFrequency: 'yearly', priority: 0.6 },
+
   ]
 
   // Categories from your actual data
