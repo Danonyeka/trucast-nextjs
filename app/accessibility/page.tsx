@@ -1,6 +1,14 @@
+// app/accessibility/page.tsx
+import type { Metadata } from 'next'
+import { site } from '@/lib/site'
 
-import { site } from '@/lib/site';
-export default function AccessibilityPage(){
+export const metadata: Metadata = {
+  title: 'Accessibility',
+  description:
+    'WCAG 2.1 AA at Trucast Nigeria—semantic HTML, keyboard navigation, alt text and clear contrast so everyone can shop electrical accessories in Nigeria.',
+}
+
+export default function AccessibilityPage() {
   return (
     <div className="container py-16">
       <h1 className="text-3xl font-bold">Accessibility Statement</h1>
@@ -10,14 +18,16 @@ export default function AccessibilityPage(){
       </p>
       <ul className="list-disc pl-6 mt-4 text-sm text-zinc-700 space-y-1">
         <li>Semantic HTML and descriptive link text</li>
-        <li>Alt text for non‑decorative images</li>
+        <li>Alt text for non-decorative images</li>
         <li>Focusable controls with visible states</li>
         <li>Logical heading hierarchy</li>
       </ul>
       <p className="mt-6 text-sm">
-        If you face any accessibility barriers, email <a className="link" href={`mailto:${site.emailPrimary}`}>{site.emailPrimary}</a> or message us on WhatsApp at <a className="link" href={site.waLink}>{site.phone}</a>.
+        If you face any accessibility barriers, email{' '}
+        <a className="link" href={`mailto:${site.emailPrimary}`}>{site.emailPrimary}</a> or message
+        us on WhatsApp at <a className="link" href={site.waLink}>{site.phone}</a>.
       </p>
       <p className="text-xs text-zinc-500 mt-6">Last updated: 2025-01-01</p>
     </div>
-  );
+  )
 }
