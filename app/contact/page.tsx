@@ -1,48 +1,64 @@
 // app/contact/page.tsx
-'use client'
+import type { Metadata } from 'next'
 
-import { site } from '@/lib/site'
-import { useState } from 'react'
+export const metadata: Metadata = {
+  title: 'Contact | Trucast Nigeria',
+  description:
+    'Contact Trucast Nigeria for quotes, orders or support on electrical accessories, LED lighting & smart devices. Call, WhatsApp or email—fast response nationwide.',
+}
 
 export default function ContactPage() {
-  const [name, setName] = useState('')
-  const [reply, setReply] = useState('')
-  const [msg, setMsg] = useState('')
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const subject = encodeURIComponent(`Website inquiry from ${name || 'Customer'}`)
-    const body = encodeURIComponent(`Name: ${name}\nReply to: ${reply}\n\n${msg}`)
-    window.location.href = `mailto:${site.emailPrimary}?subject=${subject}&body=${body}`
-  }
-
   return (
-    <div className="container py-16">
-      <h1 className="text-2xl font-semibold">Contact Trucast</h1>
-      <p className="text-zinc-600 mt-2">We’d love to hear from you.</p>
+    <section className="container py-12">
+      <h1 className="text-3xl font-bold">Contact Trucast</h1>
+      <p className="mt-2 text-zinc-600 max-w-2xl">We’d love to hear from you.</p>
 
-      <form onSubmit={handleSubmit} className="mt-8 space-y-4 max-w-xl">
-        <input
-          className="input"
-          placeholder="Your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          className="input"
-          placeholder="Your email or phone"
-          value={reply}
-          onChange={(e) => setReply(e.target.value)}
-        />
-        <textarea
-          className="textarea"
-          rows={6}
-          placeholder="Message"
-          value={msg}
-          onChange={(e) => setMsg(e.target.value)}
-        />
-        <button className="btn" type="submit">Send</button>
+      <form className="mt-8 grid max-w-2xl gap-5">
+        <label className="block">
+          <span className="text-sm font-medium text-zinc-800">Your name</span>
+          <input
+            type="text"
+            name="name"
+            required
+            className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
+            placeholder="John Doe"
+            aria-required="true"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium text-zinc-800">Your email or phone</span>
+          <input
+            type="text"
+            name="contact"
+            required
+            className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
+            placeholder="you@example.com or +234…"
+            aria-required="true"
+          />
+        </label>
+
+        <label className="block">
+          <span className="text-sm font-medium text-zinc-800">Message</span>
+          <textarea
+            name="message"
+            rows={6}
+            required
+            className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
+            placeholder="How can we help?"
+            aria-required="true"
+          />
+        </label>
+
+        <div>
+          <button
+            type="submit"
+            className="inline-flex items-center rounded-xl bg-brand px-5 py-3 font-semibold text-white hover:bg-brand/90 focus:outline-none focus:ring-2 focus:ring-brand/40"
+          >
+            Send
+          </button>
+        </div>
       </form>
-    </div>
+    </section>
   )
 }
