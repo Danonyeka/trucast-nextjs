@@ -6,6 +6,9 @@ import { catalog } from '@/lib/products';
 
 function NGN(n: number) { return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(n); }
 
+import type { Metadata } from 'next'
+export const metadata: Metadata = { robots: { index: false, follow: true } }
+
 export default function SearchPage(){
   const [q, setQ] = useState('');
   const results = useMemo(() => {
