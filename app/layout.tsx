@@ -1,47 +1,58 @@
-import type { Metadata, Viewport } from 'next';
-import './(site)/_styles/globals.css';
-import { site } from '@/lib/site';
-import { CartProvider } from '@/components/cart/CartContext';
-import { ToastProvider } from '@/components/ui/Toast'; // ✅ add
-import SiteHeader from '@/components/site/SiteHeader';
-import SiteFooter from '@/components/site/SiteFooter';
-import Analytics from '@/components/analytics/Analytics'; // ✅
+// app/layout.tsx
+import type { Metadata, Viewport } from 'next'
+import './(site)/_styles/globals.css'
+import { site } from '@/lib/site'
+import { CartProvider } from '@/components/cart/CartContext'
+import { ToastProvider } from '@/components/ui/Toast'
+import SiteHeader from '@/components/site/SiteHeader'
+import SiteFooter from '@/components/site/SiteFooter'
+import Analytics from '@/components/analytics/Analytics'
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.trucast-ng.com'
+const DEFAULT_TITLE = 'Trucast Nigeria — Electrical Accessories, LED Lighting & Smart Devices'
+const DEFAULT_DESC =
+  'Shop electrical accessories in Nigeria—premium switches, sockets, LED lighting & smart devices. Retail & wholesale, fast nationwide delivery, SON compliant.'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.trucast-ng.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
+    default: DEFAULT_TITLE,
     template: '%s | Trucast Nigeria',
   },
-  description: site.tagline,
+  description: DEFAULT_DESC,
   openGraph: {
     type: 'website',
-    url: 'https://www.trucast-ng.com',
+    url: SITE_URL,
     siteName: 'Trucast Nigeria',
-    title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
-    description: site.tagline,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESC,
     images: [
-      { url: '/og.jpg', width: 1200, height: 630, alt: 'Trucast Nigeria – LED lights, switches & electrical fittings in Nigeria.' },
+      {
+        url: '/og.jpg',
+        width: 1200,
+        height: 630,
+        alt: DEFAULT_TITLE,
+      },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Trucast Nigeria – LED Lights, Switches & Electrical Fittings',
-    description: site.tagline,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESC,
     images: ['/og.jpg'],
   },
   verification: {
     google: 'b8wUw2zlZ-4qhPLB40QRMOJS1Nk5ctyNk0ql424it84',
     other: { 'msvalidate.01': '4C1D61B1DFA11D28F74422CEABFCC06D' },
   },
-};
+}
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
   themeColor: '#16a34a',
-};
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -97,5 +108,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </CartProvider>
       </body>
     </html>
-  );
+  )
 }
