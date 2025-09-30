@@ -231,3 +231,7 @@ export function BreadcrumbLd(
   }
   return <JsonLd id={props.id || 'breadcrumb-ld'} data={data} />
 }
+<script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+/>
