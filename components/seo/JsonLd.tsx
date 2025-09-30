@@ -10,6 +10,7 @@ export default function JsonLd({ id, data }: { id?: string; data: Json }) {
     <script
       id={id}
       type="application/ld+json"
+      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
   )
@@ -178,19 +179,6 @@ export function ProductLd(
   }
 ) {
   const base = props.baseUrl || props.url
-
-  // Robust price + availability handling
-  const priceNum =
-    typeof props.price === 'string' ? Number(props.price) : props.price
-  const hasValidPrice =
-    typeof priceNum === 'number' && isFinite(priceNum) && priceNum > 0
-
-  const resolvedAvailability =
-    props.availability ||
-    (hasValidPrice
-      ? 'https://schema.org/InStock'
-      : 'https://schema.org/OutOfStock')
-
   const data = clean({
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -198,19 +186,16 @@ export function ProductLd(
     description: props.description,
     sku: props.sku,
     image: props.image ? [abs(props.image, base)] : undefined,
-    brand: props.brandName
-      ? { '@type': 'Brand', name: props.brandName }
-      : undefined,
+    brand: props.brandName ? { '@type': 'Brand', name: props.brandName } : undefined,
     offers: clean({
       '@type': 'Offer',
       url: props.url,
       priceCurrency: props.priceCurrency || 'NGN',
-      price: hasValidPrice ? priceNum : undefined,
-      availability: resolvedAvailability,
+      price: props.price,
+      availability: props.availability || 'http://schema.org/InStock',
       seller: { '@type': 'Organization', name: 'Trucast Nigeria Limited' },
     }),
   })
-
   return <JsonLd id={props.id || 'product-ld'} data={data} />
 }
 
@@ -231,7 +216,3 @@ export function BreadcrumbLd(
   }
   return <JsonLd id={props.id || 'breadcrumb-ld'} data={data} />
 }
-<script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-/>
