@@ -1,3 +1,5 @@
+// components/cards
+/CategoryCard.tsx
 import Image from 'next/image';
 import type { StaticImageData } from 'next/image';
 import Link from 'next/link';
