@@ -2,7 +2,6 @@
 // Server-friendly JSON-LD helpers (no 'use client', no next/script)
 
 type Base = { id?: string }
-
 type Json = Record<string, unknown> | Array<Record<string, unknown>>
 
 /** Render raw JSON-LD (SSR-safe) */
@@ -11,7 +10,6 @@ export default function JsonLd({ id, data }: { id?: string; data: Json }) {
     <script
       id={id}
       type="application/ld+json"
-      // must be a string:
       dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
     />
   )
@@ -42,7 +40,6 @@ export function OrganizationLd(
     url: string
     logo?: string
     sameAs?: string[]
-    /** Optional base URL to absolutize logo */
     baseUrl?: string
   }
 ) {
@@ -54,7 +51,6 @@ export function OrganizationLd(
     logo: abs(props.logo, props.baseUrl || props.url),
     sameAs: (props.sameAs || []).filter(Boolean),
   })
-
   return <JsonLd id={props.id || 'org-ld'} data={data} />
 }
 
@@ -68,11 +64,11 @@ export function LocalBusinessLd(
     addressLocality?: string
     addressRegion?: string
     postalCode?: string
-    addressCountry?: string // 'NG'
+    addressCountry?: string
     telephone?: string
     email?: string
-    image?: string // absolute or '/path'
-    openingHours?: string // e.g. "Mo-Fr 09:00-17:00"
+    image?: string
+    openingHours?: string
     baseUrl?: string
   }
 ) {
@@ -103,12 +99,7 @@ export function LocalBusinessLd(
 /* ------------------------------ WEBSITE LD ------------------------------- */
 
 export function WebSiteLd(
-  props: Base & {
-    name: string
-    url: string
-    /** Path to your search page with `{search_term_string}` placeholder */
-    searchPath?: string // e.g. '/search?q={search_term_string}'
-  }
+  props: Base & { name: string; url: string; searchPath?: string }
 ) {
   const data = clean({
     '@context': 'https://schema.org',
@@ -132,13 +123,13 @@ export function BlogPostingLd(
   props: Base & {
     headline: string
     description: string
-    url: string // canonical URL of the post
-    image?: string // absolute or '/og.jpg'
-    datePublished: string // ISO
-    dateModified?: string // ISO
-    authorName?: string // defaults to org
-    publisherName?: string // defaults to org
-    publisherLogo?: string // absolute or '/og.jpg'
+    url: string
+    image?: string
+    datePublished: string
+    dateModified?: string
+    authorName?: string
+    publisherName?: string
+    publisherLogo?: string
     baseUrl?: string
   }
 ) {
@@ -177,11 +168,11 @@ export function ProductLd(
     name: string
     description?: string
     sku?: string
-    url: string // canonical to the product
-    image?: string // absolute or '/path'
+    url: string
+    image?: string
     price: number | string
     priceCurrency?: 'NGN' | string
-    availability?: string // schema.org URL or short e.g. "http://schema.org/InStock"
+    availability?: string
     brandName?: string
     baseUrl?: string
   }
@@ -198,3 +189,29 @@ export function ProductLd(
     offers: clean({
       '@type': 'Offer',
       url: props.url,
+      priceCurrency: props.priceCurrency || 'NGN',
+      price: props.price,
+      availability: props.availability || 'http://schema.org/InStock',
+      seller: { '@type': 'Organization', name: 'Trucast Nigeria Limited' },
+    }),
+  })
+  return <JsonLd id={props.id || 'product-ld'} data={data} />
+}
+
+/* ---------------------------- BREADCRUMB LIST LD ------------------------- */
+
+export function BreadcrumbLd(
+  props: Base & { items: Array<{ name: string; item: string }> }
+) {
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: props.items.map((x, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: x.name,
+      item: x.item,
+    })),
+  }
+  return <JsonLd id={props.id || 'breadcrumb-ld'} data={data} />
+}
