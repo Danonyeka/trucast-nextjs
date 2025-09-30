@@ -131,4 +131,27 @@ export default function BlogDetailPage({ params }: PageProps) {
                 {t}
               </span>
             ))}
-          </di
+          </div>
+        ) : null}
+
+        {post.cover ? (
+          <div className="mt-6">
+            <SmartImage
+              src={image}
+              alt={post.title}
+              width={1200}
+              height={630}
+              className="w-full h-auto rounded-lg"
+              priority
+            />
+          </div>
+        ) : null}
+
+        <article
+          className="prose prose-zinc max-w-none mt-8"
+          dangerouslySetInnerHTML={{ __html: mdToHtml(post.content) }}
+        />
+      </div>
+    </>
+  )
+}
