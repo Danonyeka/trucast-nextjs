@@ -7,11 +7,18 @@ import { ToastProvider } from '@/components/ui/Toast'
 import SiteHeader from '@/components/site/SiteHeader'
 import SiteFooter from '@/components/site/SiteFooter'
 import Analytics from '@/components/analytics/Analytics'
+import { OrganizationLd, WebSiteLd, LocalBusinessLd } from '@/components/seo/JsonLd'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.trucast-ng.com'
 const DEFAULT_TITLE = 'Trucast Nigeria — Electrical Accessories, LED Lighting & Smart Devices'
 const DEFAULT_DESC =
   'Shop electrical accessories in Nigeria—premium switches, sockets, LED lighting & smart devices. Retail & wholesale, fast nationwide delivery, SON compliant.'
+
+// Safely read optional fields from `site`
+const s: any = site || {}
+const sameAs: string[] = Array.isArray(s.social) ? s.social.filter(Boolean) : []
+const addr = s.address || {}
+const hasAddress = !!addr.street
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -63,6 +70,36 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/icon.svg?v=4" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" />
         <link rel="manifest" href="/manifest.json" />
+
+        {/* JSON-LD (SSR) */}
+        <OrganizationLd
+          name="Trucast Nigeria Limited"
+          url={SITE_URL}
+          logo="/icon.svg"
+          sameAs={sameAs}
+          baseUrl={SITE_URL}
+        />
+        <WebSiteLd
+          name="Trucast Nigeria"
+          url={SITE_URL}
+          searchPath="/search?q={search_term_string}"
+        />
+        {hasAddress && (
+          <LocalBusinessLd
+            name="Trucast Nigeria Limited"
+            url={SITE_URL}
+            streetAddress={addr.street}
+            addressLocality={addr.city}
+            addressRegion={addr.state}
+            postalCode={addr.postalCode}
+            addressCountry="NG"
+            telephone={s.phone}
+            email={s.email}
+            image="/og.jpg"
+            openingHours={s.openingHours}
+            baseUrl={SITE_URL}
+          />
+        )}
       </head>
       <body className="antialiased">
         {/* Analytics */}
