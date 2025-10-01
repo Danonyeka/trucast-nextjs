@@ -188,6 +188,7 @@ For large projects, real estate developments, and facility upgrades, cost saving
   },
 ];
 
+
 // Helpers
 export function getGuide(slug: string) {
   return guides.find((g) => g.slug === slug);
