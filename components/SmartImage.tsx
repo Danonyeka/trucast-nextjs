@@ -3,38 +3,43 @@
 
 import Image, { ImageProps } from 'next/image'
 
+function normalizeProductImagePath(src: string): string {
+  const dir = '/images/products/'
+  if (!src.startsWith(dir)) return src
+
+  // Split off any query/hash
+  const q = src.indexOf('?')
+  const h = src.indexOf('#')
+  const cut = [q, h].filter(i => i >= 0).reduce((m, i) => Math.min(m, i), Infinity)
+  const head = cut === Infinity ? src : src.slice(0, cut)
+  const tail = cut === Infinity ? ''   : src.slice(cut)
+
+  // Decode once, remove whitespace, fix case only for the filename
+  let filename = decodeURIComponent(head.slice(dir.length)).replace(/\s+/g, '')
+  const dot = filename.lastIndexOf('.')
+  if (dot > 0) {
+    const name = filename.slice(0, dot).toUpperCase()
+    const ext  = filename.slice(dot + 1).toLowerCase()
+    filename = `${name}.${ext}`
+  } else {
+    filename = filename.toUpperCase()
+  }
+
+  return dir + filename + tail
+}
+
 export default function SmartImage(props: ImageProps) {
   const { src, sizes, ...rest } = props
-
-  // Local path? (served from /public)
   const isLocal = typeof src === 'string' && src.startsWith('/')
 
-  // --- Temporary safety: normalize product image filenames ---
-  // We saw requests going to lower-cased paths like /images/products/trc-....png.
-  // All real files in /public/images/products are UPPERCASE (TRC-....png),
-  // and one file had an accidental space in the name.
-  let fixedSrc = src
-  if (typeof src === 'string' && src.startsWith('/images/products/')) {
-    const dir = '/images/products/'
-    const qIndex = src.indexOf('?')
-    const base = qIndex === -1 ? src : src.slice(0, qIndex)
-    const query = qIndex === -1 ? '' : src.slice(qIndex)
-
-    // Take the filename part and fix common issues:
-    // 1) Force uppercase (matches files in repo)
-    // 2) Remove stray spaces in the filename (e.g. "TRC-SW-MS- MINDU.png")
-    const filename = base.slice(dir.length).toUpperCase().replace(/\s+/g, '')
-    fixedSrc = dir + filename + query
-  }
+  const fixedSrc =
+    typeof src === 'string' ? normalizeProductImagePath(src) : (src as any)
 
   return (
     <Image
-      // If it's a local file under /public, render as a plain <img>.
-      // (prevents optimizer/CDN from doing anything surprising)
       unoptimized={isLocal}
-      // Next/Image with `fill` needs a sizes hint; provide a sensible default.
-      sizes={('fill' in rest && rest.fill && !sizes) ? '100vw' : sizes}
-      src={fixedSrc as any}
+      sizes={('fill' in rest && (rest as any).fill && !sizes) ? '100vw' : sizes}
+      src={fixedSrc}
       {...rest}
     />
   )
