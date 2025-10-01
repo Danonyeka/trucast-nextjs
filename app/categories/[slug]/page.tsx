@@ -29,6 +29,14 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
     )
   }
 
+<SmartImage
+  src={p.img}
+  alt={p.name}
+  fill
+  className="object-contain"
+  sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
+/>
+  
   const items = byCategory(params.slug)
 
   return (
