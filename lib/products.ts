@@ -1,20 +1,25 @@
-// Inventory-aware Product model (backward-compatible with your current data)
+// lib/products.ts
+
 export type StockStatus = 'in_stock' | 'out_of_stock' | 'preorder' | 'discontinued';
 
 export type Product = {
   sku: string;
   name: string;
   desc: string;
-  priceNGN: number;          // keep using 0 for OOS if you like
+  priceNGN: number;
   img: string;
+
+  /** Descriptive alt text for the product image (falls back to name when absent) */
+  alt?: string;
+
   category: string;
   slug?: string;
 
-  // Optional explicit stock info. If omitted, we derive status from priceNGN.
+  // Optional explicit stock info
   stock?: {
     status: StockStatus;
     qty?: number;
-    eta?: string;            // e.g. "2025-10-05" or "2–3 weeks"
+    eta?: string;
   };
 };
 
