@@ -25,36 +25,34 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   const tel = (site as any).phone ?? '+2347026921633'
 
-  const team = [
+  const teams = [
     {
-      name: 'Chinedu Okeke',
-      role: 'Managing Director',
-      img: '/images/about/team-chinedu.jpg',
-      alt: 'Portrait of Chinedu Okeke, Managing Director at Trucast Nigeria Limited',
+      name: 'Smart Team',
+      desc:
+        'Specialists in smart door locks, breakers, motion sensors, and automation. We help spec, configure, and support deployments.',
+      img: '/images/about/team-smart.jpg',
+      alt: 'Trucast Smart Team configuring smart locks and automation controllers on a workbench',
     },
     {
-      name: 'Amina Yusuf',
-      role: 'Operations Lead',
-      img: '/images/about/team-amina.jpg',
-      alt: 'Portrait of Amina Yusuf, Operations Lead at Trucast Nigeria Limited',
+      name: 'Lighting Team',
+      desc:
+        'Downlights, POP panels, bulbs and drivers—designed for efficiency and low glare. We assist with layout, wattage and color temp choices.',
+      img: '/images/about/team-lighting.jpg',
+      alt: 'Trucast Lighting Team preparing LED panel lights and drivers for project delivery',
     },
     {
-      name: 'Tunde Balogun',
-      role: 'Technical Sales',
-      img: '/images/about/team-tunde.jpg',
-      alt: 'Portrait of Tunde Balogun, Technical Sales at Trucast Nigeria Limited',
+      name: 'Strip Team',
+      desc:
+        'LED strip runs for accents and architectural lines: cut, crimp, and test. We supply profiles, connectors, and controllers for clean installs.',
+      img: '/images/about/team-strip.jpg',
+      alt: 'Trucast Strip Team assembling LED strip lengths with aluminum profiles and connectors',
     },
   ]
 
   return (
     <>
       {/* JSON-LD */}
-      <OrganizationLd
-        name={site.legalName}
-        url={SITE_URL}
-        logo="/og.jpg"
-        sameAs={[]}
-      />
+      <OrganizationLd name={site.legalName} url={SITE_URL} logo="/og.jpg" sameAs={[]} />
       <BreadcrumbLd
         items={[
           { name: 'Home', item: SITE_URL },
@@ -67,13 +65,12 @@ export default function AboutPage() {
         <section className="bg-zinc-50 border-b border-zinc-200">
           <div className="container py-10 grid md:grid-cols-2 gap-8 items-center">
             <div>
-              <h1 className="text-4xl font-bold">
-                About Trucast Nigeria Limited
-              </h1>
+              <h1 className="text-4xl font-bold">About Trucast Nigeria Limited</h1>
               <p className="mt-3 text-zinc-700">
-                We’re an electricals and lighting distributor focused on quality, value, and dependable service. 
-                From<strong> mechanical switches & sockets</strong> to <strong>LED lighting</strong> and smart devices, 
-                we support homeowners, builders, and facility managers with project-grade products and responsive after-sales care.
+                We’re an electricals and lighting distributor focused on quality, value, and dependable
+                service. From <strong>mechanical switches & sockets</strong> to <strong>LED lighting</strong> and
+                smart devices, we support homeowners, builders, and facility managers with project-grade
+                products and responsive after-sales care.
               </p>
               <div className="mt-6 flex gap-3">
                 <Link href="/categories" className="btn-primary">Shop Products</Link>
@@ -98,8 +95,8 @@ export default function AboutPage() {
         <section className="container py-12">
           <h2 className="text-2xl font-semibold">Our Mission</h2>
           <p className="mt-2 text-zinc-700">
-            Make reliable electrical accessories and energy-efficient lighting accessible across Nigeria—backed by 
-            transparent pricing, quick fulfillment, and attentive support.
+            Make reliable electrical accessories and energy-efficient lighting accessible across Nigeria—backed
+            by transparent pricing, quick fulfillment, and attentive support.
           </p>
 
           <h3 className="mt-8 text-xl font-semibold">What we value</h3>
@@ -135,23 +132,23 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Team */}
+        {/* Teams & Capabilities */}
         <section className="container py-12">
-          <h2 className="text-2xl font-semibold">Leadership</h2>
+          <h2 className="text-2xl font-semibold">Teams &amp; Capabilities</h2>
           <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {team.map((m) => (
-              <div key={m.name} className="card p-4">
+            {teams.map((t) => (
+              <div key={t.name} className="card p-4">
                 <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-zinc-100">
                   <Image
-                    src={m.img}
-                    alt={m.alt}
+                    src={t.img}
+                    alt={t.alt}
                     fill
                     className="object-cover"
                     sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
                   />
                 </div>
-                <p className="mt-3 font-semibold">{m.name}</p>
-                <p className="text-sm text-zinc-600">{m.role}</p>
+                <p className="mt-3 font-semibold">{t.name}</p>
+                <p className="text-sm text-zinc-600 mt-1">{t.desc}</p>
               </div>
             ))}
           </div>
