@@ -4,13 +4,25 @@
 type Base = { id?: string }
 type Json = Record<string, unknown> | Array<Record<string, unknown>>
 
+/** Safely stringify JSON for <script> tags to avoid breaking the DOM */
+function safeJsonLd(data: Json) {
+  return JSON.stringify(data)
+    .replace(/</g, '\\u003c')   // prevents closing </script>
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028') // line separator
+    .replace(/\u2029/g, '\\u2029') // paragraph separator
+}
+
 /** Render raw JSON-LD (SSR-safe) */
 export default function JsonLd({ id, data }: { id?: string; data: Json }) {
   return (
     <script
       id={id}
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      aria-hidden="true"
+      suppressHydrationWarning
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   )
 }
