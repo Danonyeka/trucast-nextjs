@@ -1,20 +1,19 @@
-// components/cards
-/CategoryCard.tsx
-import Image from 'next/image';
-import type { StaticImageData } from 'next/image';
-import Link from 'next/link';
+// components/cards/CategoryCard.tsx
+import Link from 'next/link'
+import SmartImage from '@/components/SmartImage'
+import type { StaticImageData } from 'next/image'
 
 type Props = {
-  href: string;
-  title: string;
-  image: StaticImageData | string; // <— allow static imports too
-};
+  href: string
+  title: string
+  image: StaticImageData | string // allow static imports or string paths
+}
 
 export default function CategoryCard({ href, title, image }: Props) {
   return (
     <Link href={href} className="block group">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-zinc-200">
-        <Image
+      <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50">
+        <SmartImage
           src={image}
           alt={title}
           fill
@@ -26,5 +25,5 @@ export default function CategoryCard({ href, title, image }: Props) {
       </div>
       <p className="mt-2 text-sm font-medium">{title}</p>
     </Link>
-  );
+  )
 }
