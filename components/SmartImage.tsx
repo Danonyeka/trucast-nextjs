@@ -7,14 +7,14 @@ function normalizeProductImagePath(src: string): string {
   const dir = '/images/products/'
   if (!src.startsWith(dir)) return src
 
-  // Split off any query/hash
+  // Split query/hash so we only normalize the filename itself
   const q = src.indexOf('?')
   const h = src.indexOf('#')
   const cut = [q, h].filter(i => i >= 0).reduce((m, i) => Math.min(m, i), Infinity)
   const head = cut === Infinity ? src : src.slice(0, cut)
   const tail = cut === Infinity ? ''   : src.slice(cut)
 
-  // Decode once, remove whitespace, fix case only for the filename
+  // Decode, remove whitespace, then UPPERCASE the name and lowercase the extension
   let filename = decodeURIComponent(head.slice(dir.length)).replace(/\s+/g, '')
   const dot = filename.lastIndexOf('.')
   if (dot > 0) {
@@ -37,7 +37,9 @@ export default function SmartImage(props: ImageProps) {
 
   return (
     <Image
+      // local /public files → serve directly, no optimizer
       unoptimized={isLocal}
+      // provide a default sizes when using `fill`
       sizes={('fill' in rest && (rest as any).fill && !sizes) ? '100vw' : sizes}
       src={fixedSrc}
       {...rest}
