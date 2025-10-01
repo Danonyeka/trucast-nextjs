@@ -1,30 +1,15 @@
 // components/seo/JsonLd.tsx
-// Server-friendly JSON-LD helpers (no 'use client', no next/script)
+// Server-friendly helpers that render a *client* script after hydration.
+// This guarantees JSON-LD cannot break hydration or Next/Image.
+
+import JsonLdClient from './JsonLd.client'
 
 type Base = { id?: string }
 type Json = Record<string, unknown> | Array<Record<string, unknown>>
 
-/** Safely stringify JSON for <script> tags to avoid breaking the DOM */
-function safeJsonLd(data: Json) {
-  return JSON.stringify(data)
-    .replace(/</g, '\\u003c')   // prevents closing </script>
-    .replace(/>/g, '\\u003e')
-    .replace(/&/g, '\\u0026')
-    .replace(/\u2028/g, '\\u2028') // line separator
-    .replace(/\u2029/g, '\\u2029') // paragraph separator
-}
-
-/** Render raw JSON-LD (SSR-safe) */
+/** Render JSON-LD by appending a script tag on the client */
 export default function JsonLd({ id, data }: { id?: string; data: Json }) {
-  return (
-    <script
-      id={id}
-      type="application/ld+json"
-      aria-hidden="true"
-      suppressHydrationWarning
-      dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
-    />
-  )
+  return <JsonLdClient id={id} data={data} />
 }
 
 /* ---------------------------- internal helpers ---------------------------- */
@@ -63,7 +48,7 @@ export function OrganizationLd(
     logo: abs(props.logo, props.baseUrl || props.url),
     sameAs: (props.sameAs || []).filter(Boolean),
   })
-  return <JsonLd id={props.id || 'org-ld'} data={data} />
+  return <JsonLdClient id={props.id || 'org-ld'} data={data} />
 }
 
 /* ---------------------------- LOCAL BUSINESS LD --------------------------- */
@@ -105,7 +90,7 @@ export function LocalBusinessLd(
     openingHours: props.openingHours ? [props.openingHours] : undefined,
   })
 
-  return <JsonLd id={props.id || 'localbusiness-ld'} data={data} />
+  return <JsonLdClient id={props.id || 'localbusiness-ld'} data={data} />
 }
 
 /* ------------------------------ WEBSITE LD ------------------------------- */
@@ -126,7 +111,7 @@ export function WebSiteLd(
         }
       : undefined,
   })
-  return <JsonLd id={props.id || 'website-ld'} data={data} />
+  return <JsonLdClient id={props.id || 'website-ld'} data={data} />
 }
 
 /* ------------------------------ BLOGPOSTING LD --------------------------- */
@@ -170,7 +155,7 @@ export function BlogPostingLd(
   }
   if (!data.publisher.logo) delete data.publisher.logo
   clean(data)
-  return <JsonLd id={props.id || 'blogposting-ld'} data={data} />
+  return <JsonLdClient id={props.id || 'blogposting-ld'} data={data} />
 }
 
 /* ------------------------------- PRODUCT LD ------------------------------ */
@@ -207,7 +192,7 @@ export function ProductLd(
       seller: { '@type': 'Organization', name: 'Trucast Nigeria Limited' },
     }),
   })
-  return <JsonLd id={props.id || 'product-ld'} data={data} />
+  return <JsonLdClient id={props.id || 'product-ld'} data={data} />
 }
 
 /* ---------------------------- BREADCRUMB LIST LD ------------------------- */
@@ -225,5 +210,5 @@ export function BreadcrumbLd(
       item: x.item,
     })),
   }
-  return <JsonLd id={props.id || 'breadcrumb-ld'} data={data} />
+  return <JsonLdClient id={props.id || 'breadcrumb-ld'} data={data} />
 }
