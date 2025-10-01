@@ -108,6 +108,7 @@ export default function BlogDetailPage({ params }: PageProps) {
         ]}
       />
 
+      {/* ----- existing UI below ----- */}
       <div className="container py-10">
         <nav className="text-sm text-zinc-600 mb-4">
           <Link className="link" href="/blog">
@@ -135,20 +136,13 @@ export default function BlogDetailPage({ params }: PageProps) {
         ) : null}
 
         {post.cover ? (
-          <div className="mt-6">
-            <SmartImage
-              src={image}
-              alt={post.title}
-              width={1200}
-              height={630}
-              className="w-full h-auto rounded-lg"
-              priority
-            />
+          <div className="mt-6 relative aspect-[16/9] rounded-xl overflow-hidden bg-zinc-100">
+            <SmartImage src={post.cover} alt={post.title} fill className="object-cover" />
           </div>
         ) : null}
 
         <article
-          className="prose prose-zinc max-w-none mt-8"
+          className="prose prose-zinc mt-6"
           dangerouslySetInnerHTML={{ __html: mdToHtml(post.content) }}
         />
       </div>
