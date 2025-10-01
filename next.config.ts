@@ -2,6 +2,9 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  // Serve images directly from /public (no optimizer/proxy)
+  images: { unoptimized: true },
+
   async redirects() {
     return [
       // Canonical pages
@@ -15,7 +18,6 @@ const nextConfig: NextConfig = {
       { source: '/accessibility-statement', destination: '/accessibility', permanent: true },
 
       // Store paths / aliases
-      // If /shop is NOT a real page, keep this redirect; if it is, remove it.
       { source: '/shop', destination: '/categories', permanent: true },
       { source: '/store', destination: '/categories', permanent: true },
       { source: '/products', destination: '/categories', permanent: true },
