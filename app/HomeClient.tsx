@@ -282,35 +282,45 @@ export default function HomeClient() {
         </section>
 
         {/* About strip */}
-        <section className="bg-zinc-50 border-y">
-          <div className="container py-10 grid md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-xl font-semibold">About Trucast</h3>
-              <p className="text-sm text-zinc-700 mt-2">
-                Trucast Nigeria Limited is an electricals and lighting distributor focused on quality, value, and service.
-                We partner with builders, facility managers, and homeowners to deliver dependable products and support.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="card p-4">
-                <p className="text-sm text-zinc-600">Coverage</p>
-                <p className="font-semibold mt-1">Nationwide delivery</p>
-              </div>
-              <div className="card p-4">
-                <p className="text-sm text-zinc-600">Returns</p>
-                <p className="font-semibold mt-1">Hassle-free exchanges</p>
-              </div>
-              <div className="card p-4">
-                <p className="text-sm text-zinc-600">Support</p>
-                <p className="font-semibold mt-1">WhatsApp &amp; Email</p>
-              </div>
-              <div className="card p-4">
-                <p className="text-sm text-zinc-600">Pricing</p>
-                <p className="font-semibold mt-1">Transparent quotes</p>
-              </div>
-            </div>
-          </div>
-        </section>
+<section className="bg-zinc-50 border-y">
+  <div className="container py-10 grid md:grid-cols-2 gap-8">
+    <div>
+      <h3 className="text-xl font-semibold">About Trucast</h3>
+      <p className="text-sm text-zinc-700 mt-2">
+        Trucast Nigeria Limited is an electricals and lighting distributor focused on quality, value, and service.
+        We partner with builders, facility managers, and homeowners to deliver dependable products and support.
+      </p>
+
+      {/* NEW: link to About page */}
+      <p className="mt-3">
+        <Link href="/about" className="link inline-flex items-center text-sm font-medium" aria-label="Read more about Trucast">
+          <span aria-hidden className="mr-1">{'>>>'}</span>
+          Click for more
+        </Link>
+      </p>
+    </div>
+
+    <div className="grid grid-cols-2 gap-4">
+      <div className="card p-4">
+        <p className="text-sm text-zinc-600">Coverage</p>
+        <p className="font-semibold mt-1">Nationwide delivery</p>
+      </div>
+      <div className="card p-4">
+        <p className="text-sm text-zinc-600">Returns</p>
+        <p className="font-semibold mt-1">Hassle-free exchanges</p>
+      </div>
+      <div className="card p-4">
+        <p className="text-sm text-zinc-600">Support</p>
+        <p className="font-semibold mt-1">WhatsApp &amp; Email</p>
+      </div>
+      <div className="card p-4">
+        <p className="text-sm text-zinc-600">Pricing</p>
+        <p className="font-semibold mt-1">Transparent quotes</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
         {/* CTA */}
         <section className="bg-white">
