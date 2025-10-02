@@ -1,9 +1,9 @@
 // app/not-found.tsx
-import Link from 'next/link'
+import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <section className="container py-16 text-center">
+    <section className="container py-16 text-center" role="region" aria-label="404 content">
       <h1 className="text-3xl font-bold">Page not found</h1>
       <p className="mt-3 text-zinc-600">
         The page you’re looking for doesn’t exist. Try these popular links:
@@ -13,7 +13,8 @@ export default function NotFound() {
         <Link className="btn" href="/categories">Shop by Category</Link>
         <Link className="btn" href="/wholesale">Wholesale</Link>
         <Link className="btn" href="/contact">Contact</Link>
+        <Link className="btn" href="/search">Search</Link>
       </div>
     </section>
-  )
+  );
 }
