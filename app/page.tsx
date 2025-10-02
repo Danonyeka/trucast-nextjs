@@ -1,4 +1,7 @@
 // app/page.tsx (SERVER COMPONENT)
+export const dynamic = 'force-dynamic'; // avoid SSG crash
+export const revalidate = 0;
+
 import type { Metadata } from 'next';
 import HeroSlider from '@/components/HeroSlider';
 import HomeClient from './HomeClient';
@@ -50,9 +53,12 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
+      {/* Hero slideshow */}
       <div className="mx-auto max-w-7xl px-4 pt-4 md:pt-6">
         <HeroSlider />
       </div>
+
+      {/* Rest of homepage */}
       <HomeClient />
     </>
   );
