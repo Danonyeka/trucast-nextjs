@@ -1,4 +1,7 @@
 'use client';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import SmartImage from '@/components/SmartImage';
 import Link from 'next/link';
 import { useCart } from '@/components/cart/CartContext';
