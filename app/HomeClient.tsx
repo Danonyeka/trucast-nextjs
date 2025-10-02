@@ -35,6 +35,7 @@ function HeroSlider() {
 
   const [i, setI] = useState(0)
   const [reduced, setReduced] = useState(false)
+  const [paused, setPaused] = useState(false) // NEW: pause on hover
 
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)')
@@ -45,16 +46,20 @@ function HeroSlider() {
   }, [])
 
   useEffect(() => {
-    if (reduced) return
+    if (reduced || paused) return // respect reduced motion & pause state
     const id = setInterval(() => setI((p) => (p + 1) % slides.length), 6000)
     return () => clearInterval(id)
-  }, [reduced, slides.length])
+  }, [reduced, paused, slides.length])
 
   const next = (i + 1) % slides.length
   const visible = [i, next]
 
   return (
-    <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-lg bg-white">
+    <div
+      className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-lg bg-white"
+      onMouseEnter={() => setPaused(true)}   // NEW: pause when hovered
+      onMouseLeave={() => setPaused(false)}  // NEW: resume when not hovered
+    >
       {visible.map((idx) => {
         const s = slides[idx]
         const isActive = idx === i
@@ -76,6 +81,24 @@ function HeroSlider() {
           </div>
         )
       })}
+
+      {/* NEW: Prev / Next arrows */}
+      <button
+        type="button"
+        aria-label="Previous slide"
+        onClick={() => setI((p) => (p - 1 + slides.length) % slides.length)}
+        className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-2 hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        aria-label="Next slide"
+        onClick={() => setI((p) => (p + 1) % slides.length)}
+        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-2 hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+      >
+        ›
+      </button>
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
         {slides.map((_, idx) => (
@@ -282,45 +305,44 @@ export default function HomeClient() {
         </section>
 
         {/* About strip */}
-<section className="bg-zinc-50 border-y">
-  <div className="container py-10 grid md:grid-cols-2 gap-8">
-    <div>
-      <h3 className="text-xl font-semibold">About Trucast</h3>
-      <p className="text-sm text-zinc-700 mt-2">
-        Trucast Nigeria Limited is an electricals and lighting distributor focused on quality, value, and service.
-        We partner with builders, facility managers, and homeowners to deliver dependable products and support.
-      </p>
+        <section className="bg-zinc-50 border-y">
+          <div className="container py-10 grid md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-xl font-semibold">About Trucast</h3>
+              <p className="text-sm text-zinc-700 mt-2">
+                Trucast Nigeria Limited is an electricals and lighting distributor focused on quality, value, and service.
+                We partner with builders, facility managers, and homeowners to deliver dependable products and support.
+              </p>
 
-      {/* NEW: link to About page */}
-      <p className="mt-3">
-        <Link href="/about" className="link inline-flex items-center text-sm font-medium" aria-label="Read more about Trucast">
-          <span aria-hidden className="mr-1">{'>>>'}</span>
-          Click for more
-        </Link>
-      </p>
-    </div>
+              {/* NEW: link to About page */}
+              <p className="mt-3">
+                <Link href="/about" className="link inline-flex items-center text-sm font-medium" aria-label="Read more about Trucast">
+                  <span aria-hidden className="mr-1">{'>>>'}</span>
+                  Click for more
+                </Link>
+              </p>
+            </div>
 
-    <div className="grid grid-cols-2 gap-4">
-      <div className="card p-4">
-        <p className="text-sm text-zinc-600">Coverage</p>
-        <p className="font-semibold mt-1">Nationwide delivery</p>
-      </div>
-      <div className="card p-4">
-        <p className="text-sm text-zinc-600">Returns</p>
-        <p className="font-semibold mt-1">Hassle-free exchanges</p>
-      </div>
-      <div className="card p-4">
-        <p className="text-sm text-zinc-600">Support</p>
-        <p className="font-semibold mt-1">WhatsApp &amp; Email</p>
-      </div>
-      <div className="card p-4">
-        <p className="text-sm text-zinc-600">Pricing</p>
-        <p className="font-semibold mt-1">Transparent quotes</p>
-      </div>
-    </div>
-  </div>
-</section>
-
+            <div className="grid grid-cols-2 gap-4">
+              <div className="card p-4">
+                <p className="text-sm text-zinc-600">Coverage</p>
+                <p className="font-semibold mt-1">Nationwide delivery</p>
+              </div>
+              <div className="card p-4">
+                <p className="text-sm text-zinc-600">Returns</p>
+                <p className="font-semibold mt-1">Hassle-free exchanges</p>
+              </div>
+              <div className="card p-4">
+                <p className="text-sm text-zinc-600">Support</p>
+                <p className="font-semibold mt-1">WhatsApp &amp; Email</p>
+              </div>
+              <div className="card p-4">
+                <p className="text-sm text-zinc-600">Pricing</p>
+                <p className="font-semibold mt-1">Transparent quotes</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* CTA */}
         <section className="bg-white">
