@@ -39,9 +39,10 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      maxSnippet: -1,
-      maxImagePreview: 'large',
-      maxVideoPreview: -1,
+      noimageindex: false,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1,
     },
   },
 };
@@ -49,12 +50,9 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <>
-      {/* Hero slideshow (client) */}
       <div className="mx-auto max-w-7xl px-4 pt-4 md:pt-6">
         <HeroSlider />
       </div>
-
-      {/* Rest of homepage (client) */}
       <HomeClient />
     </>
   );
