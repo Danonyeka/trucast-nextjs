@@ -1,12 +1,27 @@
 // app/wholesale/page.tsx
-import Link from 'next/link'
-import type { Metadata } from 'next'
+import Link from 'next/link';
+import type { Metadata } from 'next';
+
+export const dynamic = 'force-dynamic'; // avoid pre-render errors during build
+export const revalidate = 0;
+
+const PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '2347026921633';
+const WA_CHAT = `https://wa.me/${PHONE}?text=${encodeURIComponent(
+  'Hello Trucast! I want wholesale/bulk pricing.'
+)}`;
 
 export const metadata: Metadata = {
   title: 'Wholesale & Bulk Orders',
   description:
     'Wholesale electrical accessories in Nigeria—bulk pricing on switches, sockets, LED lighting & smart devices. Nationwide delivery, SON-compliant, expert support.',
-}
+  alternates: { canonical: '/wholesale' },
+  openGraph: {
+    title: 'Wholesale & Bulk Orders — Trucast Nigeria',
+    description:
+      'Wholesale electrical accessories in Nigeria—bulk pricing on switches, sockets, LED lighting & smart devices. Nationwide delivery, SON-compliant, expert support.',
+    url: '/wholesale',
+  },
+};
 
 export default function WholesalePage() {
   return (
@@ -14,15 +29,23 @@ export default function WholesalePage() {
       {/* Hero */}
       <section className="py-10 md:py-14">
         <h1 className="text-2xl md:text-4xl font-bold leading-tight">
-          Wholesale & Bulk Orders
+          Wholesale &amp; Bulk Orders
         </h1>
         <p className="mt-3 text-zinc-600 max-w-2xl">
           Get factory-level pricing on LED lights, switches, sockets and fittings.
           Ideal for contractors, distributors and large projects.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Link className="btn-primary" href="/categories">Browse Catalogue</Link>
-          <a className="btn-outline" href="https://wa.me/2347026921633" target="_blank" rel="noreferrer">
+          <Link className="btn-primary" href="/categories">
+            Browse Catalogue
+          </Link>
+          <a
+            className="btn-outline"
+            href={WA_CHAT}
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Chat sales on WhatsApp"
+          >
             Chat Sales on WhatsApp
           </a>
         </div>
@@ -43,7 +66,7 @@ export default function WholesalePage() {
           </p>
         </div>
         <div className="card p-5">
-          <h3 className="font-semibold">Warranty & Support</h3>
+          <h3 className="font-semibold">Warranty &amp; Support</h3>
           <p className="mt-2 text-sm text-zinc-600">
             SON-registered, with responsive after-sales support.
           </p>
@@ -60,11 +83,20 @@ export default function WholesalePage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <a className="btn-primary" href="mailto:sales@trucast-ng.com">Email BOQ</a>
-            <a className="btn-outline" href="https://wa.me/2347026921633" target="_blank" rel="noreferrer">WhatsApp Sales</a>
+            <a className="btn-primary" href="mailto:sales@trucast-ng.com">
+              Email BOQ
+            </a>
+            <a
+              className="btn-outline"
+              href={WA_CHAT}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              WhatsApp Sales
+            </a>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 }
