@@ -3,18 +3,10 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <section className="container py-16 text-center" role="region" aria-label="404 content">
+    <div className="container py-16">
       <h1 className="text-3xl font-bold">Page not found</h1>
-      <p className="mt-3 text-zinc-600">
-        The page you’re looking for doesn’t exist. Try these popular links:
-      </p>
-      <div className="mt-6 flex flex-wrap justify-center gap-3">
-        <Link className="btn" href="/">Home</Link>
-        <Link className="btn" href="/categories">Shop by Category</Link>
-        <Link className="btn" href="/wholesale">Wholesale</Link>
-        <Link className="btn" href="/contact">Contact</Link>
-        <Link className="btn" href="/search">Search</Link>
-      </div>
-    </section>
+      <p className="mt-2 text-zinc-600">Sorry — we can’t find that page.</p>
+      <Link href="/" className="btn-primary mt-6 inline-block">Go home</Link>
+    </div>
   );
 }
