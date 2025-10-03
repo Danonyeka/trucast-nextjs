@@ -21,6 +21,7 @@ const sameAs: string[] = Array.isArray(s.social) ? s.social.filter(Boolean) : []
 const addr = s.address || {};
 const hasAddress = !!addr.street;
 
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
