@@ -1,14 +1,17 @@
 // app/layout.tsx
 import type { Metadata, Viewport } from 'next';
+import dynamic from 'next/dynamic';
 import './(site)/_styles/globals.css';
 import { site } from '@/lib/site';
 import { CartProvider } from '@/components/cart/CartContext';
 import { ToastProvider } from '@/components/ui/Toast';
 import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
-import Analytics from '@/components/analytics/Analytics';
 import { OrganizationLd, WebSiteLd, LocalBusinessLd } from '@/components/seo/JsonLd';
-import StickyWhatsApp from '@/components/StickyWhatsApp';
+
+// ✅ client-only features, but never SSR-rendered
+const AnalyticsNoSSR = dynamic(() => import('@/components/analytics/Analytics'), { ssr: false });
+const StickyWhatsAppNoSSR = dynamic(() => import('@/components/StickyWhatsApp'), { ssr: false });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.trucast-ng.com';
 const DEFAULT_TITLE = 'Trucast Nigeria — Electrical Accessories, LED Lighting & Smart Devices';
@@ -20,7 +23,6 @@ const s: any = site || {};
 const sameAs: string[] = Array.isArray(s.social) ? s.social.filter(Boolean) : [];
 const addr = s.address || {};
 const hasAddress = !!addr.street;
-
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -100,8 +102,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         )}
       </head>
       <body className="antialiased">
-        {/* Analytics */}
-        <Analytics />
+        {/* Analytics (client-only, no SSR) */}
+        <AnalyticsNoSSR />
 
         {/* Skip link (styled in globals.css) */}
         <a href="#main-content" className="skip-link">
@@ -142,8 +144,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* Footer */}
             <SiteFooter />
 
-            {/* Sticky WhatsApp chat (site-wide; hidden on /checkout by default) */}
-            <StickyWhatsApp
+            {/* Sticky WhatsApp chat (client-only, no SSR) */}
+            <StickyWhatsAppNoSSR
               // Prefer env: NEXT_PUBLIC_WHATSAPP_PHONE / NEXT_PUBLIC_WHATSAPP_MESSAGE
               // phone="2347026921633"
               // message="Hello Trucast! I need help with an item."
