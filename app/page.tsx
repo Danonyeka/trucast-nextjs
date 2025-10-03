@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'; // avoid SSG crash
 export const revalidate = 0;
 
 import type { Metadata } from 'next';
-import HeroSlider from '@/components/HeroSlider';
+// import HeroSlider from '@/components/HeroSlider';
 import HomeClient from './HomeClient';
 
 export const metadata: Metadata = {
