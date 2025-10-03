@@ -144,7 +144,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {/* Sticky WhatsApp chat (site-wide; hidden on /checkout by default) */}
             <StickyWhatsApp
               // Prefer env: NEXT_PUBLIC_WHATSAPP_PHONE / NEXT_PUBLIC_WHATSAPP_MESSAGE
-              // phone="2347012345678"
+              // phone="2347026921633"
               // message="Hello Trucast! I need help with an item."
               utm={{ source: 'website', medium: 'cta', campaign: 'sticky_whatsapp' }}
               position="right"
