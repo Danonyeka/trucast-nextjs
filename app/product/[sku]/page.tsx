@@ -12,6 +12,14 @@ function NGN(n: number) {
   }).format(n);
 }
 
+function safeDecode(s: string) {
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    return s;
+  }
+}
+
 /** Fallback: extract bullets from desc if features[] not provided */
 function featuresFromDesc(desc?: string): string[] {
   if (!desc) return [];
@@ -31,23 +39,23 @@ function featuresFromDesc(desc?: string): string[] {
 }
 
 export default function ProductPage({ params }: { params: { sku: string } }) {
-  const skuParam = decodeURIComponent(params.sku);
+  // allow %2E-escaped dots and guard decoding
+  const raw = (params.sku || '').replace(/%2E/gi, '.');
+  const skuParam = safeDecode(raw);
+
   const product = catalog.find(
-    (p) => p.sku.toLowerCase() === skuParam.toLowerCase(),
+    (p) => p.sku.toLowerCase() === skuParam.toLowerCase()
   ) as Product | undefined;
 
   if (!product) notFound();
 
   const { name, img, alt, priceNGN, desc } = product;
   const features =
-    product.features && product.features.length > 0
-      ? product.features
-      : featuresFromDesc(desc);
+    product.features?.length ? product.features : featuresFromDesc(desc);
 
   return (
     <div className="container py-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Image */}
         <div className="rounded-2xl overflow-hidden bg-zinc-50 border">
           <SmartImage
             src={img}
@@ -59,22 +67,18 @@ export default function ProductPage({ params }: { params: { sku: string } }) {
           />
         </div>
 
-        {/* Content */}
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold">{name}</h1>
           <p className="mt-1 text-sm text-zinc-500">SKU: {product.sku}</p>
 
-          {/* Price */}
           <div className="mt-4 text-3xl font-bold">{NGN(priceNGN)}</div>
 
-          {/* Description directly under price */}
           {desc && (
             <div className="mt-4 whitespace-pre-line text-zinc-700 leading-relaxed">
               {desc}
             </div>
           )}
 
-          {/* Features */}
           {features.length > 0 && (
             <div className="mt-6">
               <h2 className="text-lg font-semibold">Key features</h2>
@@ -86,7 +90,7 @@ export default function ProductPage({ params }: { params: { sku: string } }) {
             </div>
           )}
 
-          {/* Buy box (client) */}
+          {/* client-only buy box */}
           <BuyBox
             id={product.sku}
             name={product.name}
