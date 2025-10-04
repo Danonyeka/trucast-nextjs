@@ -14,16 +14,21 @@ function normalizeProductImagePath(src: string): string {
   const head = cut === Infinity ? src : src.slice(0, cut)
   const tail = cut === Infinity ? ''   : src.slice(cut)
 
-  // Decode, remove whitespace, then UPPERCASE the name and lowercase the extension
-  let filename = decodeURIComponent(head.slice(dir.length)).replace(/\s+/g, '')
-  const dot = filename.lastIndexOf('.')
-  if (dot > 0) {
-    const name = filename.slice(0, dot).toUpperCase()
-    const ext  = filename.slice(dot + 1).toLowerCase()
-    filename = `${name}.${ext}`
-  } else {
-    filename = filename.toUpperCase()
+  // Decode and remove whitespace
+  const raw = decodeURIComponent(head.slice(dir.length)).replace(/\s+/g, '')
+  const dot = raw.lastIndexOf('.')
+  const name = dot > 0 ? raw.slice(0, dot) : raw
+  const ext  = dot > 0 ? raw.slice(dot + 1) : ''
+
+  // FIX: Preserve lowercase for assets saved as lowercase (e.g., trc-* files)
+  if (name.toLowerCase().startsWith('trc-')) {
+    const filename = `${name.toLowerCase()}${ext ? '.' + ext.toLowerCase() : ''}`
+    return dir + filename + tail
   }
+
+  // Default behavior: UPPERCASE name, lowercase extension
+  const filename =
+    `${name.toUpperCase()}${ext ? '.' + ext.toLowerCase() : ''}`
 
   return dir + filename + tail
 }
