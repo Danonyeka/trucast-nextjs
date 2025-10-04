@@ -13,45 +13,48 @@ function NGN(n: number) {
   }).format(n);
 }
 
-/** Extract bullet features from desc if features[] not provided */
+/** Fallback: extract bullets from desc if features[] not provided */
 function featuresFromDesc(desc?: string): string[] {
   if (!desc) return [];
   const lines = desc.split(/\r?\n/);
+  const start = lines.findIndex((l) => /key features\s*:?\s*$/i.test(l.trim()));
+  const slice = start >= 0 ? lines.slice(start + 1) : lines;
 
-  // If there's a "Key features:" heading, capture bullets after it.
-  let start = lines.findIndex((l) => /key features\s*:?\s*$/i.test(l.trim()));
-  let slice = start >= 0 ? lines.slice(start + 1) : lines;
-
-  // Keep only hyphen/• bullets, strip prefix
-  const bullets = slice
-    .map((l) => l.trim())
-    .filter((l) => /^[-•]\s+/.test(l))
-    .map((l) => l.replace(/^[-•]\s+/, '').trim());
-
-  // De-duplicate & trim
-  return Array.from(new Set(bullets)).filter(Boolean);
+  return Array.from(
+    new Set(
+      slice
+        .map((l) => l.trim())
+        .filter((l) => /^[-•]\s+/.test(l))
+        .map((l) => l.replace(/^[-•]\s+/, '').trim())
+        .filter(Boolean),
+    ),
+  );
 }
 
 export default function ProductPage({ params }: { params: { sku: string } }) {
-  const { addItem } = useCart();
+  const { add } = useCart();
   const skuParam = decodeURIComponent(params.sku);
+
   const product = catalog.find(
-    (p) => p.sku.toLowerCase() === skuParam.toLowerCase()
+    (p) => p.sku.toLowerCase() === skuParam.toLowerCase(),
   ) as Product | undefined;
 
   if (!product) {
     return (
       <div className="container py-16">
         <h1 className="text-2xl font-bold">Product not found</h1>
-        <Link href="/search" className="link mt-4 inline-block">← Back to search</Link>
+        <Link href="/search" className="link mt-4 inline-block">
+          ← Back to search
+        </Link>
       </div>
     );
   }
 
   const { name, img, alt, priceNGN, desc } = product;
-  const features = (product.features && product.features.length > 0)
-    ? product.features
-    : featuresFromDesc(desc);
+  const features =
+    product.features && product.features.length > 0
+      ? product.features
+      : featuresFromDesc(desc);
 
   return (
     <div className="container py-10">
@@ -76,14 +79,14 @@ export default function ProductPage({ params }: { params: { sku: string } }) {
           {/* Price */}
           <div className="mt-4 text-3xl font-bold">{NGN(priceNGN)}</div>
 
-          {/* ↓↓↓ Description moved directly below price ↓↓↓ */}
+          {/* Description directly under price */}
           {desc && (
             <div className="mt-4 whitespace-pre-line text-zinc-700 leading-relaxed">
               {desc}
             </div>
           )}
 
-          {/* Features bullets */}
+          {/* Feature bullets */}
           {features.length > 0 && (
             <div className="mt-6">
               <h2 className="text-lg font-semibold">Key features</h2>
@@ -99,17 +102,22 @@ export default function ProductPage({ params }: { params: { sku: string } }) {
           <div className="mt-8 flex flex-wrap gap-3">
             <button
               className="btn"
-              onClick={() => addItem({
-                sku: product.sku,
-                name: product.name,
-                priceNGN: product.priceNGN,
-                img: product.img,
-                qty: 1,
-              })}
+              onClick={() =>
+                add({
+                  id: product.sku,
+                  name: product.name,
+                  qty: 1,
+                  priceNGN: product.priceNGN,
+                  image: product.img,
+                })
+              }
             >
               Add to Cart
             </button>
-            <Link className="btn-outline" href="/cart">Go to Cart</Link>
+
+            <Link className="btn-outline" href="/cart">
+              Go to Cart
+            </Link>
           </div>
         </div>
       </div>
