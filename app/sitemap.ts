@@ -36,7 +36,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const productRoutes: MetadataRoute.Sitemap = (catalog ?? [])
     .filter((p) => p.slug) // ensure slug exists
     .map((p) => ({
-      url: url(`/product/${p.slug}`), // adjust if your route differs
+      url: url(`/p/${p.slug}`), // adjust if your route differs
       lastModified: BUILD_TIME,       // use p.updatedAt if available
       changeFrequency: 'monthly',
       priority: 0.5,
