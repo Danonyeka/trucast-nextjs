@@ -8,6 +8,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.trucast-ng.com
 const BUILD_TIME = new Date()
 const url = (path: string) => `${BASE_URL}${path}`
 
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: url('/'),              lastModified: BUILD_TIME, changeFrequency: 'weekly',  priority: 1.0 },
