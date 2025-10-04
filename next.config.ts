@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   // Serve images directly from /public (no optimizer/proxy)
   images: { unoptimized: true },
 
+  
   // Redirect old /product/* to the new slug route /p/*
   async redirects() {
     return [
