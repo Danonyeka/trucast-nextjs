@@ -61,7 +61,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
               key={p.sku}
               className="rounded-2xl border bg-white overflow-hidden hover:shadow-md transition"
             >
-              <Link href={`/product/${encodeURIComponent(p.sku)}`} className="block">
+              <Link href={`/p/${encodeURIComponent(p.slug || p.sku)}`} className="block">
                 <div className="aspect-[4/3] bg-zinc-50">
                   <SmartImage
                     src={p.img}
