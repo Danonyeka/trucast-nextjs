@@ -74,7 +74,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
               </Link>
 
               <div className="p-4">
-                <Link href={`/product/${encodeURIComponent(p.sku)}`}>
+                <Link href={`/p/${encodeURIComponent(p.slug || p.sku)}`}>
                   <h2 className="font-semibold line-clamp-2">{p.name}</h2>
                 </Link>
 
