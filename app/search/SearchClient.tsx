@@ -43,7 +43,7 @@ export default function SearchClient() {
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {results.map((p) => (
-          <Link key={p.sku} href={`/product/${p.sku}`} className="card overflow-hidden">
+          <Link key={p.sku} href={`/p/${encodeURIComponent(p.slug || p.sku)}`} className="card overflow-hidden">
             <div className="relative aspect-square bg-zinc-100">
               <Image
                 src={p.img}
