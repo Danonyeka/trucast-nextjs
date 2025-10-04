@@ -2,7 +2,7 @@
 
 import SmartImage from '@/components/SmartImage';
 import Link from 'next/link';
-import { catalog } from '@/lib/products';
+import { catalog, Product } from '@/lib/products';
 import { useCart } from '@/components/cart/CartContext';
 
 function NGN(n: number) {
@@ -13,61 +13,104 @@ function NGN(n: number) {
   }).format(n);
 }
 
+/** Extract bullet features from desc if features[] not provided */
+function featuresFromDesc(desc?: string): string[] {
+  if (!desc) return [];
+  const lines = desc.split(/\r?\n/);
+
+  // If there's a "Key features:" heading, capture bullets after it.
+  let start = lines.findIndex((l) => /key features\s*:?\s*$/i.test(l.trim()));
+  let slice = start >= 0 ? lines.slice(start + 1) : lines;
+
+  // Keep only hyphen/• bullets, strip prefix
+  const bullets = slice
+    .map((l) => l.trim())
+    .filter((l) => /^[-•]\s+/.test(l))
+    .map((l) => l.replace(/^[-•]\s+/, '').trim());
+
+  // De-duplicate & trim
+  return Array.from(new Set(bullets)).filter(Boolean);
+}
+
 export default function ProductPage({ params }: { params: { sku: string } }) {
-  const product = catalog.find((p) => p.sku === params.sku);
-  const { add } = useCart();
+  const { addItem } = useCart();
+  const skuParam = decodeURIComponent(params.sku);
+  const product = catalog.find(
+    (p) => p.sku.toLowerCase() === skuParam.toLowerCase()
+  ) as Product | undefined;
 
   if (!product) {
     return (
       <div className="container py-16">
         <h1 className="text-2xl font-bold">Product not found</h1>
-        <Link href="/categories" className="link mt-4 inline-block">
-          ← Back to shop
-        </Link>
+        <Link href="/search" className="link mt-4 inline-block">← Back to search</Link>
       </div>
     );
   }
 
-  const unitPrice =
-    (product as any).priceNGN ?? (product as any).price ?? 0;
+  const { name, img, alt, priceNGN, desc } = product;
+  const features = (product.features && product.features.length > 0)
+    ? product.features
+    : featuresFromDesc(desc);
 
   return (
-    <div className="container py-16 grid lg:grid-cols-2 gap-8">
-      <div className="relative aspect-square bg-zinc-100 rounded-2xl overflow-hidden">
-        <SmartImage
-          src={(product as any).img ?? (product as any).image}
-          alt={product.name}
-          fill
-          className="object-contain"
-        />
-      </div>
+    <div className="container py-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Image */}
+        <div className="rounded-2xl overflow-hidden bg-zinc-50 border">
+          <SmartImage
+            src={img}
+            alt={alt || name}
+            width={1200}
+            height={900}
+            className="w-full h-auto"
+            priority
+          />
+        </div>
 
-      <div>
-        <h1 className="text-3xl font-bold">{product.name}</h1>
-        <p className="text-zinc-500 mt-1">SKU: {product.sku}</p>
-        <p className="text-xl font-bold mt-2">{NGN(unitPrice)}</p>
-        <p className="mt-4 text-zinc-700">{(product as any).desc}</p>
+        {/* Content */}
+        <div>
+          <h1 className="text-2xl md:text-3xl font-semibold">{name}</h1>
+          <p className="mt-1 text-sm text-zinc-500">SKU: {product.sku}</p>
 
-        <div className="mt-6 flex gap-3">
-          <button
-            className="btn-primary"
-            onClick={() =>
-              add({
-                id: product.sku, // use SKU as stable id
+          {/* Price */}
+          <div className="mt-4 text-3xl font-bold">{NGN(priceNGN)}</div>
+
+          {/* ↓↓↓ Description moved directly below price ↓↓↓ */}
+          {desc && (
+            <div className="mt-4 whitespace-pre-line text-zinc-700 leading-relaxed">
+              {desc}
+            </div>
+          )}
+
+          {/* Features bullets */}
+          {features.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-lg font-semibold">Key features</h2>
+              <ul className="mt-2 list-disc pl-5 space-y-1 text-zinc-700">
+                {features.map((f, i) => (
+                  <li key={i}>{f}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="mt-8 flex flex-wrap gap-3">
+            <button
+              className="btn"
+              onClick={() => addItem({
+                sku: product.sku,
                 name: product.name,
+                priceNGN: product.priceNGN,
+                img: product.img,
                 qty: 1,
-                // provide either price or priceNGN (both NGN units)
-                priceNGN: (product as any).priceNGN ?? (product as any).price ?? 0,
-                image: (product as any).img ?? (product as any).image,
-              })
-            }
-          >
-            Add to Cart
-          </button>
-
-          <Link className="btn-outline" href="/cart">
-            Go to Cart
-          </Link>
+              })}
+            >
+              Add to Cart
+            </button>
+            <Link className="btn-outline" href="/cart">Go to Cart</Link>
+          </div>
         </div>
       </div>
     </div>
