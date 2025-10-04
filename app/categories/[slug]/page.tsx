@@ -105,12 +105,13 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                     priceNGN={p.priceNGN}
                     image={p.img}
                   />
-                  <Link
+                 <Link
                     className="btn-outline"
-                    href={`/product/${encodeURIComponent(p.sku)}`}
+                    // force-escape dots so the route never gets misinterpreted as an “asset-like” path
+                    href={`/product/${encodeURIComponent(p.sku).replace(/\./g, '%2E')}`}
                   >
-                    View
-                  </Link>
+                  View
+                </Link>
                 </div>
               </div>
             </div>
