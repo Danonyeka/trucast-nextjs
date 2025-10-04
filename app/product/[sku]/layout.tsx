@@ -5,17 +5,36 @@ import { ProductLd, BreadcrumbLd } from '@/components/seo/JsonLd'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.trucast-ng.com'
 
+function safeDecode(s: string) {
+  try {
+    return decodeURIComponent(s)
+  } catch {
+    return s
+  }
+}
+
 export async function generateMetadata(
   { params }: { params: { sku: string } }
 ): Promise<Metadata> {
-  const p = catalog.find(x => x.slug === params.sku || x.sku === params.sku)
+  // Normalize the route param (handle %2E for dots and decoding)
+  const raw = (params.sku || '').replace(/%2E/gi, '.')
+  const sku = safeDecode(raw)
 
-  const path = `/product/${p?.slug ?? params.sku}`
-  const canonical = `${SITE_URL}${path}`
+  const p = catalog.find(
+    x =>
+      x.sku.toLowerCase() === sku.toLowerCase() ||
+      (x.slug ? x.slug.toLowerCase() : '') === sku.toLowerCase()
+  )
+
+  // Build a canonical URL that *always* escapes dots to avoid host/CDN quirks
+  const canonicalPath = `/product/${encodeURIComponent(p?.slug || sku).replace(/\./g, '%2E')}`
+  const canonical = `${SITE_URL}${canonicalPath}`
+
   const title = p ? `${p.name} | Trucast Nigeria` : 'Product | Trucast Nigeria'
-  const description =
-    p?.desc ||
-    'Shop electrical accessories in Nigeria—premium switches, sockets, LED lighting & smart devices. Fast nationwide delivery.'
+  const description = p?.desc
+    ? p.desc.replace(/\s+/g, ' ').slice(0, 160)
+    : 'Electrical accessories and lighting from Trucast Nigeria.'
+
   const imgUrl = p?.img || '/og.jpg'
 
   return {
@@ -23,10 +42,11 @@ export async function generateMetadata(
     description,
     alternates: { canonical },
     openGraph: {
-      url: canonical,
       title,
       description,
-      // Keep a valid OG type for Next metadata (omit "product" here)
+      url: canonical,
+      siteName: 'Trucast Nigeria',
+      // Keep "website" to satisfy Next metadata typing
       type: 'website',
       images: [{ url: imgUrl }],
     },
@@ -36,8 +56,6 @@ export async function generateMetadata(
       description,
       images: [imgUrl],
     },
-    // If you really want og:type=product, remove openGraph.type above and do:
-    // other: { 'og:type': 'product' },
   }
 }
 
@@ -48,34 +66,30 @@ export default function ProductLayout({
   children: React.ReactNode
   params: { sku: string }
 }) {
-  // Fetch product again for JSON-LD (cheap lookup from in-memory catalog)
-  const p = catalog.find(x => x.slug === params.sku || x.sku === params.sku)
+  const raw = (params.sku || '').replace(/%2E/gi, '.')
+  const sku = safeDecode(raw)
 
-  const canonicalPath = `/product/${p?.slug ?? params.sku}`
+  const p = catalog.find(
+    x =>
+      x.sku.toLowerCase() === sku.toLowerCase() ||
+      (x.slug ? x.slug.toLowerCase() : '') === sku.toLowerCase()
+  )
+
+  const canonicalPath = `/product/${encodeURIComponent(p?.slug || sku).replace(/\./g, '%2E')}`
   const canonicalUrl = `${SITE_URL}${canonicalPath}`
 
-  const breadcrumbItems =
-    p
-      ? [
-          { name: 'Home', item: SITE_URL },
-          { name: 'Categories', item: `${SITE_URL}/categories` },
-          {
-            name: categoryMap[p.category] ?? p.category,
-            item: `${SITE_URL}/categories/${p.category}`,
-          },
-          { name: p.name, item: canonicalUrl },
-        ]
-      : [
-          { name: 'Home', item: SITE_URL },
-          { name: 'Categories', item: `${SITE_URL}/categories` },
-        ]
+  const breadcrumbItems = [
+    { name: 'Home', item: `${SITE_URL}/` },
+    { name: categoryMap[p?.category || ''] || 'Products', item: `${SITE_URL}/categories` },
+    { name: p?.name || sku, item: canonicalUrl },
+  ]
 
   return (
     <>
-      {/* JSON-LD (SSR) */}
       {p && (
         <>
           <ProductLd
+            id="product-ld"
             name={p.name}
             description={p.desc}
             sku={p.sku}
@@ -89,7 +103,6 @@ export default function ProductLayout({
           <BreadcrumbLd items={breadcrumbItems} />
         </>
       )}
-
       {children}
     </>
   )
