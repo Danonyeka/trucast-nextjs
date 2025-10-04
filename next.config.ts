@@ -29,5 +29,20 @@ const nextConfig: NextConfig = {
     ]
   },
 }
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  async redirects() {
+    return [
+      // Anything under /product/* → /p/*
+      {
+        source: '/product/:path*',
+        destination: '/p/:path*',
+        permanent: true,
+      },
+    ]
+  },
+}
+
+module.exports = nextConfig
 
 export default nextConfig
