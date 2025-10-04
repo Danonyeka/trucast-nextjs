@@ -2,13 +2,13 @@
 
 export type StockStatus = 'in_stock' | 'out_of_stock' | 'preorder' | 'discontinued';
 
+// lib/products.ts
 export type Product = {
   sku: string;
   name: string;
   desc: string;
   priceNGN: number;
   img: string;
-
   /** Descriptive alt text for the product image (falls back to name when absent) */
   alt?: string;
 
@@ -17,10 +17,13 @@ export type Product = {
 
   // Optional explicit stock info
   stock?: {
-    status: StockStatus;
+    status: 'in_stock' | 'out_of_stock' | 'preorder' | 'discontinued';
     qty?: number;
     eta?: string;
   };
+
+  /** NEW: render as real bullet points on UI */
+  features?: string[];
 };
 
 export const categoryMap: Record<string, string> = {
