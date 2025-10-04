@@ -1,9 +1,8 @@
-'use client';
-
 import SmartImage from '@/components/SmartImage';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { catalog, Product } from '@/lib/products';
-import { useCart } from '@/components/cart/CartContext';
+import BuyBox from './BuyBox';
 
 function NGN(n: number) {
   return new Intl.NumberFormat('en-NG', {
@@ -32,23 +31,12 @@ function featuresFromDesc(desc?: string): string[] {
 }
 
 export default function ProductPage({ params }: { params: { sku: string } }) {
-  const { add } = useCart();
   const skuParam = decodeURIComponent(params.sku);
-
   const product = catalog.find(
     (p) => p.sku.toLowerCase() === skuParam.toLowerCase(),
   ) as Product | undefined;
 
-  if (!product) {
-    return (
-      <div className="container py-16">
-        <h1 className="text-2xl font-bold">Product not found</h1>
-        <Link href="/search" className="link mt-4 inline-block">
-          ← Back to search
-        </Link>
-      </div>
-    );
-  }
+  if (!product) notFound();
 
   const { name, img, alt, priceNGN, desc } = product;
   const features =
@@ -86,7 +74,7 @@ export default function ProductPage({ params }: { params: { sku: string } }) {
             </div>
           )}
 
-          {/* Feature bullets */}
+          {/* Features */}
           {features.length > 0 && (
             <div className="mt-6">
               <h2 className="text-lg font-semibold">Key features</h2>
@@ -98,23 +86,15 @@ export default function ProductPage({ params }: { params: { sku: string } }) {
             </div>
           )}
 
-          {/* Actions */}
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button
-              className="btn"
-              onClick={() =>
-                add({
-                  id: product.sku,
-                  name: product.name,
-                  qty: 1,
-                  priceNGN: product.priceNGN,
-                  image: product.img,
-                })
-              }
-            >
-              Add to Cart
-            </button>
+          {/* Buy box (client) */}
+          <BuyBox
+            id={product.sku}
+            name={product.name}
+            priceNGN={product.priceNGN}
+            image={product.img}
+          />
 
+          <div className="mt-4">
             <Link className="btn-outline" href="/cart">
               Go to Cart
             </Link>
