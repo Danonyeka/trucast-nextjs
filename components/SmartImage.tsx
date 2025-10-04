@@ -20,13 +20,15 @@ function normalizeProductImagePath(src: string): string {
   const name = dot > 0 ? raw.slice(0, dot) : raw
   const ext  = dot > 0 ? raw.slice(dot + 1) : ''
 
-  // FIX: Preserve lowercase for assets saved as lowercase (e.g., trc-* files)
-  if (name.toLowerCase().startsWith('trc-')) {
-    const filename = `${name.toLowerCase()}${ext ? '.' + ext.toLowerCase() : ''}`
+  const lowerName = name.toLowerCase()
+
+  // FIX: Only the Alu Profile images are stored lowercase (trc-alp*)
+  if (lowerName.startsWith('trc-alp')) {
+    const filename = `${lowerName}${ext ? '.' + ext.toLowerCase() : ''}`
     return dir + filename + tail
   }
 
-  // Default behavior: UPPERCASE name, lowercase extension
+  // Default behavior for the rest: uppercase name, lowercase extension
   const filename =
     `${name.toUpperCase()}${ext ? '.' + ext.toLowerCase() : ''}`
 
@@ -42,9 +44,7 @@ export default function SmartImage(props: ImageProps) {
 
   return (
     <Image
-      // local /public files → serve directly, no optimizer
       unoptimized={isLocal}
-      // provide a default sizes when using `fill`
       sizes={('fill' in rest && (rest as any).fill && !sizes) ? '100vw' : sizes}
       src={fixedSrc}
       {...rest}
