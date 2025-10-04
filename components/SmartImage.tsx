@@ -1,53 +1,67 @@
 // components/SmartImage.tsx
-'use client'
+'use client';
 
-import Image, { ImageProps } from 'next/image'
+import Image, { ImageProps } from 'next/image';
+
+function safeDecode(s: string) {
+  try {
+    return decodeURIComponent(s);
+  } catch {
+    return s;
+  }
+}
 
 function normalizeProductImagePath(src: string): string {
-  const dir = '/images/products/'
-  if (!src.startsWith(dir)) return src
+  const dir = '/images/products/';
+  if (!src || typeof src !== 'string') return src;
+  if (!src.startsWith(dir)) return src;
 
   // Split query/hash so we only normalize the filename itself
-  const q = src.indexOf('?')
-  const h = src.indexOf('#')
-  const cut = [q, h].filter(i => i >= 0).reduce((m, i) => Math.min(m, i), Infinity)
-  const head = cut === Infinity ? src : src.slice(0, cut)
-  const tail = cut === Infinity ? ''   : src.slice(cut)
+  const q = src.indexOf('?');
+  const h = src.indexOf('#');
+  const cut = [q, h].filter(i => i >= 0).reduce((m, i) => Math.min(m, i), Infinity);
+  const head = cut === Infinity ? src : src.slice(0, cut);
+  const tail = cut === Infinity ? ''   : src.slice(cut);
 
-  // Decode and remove whitespace
-  const raw = decodeURIComponent(head.slice(dir.length)).replace(/\s+/g, '')
-  const dot = raw.lastIndexOf('.')
-  const name = dot > 0 ? raw.slice(0, dot) : raw
-  const ext  = dot > 0 ? raw.slice(dot + 1) : ''
-
-  const lowerName = name.toLowerCase()
-
-  // FIX: Only the Alu Profile images are stored lowercase (trc-alp*)
-  if (lowerName.startsWith('trc-alp')) {
-    const filename = `${lowerName}${ext ? '.' + ext.toLowerCase() : ''}`
-    return dir + filename + tail
+  // Decode safely, remove whitespace, then UPPERCASE name and lowercase extension
+  let filename = safeDecode(head.slice(dir.length)).replace(/\s+/g, '');
+  const dot = filename.lastIndexOf('.');
+  if (dot > 0) {
+    const name = filename.slice(0, dot).toUpperCase();
+    const ext  = filename.slice(dot + 1).toLowerCase();
+    filename = `${name}.${ext}`;
+  } else {
+    filename = filename.toUpperCase();
   }
 
-  // Default behavior for the rest: uppercase name, lowercase extension
-  const filename =
-    `${name.toUpperCase()}${ext ? '.' + ext.toLowerCase() : ''}`
-
-  return dir + filename + tail
+  return dir + filename + tail;
 }
 
 export default function SmartImage(props: ImageProps) {
-  const { src, sizes, ...rest } = props
-  const isLocal = typeof src === 'string' && src.startsWith('/')
+  const { src, sizes, alt, ...rest } = props;
 
-  const fixedSrc =
-    typeof src === 'string' ? normalizeProductImagePath(src) : (src as any)
+  const resolvedSrc =
+    typeof src === 'string'
+      ? normalizeProductImagePath(src)
+      : (src as any);
+
+  // If src is empty or not a string, fall back to a harmless placeholder
+  const safeSrc =
+    typeof resolvedSrc === 'string' && resolvedSrc.length > 0
+      ? resolvedSrc
+      : '/og.jpg';
+
+  const isLocal = typeof safeSrc === 'string' && safeSrc.startsWith('/');
 
   return (
     <Image
+      // local /public files → serve directly, no optimizer
       unoptimized={isLocal}
+      // provide a default sizes when using `fill`
       sizes={('fill' in rest && (rest as any).fill && !sizes) ? '100vw' : sizes}
-      src={fixedSrc}
+      src={safeSrc}
+      alt={alt || 'image'}
       {...rest}
     />
-  )
+  );
 }
