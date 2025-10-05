@@ -67,15 +67,9 @@ export default function ProductBySlug({ params }: { params: { slug: string } }) 
     let alive = true;
     (async () => {
       try {
-        // ⚡️ Dynamic import ensures any issues in lib/products don’t crash SSR
-        const mod = await import('@/lib/products');
-        const catalog: ProductLite[] = (mod as any).catalog || [];
-        const found =
-          catalog.find(
-            (p) =>
-              (p.slug || '').toLowerCase() === slug ||
-              (p.sku || '').toLowerCase() === slug,
-          ) || null;
+        // ✅ Use the safe finder from lib/products (no direct catalog access)
+        const { findBySlugOrSku } = await import('@/lib/products');
+        const found = (await findBySlugOrSku(slug)) as ProductLite | null;
 
         if (alive) setState({ loading: false, product: found });
       } catch (err: any) {
