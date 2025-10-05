@@ -1854,37 +1854,6 @@ Keywords: Trucast Nigeria, quality electrical accessories.`,
 // -------- Helpers --------
 const normalizeSlug = (s: string) => (s || '').toString().trim().toLowerCase();
 
-// Important: filter(Boolean) removes stray `undefined`s caused by trailing commas
-export const catalog: Product[] = (catalogRaw as Product[])
-  .filter(Boolean)
-  .map(p => ({ ...p, alt: p.alt ?? p.name }));
-
-export function byCategory(slug: string) {
-  const key = normalizeSlug(slug);
-  return catalog.filter(p => normalizeSlug(p.category) === key);
-}
-
-// SAFE product resolver that never throws at module load
-export function findBySlugOrSku(id: string) {
-  const needle = normalizeSlug(id);
-  return (
-    catalog.find(p =>
-      normalizeSlug(p.slug || '') === needle ||
-      normalizeSlug(p.sku) === needle ||
-      normalizeSlug(p.name) === needle
-    ) ?? null
-  );
-}
-
-export function searchProducts(q: string) {
-  const s = (q || '').trim();
-  if (!s) return catalog;
-  const escaped = s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp(escaped, 'i');
-  return catalog.filter(p => re.test(p.name) || re.test(p.desc) || re.test(p.sku));
-}
-
-
 // ---------- Helpers for stock handling ----------
 
 // If explicit stock status exists, use it. Otherwise, derive from price:
