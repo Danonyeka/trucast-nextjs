@@ -2,10 +2,12 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Serve images directly from /public (no optimizer/proxy)
-  images: { unoptimized: true },
+  // Serve images directly from /public (works well with your SmartImage logic)
+  images: {
+    unoptimized: true,
+  },
 
-  // Redirect old /product/* to the new slug route /p/*
+  // Redirect old SKU-based product URLs to the new slug route
   async redirects() {
     return [
       {
