@@ -1,3 +1,4 @@
+// app/p/[slug]/page.tsx
 'use client';
 
 import SmartImage from '@/components/SmartImage';
@@ -14,52 +15,31 @@ function NGN(n?: number) {
   }).format(val);
 }
 
-function safeDecode(s: string) {
-  try {
-    return decodeURIComponent(s);
-  } catch {
-    return s;
-  }
-}
+function safeDecode(s: string) { try { return decodeURIComponent(s); } catch { return s; } }
 
-/** Fallback: extract bullets from desc if features[] not provided */
 function featuresFromDesc(desc?: string): string[] {
   try {
     if (!desc) return [];
     const lines = desc.split(/\r?\n/);
     const start = lines.findIndex((l) => /key features\s*:?\s*$/i.test(l.trim()));
     const slice = start >= 0 ? lines.slice(start + 1) : lines;
-    return Array.from(
-      new Set(
-        slice
-          .map((l) => l.trim())
-          .filter((l) => /^[-•]\s+/.test(l))
-          .map((l) => l.replace(/^[-•]\s+/, '').trim())
-          .filter(Boolean),
-      ),
-    );
-  } catch {
-    return [];
-  }
+    return Array.from(new Set(
+      slice.map((l) => l.trim())
+           .filter((l) => /^[-•]\s+/.test(l))
+           .map((l) => l.replace(/^[-•]\s+/, '').trim())
+           .filter(Boolean),
+    ));
+  } catch { return []; }
 }
 
-export default function ProductBySlug({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  // (Client side) normalize slug and find product
-  const raw = (params?.slug ?? '').toString();
-  const slug = safeDecode(raw).toLowerCase();
+export default function ProductBySlug({ params }: { params: { slug: string } }) {
+  const slug = safeDecode((params?.slug ?? '').toString()).toLowerCase();
 
   const product = (catalog as Product[]).find(
-    (p) =>
-      (p.slug || '').toLowerCase() === slug ||
-      (p.sku || '').toLowerCase() === slug
+    (p) => (p.slug || '').toLowerCase() === slug || (p.sku || '').toLowerCase() === slug
   );
 
   if (!product) {
-    // Render friendly “not found” – never throw
     return (
       <div className="container py-16">
         <h1 className="text-2xl font-bold">Product not found</h1>
@@ -75,62 +55,41 @@ export default function ProductBySlug({
   }
 
   const { name, img, alt, priceNGN, desc } = product;
-  const features =
-    product.features?.length ? product.features : featuresFromDesc(desc);
+  const features = product.features?.length ? product.features : featuresFromDesc(desc);
   const imgSrc = typeof img === 'string' && img ? img : '/og.jpg';
 
   return (
     <div className="container py-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="rounded-2xl overflow-hidden bg-zinc-50 border">
-          <SmartImage
-            src={imgSrc}
-            alt={alt || name}
-            width={1200}
-            height={900}
-            className="w-full h-auto"
-            priority
-          />
+          <SmartImage src={imgSrc} alt={alt || name} width={1200} height={900} className="w-full h-auto" priority />
         </div>
 
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold">{name}</h1>
           <p className="mt-1 text-sm text-zinc-500">SKU: {product.sku}</p>
 
-          {/* Price */}
           <div className="mt-4 text-3xl font-bold">{NGN(priceNGN)}</div>
 
-          {/* Description under price */}
           {desc && (
             <div className="mt-4 whitespace-pre-line text-zinc-700 leading-relaxed">
               {desc}
             </div>
           )}
 
-          {/* Features */}
           {features.length > 0 && (
             <div className="mt-6">
               <h2 className="text-lg font-semibold">Key features</h2>
               <ul className="mt-2 list-disc pl-5 space-y-1 text-zinc-700">
-                {features.map((f, i) => (
-                  <li key={i}>{f}</li>
-                ))}
+                {features.map((f, i) => <li key={i}>{f}</li>)}
               </ul>
             </div>
           )}
 
-          {/* Add to cart (client) */}
-          <BuyBox
-            id={product.sku}
-            name={product.name}
-            priceNGN={product.priceNGN}
-            image={product.img}
-          />
+          <BuyBox id={product.sku} name={product.name} priceNGN={product.priceNGN} image={product.img} />
 
           <div className="mt-4">
-            <Link className="btn-outline" href="/cart">
-              Go to Cart
-            </Link>
+            <Link className="btn-outline" href="/cart">Go to Cart</Link>
           </div>
         </div>
       </div>
