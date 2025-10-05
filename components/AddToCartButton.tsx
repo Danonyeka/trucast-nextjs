@@ -12,11 +12,16 @@ function NGN(n: number) {
   }).format(n);
 }
 
-export default function AddToCartButton({ product }: { product: Product }) {
+type Props = {
+  product: Product;
+  className?: string; // <-- allow external classes
+};
+
+export default function AddToCartButton({ product, className }: Props) {
   const add = useCart((s) => s.add);
 
   const out = isOutOfStock(product);
-  const price = displayPriceNGN(product); // undefined when out of stock
+  const price = displayPriceNGN(product); // undefined if out of stock
 
   const handleClick = () => {
     if (out || !price) return;
@@ -29,17 +34,19 @@ export default function AddToCartButton({ product }: { product: Product }) {
     });
   };
 
+  const enabled =
+    'rounded-xl px-5 py-3 font-medium transition bg-emerald-600 text-white hover:bg-emerald-700';
+  const disabled =
+    'rounded-xl px-5 py-3 font-medium transition bg-zinc-200 text-zinc-500 cursor-not-allowed';
+  const btnClass = `${out ? disabled : enabled}${className ? ` ${className}` : ''}`;
+
   return (
     <button
       type="button"
       onClick={handleClick}
       disabled={out}
       aria-disabled={out}
-      className={`rounded-xl px-5 py-3 font-medium transition ${
-        out
-          ? 'cursor-not-allowed bg-zinc-200 text-zinc-500'
-          : 'bg-emerald-600 text-white hover:bg-emerald-700'
-      }`}
+      className={btnClass}
     >
       {out ? 'Out of stock' : <>Add — {NGN(price!)}</>}
     </button>
