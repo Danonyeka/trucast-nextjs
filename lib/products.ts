@@ -1851,37 +1851,39 @@ Keywords: Trucast Nigeria, quality electrical accessories.`,
     features: [  ], priceNGN: 90846, img: "/images/products/TRC-SBRK-63A-2P-WIFI.png", category: "smart-breaker", slug: "63a-2p-tongou-wifi-smart-circuit-breaker" }
 ];
 
-// --- SAFE HELPERS (put below `export const catalog` ) ------------------------
+// -------- Helpers --------
+const normalizeSlug = (s: string) => (s || '').toString().trim().toLowerCase();
 
-export function normalizeSlug(s?: string) {
-  return (s ?? '').toString().trim().toLowerCase();
+// Important: filter(Boolean) removes stray `undefined`s caused by trailing commas
+export const catalog: Product[] = (catalogRaw as Product[])
+  .filter(Boolean)
+  .map(p => ({ ...p, alt: p.alt ?? p.name }));
+
+export function byCategory(slug: string) {
+  const key = normalizeSlug(slug);
+  return catalog.filter(p => normalizeSlug(p.category) === key);
 }
 
-/** Filter out accidental holes from the array literal (there are many `, ,`) */
-export function safeCatalog(): Product[] {
-  return (catalog as any[]).filter(
-    (p): p is Product => !!p && typeof (p as any).sku === 'string'
+// SAFE product resolver that never throws at module load
+export function findBySlugOrSku(id: string) {
+  const needle = normalizeSlug(id);
+  return (
+    catalog.find(p =>
+      normalizeSlug(p.slug || '') === needle ||
+      normalizeSlug(p.sku) === needle ||
+      normalizeSlug(p.name) === needle
+    ) ?? null
   );
 }
 
-/** Category -> products (used by /categories/[slug]) */
-export function byCategory(slug: string): Product[] {
-  const key = normalizeSlug(slug);
-  return safeCatalog().filter((p) => normalizeSlug(p.category) === key);
+export function searchProducts(q: string) {
+  const s = (q || '').trim();
+  if (!s) return catalog;
+  const escaped = s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(escaped, 'i');
+  return catalog.filter(p => re.test(p.name) || re.test(p.desc) || re.test(p.sku));
 }
 
-/** Primary finder for /p/[slug] (matches both slug *and* SKU) */
-export function findBySlugOrSku(id: string): Product | null {
-  const needle = normalizeSlug(id);
-  if (!needle) return null;
-
-  for (const p of safeCatalog()) {
-    const sSlug = normalizeSlug(p?.slug || p?.name);
-    const sSku  = normalizeSlug(p?.sku);
-    if (sSlug === needle || sSku === needle) return p;
-  }
-  return null;
-}
 
 // ---------- Helpers for stock handling ----------
 
