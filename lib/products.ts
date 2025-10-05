@@ -1879,3 +1879,28 @@ export function byCategoryAvailable(slug: string) {
 export const outOfStockSkus = catalog
   .filter(p => deriveStatus(p) !== 'in_stock')
   .map(p => p.sku);
+
+// lib/products.ts (append near the bottom)
+
+// Helper to normalize slugs consistently
+export function normalizeSlug(s: string) {
+  return (s || '').toString().trim().toLowerCase();
+}
+
+// SAFE product resolver that never throws at module load
+export function findBySlugOrSku(id: string) {
+  const needle = normalizeSlug(id);
+
+  // Important: filter(Boolean) removes stray undefineds caused by trailing commas
+  const list = (catalog as any[]).filter(Boolean);
+
+  for (const item of list) {
+    // Guard every access
+    if (!item) continue;
+    const slug = normalizeSlug(item.slug || item.name);
+    const sku  = normalizeSlug(item.sku);
+    if (slug === needle || sku === needle) return item;
+  }
+  return null;
+}
+
