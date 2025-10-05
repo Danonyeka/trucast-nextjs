@@ -1,41 +1,62 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import AddToCartButton from '@/components/AddToCartButton';
-import { Product, displayPriceNGN, isOutOfStock } from '@/lib/products';
+import Image from 'next/image';
+import AddToCartButton from './AddToCartButton';
+import { isOutOfStock, displayPriceNGN, type Product } from '@/lib/products';
 
-const formatNGN = (n: number) =>
-  new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(n);
+function NGN(n: number) {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    maximumFractionDigits: 0,
+  }).format(n);
+}
 
 export default function ProductCard({ product }: { product: Product }) {
+  const out = isOutOfStock(product);
   const price = displayPriceNGN(product);
-  const oos = isOutOfStock(product);
 
   return (
-    <div className="group flex flex-col rounded-xl border p-4 hover:shadow-sm transition">
-      <Link href={product.slug ? `/p/${product.slug}` : '#'} className="block">
-        <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-neutral-50">
+    <div className="card overflow-hidden">
+      <Link
+        href={`/p/${encodeURIComponent(product.slug || product.sku)}`}
+        className="block"
+      >
+        <div className="relative aspect-square bg-zinc-100">
+          {out && (
+            <span className="absolute left-2 top-2 rounded-full bg-amber-600 px-2.5 py-1 text-xs font-semibold text-white shadow">
+              Out of Stock
+            </span>
+          )}
           <Image
             src={product.img}
-            alt={product.alt || product.name}
+            alt={product.name}
             fill
-            className="object-contain p-3 transition-transform group-hover:scale-[1.02]"
-            sizes="(min-width: 1024px) 250px, 40vw"
+            className={`object-contain transition-opacity ${out ? 'opacity-60' : ''}`}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         </div>
-        <h3 className="mt-3 line-clamp-2 text-sm font-medium">{product.name}</h3>
       </Link>
 
-      <div className="mt-2 text-sm text-neutral-600 line-clamp-2">{product.desc}</div>
+      <div className="p-4">
+        <Link
+          href={`/p/${encodeURIComponent(product.slug || product.sku)}`}
+          className="font-semibold line-clamp-2"
+        >
+          {product.name}
+        </Link>
+        <p className="text-xs text-zinc-500">SKU: {product.sku}</p>
 
-      <div className="mt-3 flex items-center justify-between">
-        <div className="text-base font-semibold">
-          {oos || price == null ? 'Out of stock' : formatNGN(price)}
+        {price !== undefined ? (
+          <p className="mt-1 font-bold">{NGN(price)}</p>
+        ) : (
+          <p className="mt-1 font-semibold text-zinc-500">Out of Stock</p>
+        )}
+
+        <div className="mt-3">
+          <AddToCartButton product={product} className="btn w-full" />
         </div>
-
-        {/* Add — ₦… button (auto-disables when OOS) */}
-        <AddToCartButton product={product} />
       </div>
     </div>
   );
