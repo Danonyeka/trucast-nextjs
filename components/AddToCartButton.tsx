@@ -12,6 +12,7 @@ function NGN(n: number) {
   }).format(n);
 }
 
+
 type Props = {
   product: Product;
   className?: string;
