@@ -39,7 +39,7 @@ export const categoryMap: Record<string, string> = {
   "strip": "Strip",
   "strip-connector": "Strip Connector",
   "strip-controller": "Strip Controller",
-  "switches": "Switches & Sockets",
+  "switches": "Switches",
 };
 
 export const categories = Object.entries(categoryMap).map(([slug, title]) => ({ slug, title }));
