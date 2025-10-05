@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import SmartImage from '@/components/SmartImage';
 import BuyBox from './BuyBox';
+import { findBySlugOrSku } from '@/lib/products';
 
 type ProductLite = {
   sku: string;
@@ -26,32 +27,22 @@ function NGN(n?: number) {
 }
 
 function safeDecode(s: string) {
-  try {
-    return decodeURIComponent(s);
-  } catch {
-    return s;
-  }
+  try { return decodeURIComponent(s); } catch { return s; }
 }
 
-/** Fallback: extract bullets from desc if features[] not provided */
 function featuresFromDesc(desc?: string): string[] {
   try {
     if (!desc) return [];
     const lines = desc.split(/\r?\n/);
     const start = lines.findIndex((l) => /key features\s*:?\s*$/i.test(l.trim()));
     const slice = start >= 0 ? lines.slice(start + 1) : lines;
-    return Array.from(
-      new Set(
-        slice
-          .map((l) => l.trim())
-          .filter((l) => /^[-•]\s+/.test(l))
-          .map((l) => l.replace(/^[-•]\s+/, '').trim())
-          .filter(Boolean),
-      ),
-    );
-  } catch {
-    return [];
-  }
+    return Array.from(new Set(
+      slice.map((l) => l.trim())
+           .filter((l) => /^[-•]\s+/.test(l))
+           .map((l) => l.replace(/^[-•]\s+/, '').trim())
+           .filter(Boolean),
+    ));
+  } catch { return []; }
 }
 
 export default function ProductBySlug({ params }: { params: { slug: string } }) {
@@ -64,26 +55,12 @@ export default function ProductBySlug({ params }: { params: { slug: string } }) 
   }>({ loading: true });
 
   React.useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        // ✅ Use the safe finder from lib/products (no direct catalog access)
-        const { findBySlugOrSku } = await import('@/lib/products');
-        const found = (await findBySlugOrSku(slug)) as ProductLite | null;
-
-        if (alive) setState({ loading: false, product: found });
-      } catch (err: any) {
-        if (alive)
-          setState({
-            loading: false,
-            error: err?.message || String(err),
-          });
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
+    try {
+      const found = findBySlugOrSku(slug);
+      setState({ loading: false, product: found });
+    } catch (err: any) {
+      setState({ loading: false, error: err?.message || String(err) });
+    }
   }, [slug]);
 
   if (state.loading) {
@@ -98,16 +75,10 @@ export default function ProductBySlug({ params }: { params: { slug: string } }) 
     return (
       <div className="container py-16">
         <h1 className="text-2xl font-bold">Couldn’t load product</h1>
-        <p className="mt-2 text-zinc-600">
-          An error occurred while loading this item.
-        </p>
-        <pre className="mt-4 p-3 rounded bg-zinc-100 text-xs overflow-auto">
-{state.error}
-        </pre>
+        <p className="mt-2 text-zinc-600">An error occurred while loading this item.</p>
+        <pre className="mt-4 p-3 rounded bg-zinc-100 text-xs overflow-auto">{state.error}</pre>
         <div className="mt-6">
-          <Link className="btn-outline" href="/shop">
-            Back to shop
-          </Link>
+          <Link className="btn-outline" href="/shop">Back to shop</Link>
         </div>
       </div>
     );
@@ -121,12 +92,8 @@ export default function ProductBySlug({ params }: { params: { slug: string } }) 
           The item you’re looking for isn’t available. Please browse the shop or search.
         </p>
         <div className="mt-6 flex gap-3">
-          <Link className="btn" href="/shop">
-            Browse shop
-          </Link>
-          <Link className="btn-outline" href="/search">
-            Search
-          </Link>
+          <Link className="btn" href="/shop">Browse shop</Link>
+          <Link className="btn-outline" href="/search">Search</Link>
         </div>
       </div>
     );
@@ -154,40 +121,27 @@ export default function ProductBySlug({ params }: { params: { slug: string } }) 
           <h1 className="text-2xl md:text-3xl font-semibold">{p.name}</h1>
           <p className="mt-1 text-sm text-zinc-500">SKU: {p.sku}</p>
 
-          {/* Price */}
           <div className="mt-4 text-3xl font-bold">{NGN(p.priceNGN)}</div>
 
-          {/* Description directly under price */}
           {p.desc && (
             <div className="mt-4 whitespace-pre-line text-zinc-700 leading-relaxed">
               {p.desc}
             </div>
           )}
 
-          {/* Features */}
           {feats.length > 0 && (
             <div className="mt-6">
               <h2 className="text-lg font-semibold">Key features</h2>
               <ul className="mt-2 list-disc pl-5 space-y-1 text-zinc-700">
-                {feats.map((f, i) => (
-                  <li key={i}>{f}</li>
-                ))}
+                {feats.map((f, i) => <li key={i}>{f}</li>)}
               </ul>
             </div>
           )}
 
-          {/* Add to cart */}
-          <BuyBox
-            id={p.sku}
-            name={p.name}
-            priceNGN={p.priceNGN}
-            image={p.img}
-          />
+          <BuyBox id={p.sku} name={p.name} priceNGN={p.priceNGN} image={p.img} />
 
           <div className="mt-4">
-            <Link className="btn-outline" href="/cart">
-              Go to Cart
-            </Link>
+            <Link className="btn-outline" href="/cart">Go to Cart</Link>
           </div>
         </div>
       </div>
