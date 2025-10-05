@@ -1,3 +1,5 @@
+'use client';
+
 import SmartImage from '@/components/SmartImage';
 import Link from 'next/link';
 import { catalog, Product } from '@/lib/products';
@@ -27,23 +29,29 @@ function featuresFromDesc(desc?: string): string[] {
     const lines = desc.split(/\r?\n/);
     const start = lines.findIndex((l) => /key features\s*:?\s*$/i.test(l.trim()));
     const slice = start >= 0 ? lines.slice(start + 1) : lines;
-    return Array.from(new Set(
-      slice
-        .map((l) => l.trim())
-        .filter((l) => /^[-•]\s+/.test(l))
-        .map((l) => l.replace(/^[-•]\s+/, '').trim())
-        .filter(Boolean)
-    ));
+    return Array.from(
+      new Set(
+        slice
+          .map((l) => l.trim())
+          .filter((l) => /^[-•]\s+/.test(l))
+          .map((l) => l.replace(/^[-•]\s+/, '').trim())
+          .filter(Boolean),
+      ),
+    );
   } catch {
     return [];
   }
 }
 
-export default function ProductBySlug({ params }: { params: { slug: string } }) {
+export default function ProductBySlug({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  // (Client side) normalize slug and find product
   const raw = (params?.slug ?? '').toString();
   const slug = safeDecode(raw).toLowerCase();
 
-  // Try slug match, then SKU match (so /p/<sku> still works)
   const product = (catalog as Product[]).find(
     (p) =>
       (p.slug || '').toLowerCase() === slug ||
@@ -51,7 +59,7 @@ export default function ProductBySlug({ params }: { params: { slug: string } }) 
   );
 
   if (!product) {
-    // Render a friendly not-found section instead of throwing
+    // Render friendly “not found” – never throw
     return (
       <div className="container py-16">
         <h1 className="text-2xl font-bold">Product not found</h1>
@@ -92,14 +100,14 @@ export default function ProductBySlug({ params }: { params: { slug: string } }) 
           {/* Price */}
           <div className="mt-4 text-3xl font-bold">{NGN(priceNGN)}</div>
 
-          {/* Description directly under price */}
+          {/* Description under price */}
           {desc && (
             <div className="mt-4 whitespace-pre-line text-zinc-700 leading-relaxed">
               {desc}
             </div>
           )}
 
-          {/* Features bullets */}
+          {/* Features */}
           {features.length > 0 && (
             <div className="mt-6">
               <h2 className="text-lg font-semibold">Key features</h2>
@@ -111,7 +119,7 @@ export default function ProductBySlug({ params }: { params: { slug: string } }) 
             </div>
           )}
 
-          {/* Actions */}
+          {/* Add to cart (client) */}
           <BuyBox
             id={product.sku}
             name={product.name}
@@ -120,7 +128,9 @@ export default function ProductBySlug({ params }: { params: { slug: string } }) 
           />
 
           <div className="mt-4">
-            <Link className="btn-outline" href="/cart">Go to Cart</Link>
+            <Link className="btn-outline" href="/cart">
+              Go to Cart
+            </Link>
           </div>
         </div>
       </div>
