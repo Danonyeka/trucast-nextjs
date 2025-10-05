@@ -9,14 +9,10 @@ const nextConfig: NextConfig = {
 
   // Redirect old SKU-based product URLs to the new slug route
   async redirects() {
-    return [
-      {
-        source: '/product/:path*',
-        destination: '/p/:path*',
-        permanent: true,
-      },
-    ];
-  },
+  return [
+    { source: '/product/:path*', destination: '/p/:path*', permanent: true },
+  ];
+},
 };
 
 export default nextConfig;
