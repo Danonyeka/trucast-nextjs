@@ -1851,9 +1851,6 @@ Keywords: Trucast Nigeria, quality electrical accessories.`,
     features: [  ], priceNGN: 90846, img: "/images/products/TRC-SBRK-63A-2P-WIFI.png", category: "smart-breaker", slug: "63a-2p-tongou-wifi-smart-circuit-breaker" }
 ];
 
-// -------- Helpers --------
-const normalizeSlug = (s: string) => (s || '').toString().trim().toLowerCase();
-
 // ---------- Helpers for stock handling ----------
 
 // If explicit stock status exists, use it. Otherwise, derive from price:
