@@ -120,3 +120,8 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
       <div className="mt-10">
         <Link className="link" href="/categories">
           ← Back to Categories
+        </Link>
+      </div>
+    </div>
+  );
+}
