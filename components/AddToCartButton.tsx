@@ -2,7 +2,7 @@
 
 import { useCart } from '@/lib/cart';
 import type { Product } from '@/lib/products';
-import { isOutOfStock, displayPriceNGN } from '@/lib/products';
+import { isOutOfStock } from '@/lib/products';
 
 function NGN(n: number) {
   return new Intl.NumberFormat('en-NG', {
@@ -14,17 +14,18 @@ function NGN(n: number) {
 
 type Props = {
   product: Product;
-  className?: string; // <-- allow external classes
+  className?: string;
 };
 
 export default function AddToCartButton({ product, className }: Props) {
   const add = useCart((s) => s.add);
 
-  const out = isOutOfStock(product);
-  const price = displayPriceNGN(product); // undefined if out of stock
+  // Treat zero/blank price as out of stock, regardless of explicit status
+  const price = Number(product.priceNGN ?? 0);
+  const out = isOutOfStock(product) || price <= 0;
 
   const handleClick = () => {
-    if (out || !price) return;
+    if (out) return;
     add({
       sku: product.sku,
       name: product.name,
@@ -48,7 +49,7 @@ export default function AddToCartButton({ product, className }: Props) {
       aria-disabled={out}
       className={btnClass}
     >
-      {out ? 'Out of stock' : <>Add — {NGN(price!)}</>}
+      {out ? 'Out of stock' : <>Add — {NGN(price)}</>}
     </button>
   );
 }
