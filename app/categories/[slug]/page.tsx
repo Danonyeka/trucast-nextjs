@@ -11,7 +11,7 @@ function NGN(n: number) {
   }).format(n);
 }
 
-/** Fallback: extract bullets from desc if features[] not provided */
+/** Fallback: extract bullet features from desc when features[] is missing */
 function featuresFromDesc(desc?: string): string[] {
   if (!desc) return [];
   const lines = desc.split(/\r?\n/);
@@ -98,17 +98,18 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                 )}
 
                 <div className="mt-4 flex items-center gap-3">
-                  {/* ✅ Pass expected props, not {product} */}
                   <AddToCartButton
                     id={p.sku}
                     name={p.name}
                     priceNGN={p.priceNGN}
                     image={p.img}
                   />
-                 <Link className="btn-outline" href={`/p/${encodeURIComponent(p.slug || p.sku)}`}>
+                  <Link
+                    className="btn-outline"
+                    href={`/p/${encodeURIComponent(p.slug || p.sku)}`}
+                  >
                     View
                   </Link>
-
                 </div>
               </div>
             </div>
@@ -119,8 +120,3 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
       <div className="mt-10">
         <Link className="link" href="/categories">
           ← Back to Categories
-        </Link>
-      </div>
-    </div>
-  );
-}
