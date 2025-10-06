@@ -1,39 +1,49 @@
 // app/api/contact/route.ts
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
-export const runtime = 'nodejs'; // if you use nodemailer or other Node libs
-export const dynamic = 'force-dynamic'; // avoid accidental caching
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET() {
-  // So opening /api/contact in a browser shows a helpful message
-  return NextResponse.json({ ok: true, message: 'Submit via POST.' });
+  // Visiting the URL in a browser should succeed
+  return NextResponse.json({ ok: true, message: 'Submit contact form via POST.' });
 }
 
-export async function POST(req: Request) {
-  try {
-    const { name, email, message } = await req.json();
-
-    if (!name || !email || !message) {
-      return NextResponse.json({ ok: false, error: 'Missing fields' }, { status: 400 });
-    }
-
-    // TODO: send email / persist (e.g., nodemailer/Resend/Supabase)
-    // await sendMail({ name, email, message });
-
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error('contact POST error', err);
-    return NextResponse.json({ ok: false, error: 'Bad request' }, { status: 400 });
+export async function POST(req: NextRequest) {
+  // Require JSON
+  if (!req.headers.get('content-type')?.includes('application/json')) {
+    return NextResponse.json({ ok: false, error: 'Use JSON body' }, { status: 415 });
   }
+
+  let data: any;
+  try {
+    data = await req.json();
+  } catch {
+    return NextResponse.json({ ok: false, error: 'Invalid JSON' }, { status: 400 });
+  }
+
+  const { name, email, message } = data || {};
+  if (!name || !email || !message) {
+    return NextResponse.json(
+      { ok: false, error: 'Missing fields: name, email, message' },
+      { status: 400 }
+    );
+  }
+
+  // TODO: send email / persist (nodemailer, Resend, etc.)
+  // await sendMail({ name, email, message });
+
+  return NextResponse.json({ ok: true, received: { name, email, message } });
 }
 
-// Optional if you’ll call this from another origin:
-export async function OPTIONS() {
+// Optional CORS preflight (useful if posting from another origin)
+export function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     },
   });
