@@ -13,9 +13,7 @@ import AddToCartButton from '@/components/AddToCartButton';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export const metadata: Metadata = {
-  title: 'Category | Trucast Nigeria',
-};
+export const metadata: Metadata = { title: 'Category | Trucast Nigeria' };
 
 function NGN(n: number) {
   return new Intl.NumberFormat('en-NG', {
@@ -25,7 +23,6 @@ function NGN(n: number) {
   }).format(n);
 }
 
-// ensure absolute public path for images
 const imgSrc = (s?: string) =>
   !s ? '/products/placeholder.png' : /^(https?:)?\//.test(s) ? s : `/${s}`;
 
@@ -38,7 +35,9 @@ export default async function CategoryPage({
 
   return (
     <div className="container py-12">
-      <h1 className="text-3xl font-bold capitalize">{params.slug.replace(/-/g, ' ')}</h1>
+      <h1 className="text-3xl font-bold capitalize">
+        {params.slug.replace(/-/g, ' ')}
+      </h1>
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((p) => {
@@ -47,7 +46,10 @@ export default async function CategoryPage({
 
           return (
             <div key={p.sku} className="card p-5">
-              <Link href={`/p/${encodeURIComponent(p.slug || p.sku)}`} className="block">
+              <Link
+                href={`/p/${encodeURIComponent(p.slug || p.sku)}`}
+                className="block"
+              >
                 <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-zinc-100">
                   <Image
                     src={imgSrc(p.img)}
@@ -63,18 +65,26 @@ export default async function CategoryPage({
                     </span>
                   )}
                 </div>
+
                 <div className="mt-3">
                   <p className="font-semibold">{p.name}</p>
                   <p className="text-xs text-zinc-500">SKU: {p.sku}</p>
-                  <p className="mt-1 font-bold">{price ? NGN(price) : '₦0'}</p>
-                  <p className="mt-1 line-clamp-2 text-sm text-zinc-600">{p.desc}</p>
+                  <p className="mt-1 font-bold">
+                    {price !== undefined ? NGN(price) : '₦0'}
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-sm text-zinc-600">
+                    {p.desc}
+                  </p>
                 </div>
               </Link>
 
               <div className="mt-4 flex gap-3">
-                {/* Uses shared logic; auto-disables when out of stock */}
+                {/* This auto-disables + shows “Out of stock” when needed */}
                 <AddToCartButton product={p} />
-                <Link href={`/p/${encodeURIComponent(p.slug || p.sku)}`} className="btn btn-outline">
+                <Link
+                  href={`/p/${encodeURIComponent(p.slug || p.sku)}`}
+                  className="btn btn-outline"
+                >
                   View
                 </Link>
               </div>
