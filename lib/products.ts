@@ -689,7 +689,7 @@ Key features:
 Keywords: electrical fittings Nigeria, 13A wall socket Nigeria, s73 socket 13a double mf 1usb 1 type c neon grey.`,
     features: [ "Rugged, fire-retardant body for enhanced safety", "Smooth faceplate resists scratches and discoloration", "Shuttered outlets (where applicable) for added child safety", "Standard mounting for fast installation", "Matches S06 switches for a unified interior" ], priceNGN: 11578, img: "/images/products/TRC-SK-S73-2G-MF-USBA+TYPEC-NE.png", category: "sockets", slug: "s73-socket-13a-double-mf-1usb-1-type-c-neon-grey" },
   ,
-  { sku: "trc-comb-s73-13a+4a-kitchen", name: "S73 Wall socket | 13A socket with 45A Kitchen switch", desc: `S73 Wall socket | 13A socket with 45A Kitchen switch combines robust construction with everyday convenience for residential and commercial use. The body is built from high-grade, fire-retardant materials with a smooth, stain-resistant finish that keeps its look over time.
+  { sku: "TRC-COMB-S73-13A+4A-KITCHEN", name: "S73 Wall socket | 13A socket with 45A Kitchen switch", desc: `S73 Wall socket | 13A socket with 45A Kitchen switch combines robust construction with everyday convenience for residential and commercial use. The body is built from high-grade, fire-retardant materials with a smooth, stain-resistant finish that keeps its look over time.
 
 Engineered for safer connections and consistent contact pressure, it integrates seamlessly with standard wall boxes and pairs perfectly with the S06 switch range for a coordinated scheme.
 
@@ -701,7 +701,7 @@ Key features:
 - Matches S06 switches for a unified interior
 
 Keywords: electrical fittings Nigeria, 13A wall socket Nigeria, s73 wall socket 13a socket with 45a kitchen switch.`,
-    features: [ "Rugged, fire-retardant body for enhanced safety", "Smooth faceplate resists scratches and discoloration", "Shuttered outlets (where applicable) for added child safety", "Standard mounting for fast installation", "Matches S06 switches for a unified interior" ], priceNGN: 0, img: "/images/products/trc-comb-s73-13a+45a-kitchen.png", category: "sockets", slug: "s73-wall-socket-13a-socket-with-45a-kitchen-switch" },
+    features: [ "Rugged, fire-retardant body for enhanced safety", "Smooth faceplate resists scratches and discoloration", "Shuttered outlets (where applicable) for added child safety", "Standard mounting for fast installation", "Matches S06 switches for a unified interior" ], priceNGN: 0, img: "/images/products/TRC-COMB-S73-13A+4A-KITCHEN.png", category: "sockets", slug: "s73-wall-socket-13a-socket-with-45a-kitchen-switch" },
   ,
   { sku: "TRC-SW-S01-1G1W", name: "S01 Switch | 1G; 1W; White", desc: `S01 Switch | 1G; 1W; White — a premium wall switch from our S06 Series engineered for everyday reliability and a refined look. The smooth rocker delivers crisp tactile feedback, while the fire-retardant polycarbonate body stands up to heat and impact in demanding Nigerian conditions.
 
