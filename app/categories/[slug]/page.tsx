@@ -1,7 +1,7 @@
 // app/categories/[slug]/page.tsx
 import Link from 'next/link';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
+import nextDynamic from 'next/dynamic';
 import { byCategory, deriveStatus, displayPriceNGN } from '@/lib/products';
 import type { Product } from '@/lib/products';
 
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 // Load client component only on the client to avoid SSR crashes
-const AddToCartButton = dynamic(
+const AddToCartButton = nextDynamic(
   () => import('@/components/AddToCartButton'),
   { ssr: false, loading: () => <button className="btn" disabled>Loading…</button> }
 );
@@ -46,7 +46,6 @@ export default async function CategoryPage({ params }: { params: { slug: string 
             <div key={p.sku} className="card p-5">
               <Link href={`/p/${encodeURIComponent(p.slug || p.sku)}`} className="block">
                 <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-zinc-100">
-                  {/* no onError here; avoids RSC/SSR issues */}
                   <Image
                     src={imgSrc(p.img)}
                     alt={p.name}
@@ -64,15 +63,12 @@ export default async function CategoryPage({ params }: { params: { slug: string 
                 <div className="mt-3">
                   <p className="font-semibold">{p.name}</p>
                   <p className="text-xs text-zinc-500">SKU: {p.sku}</p>
-                  <p className="mt-1 font-bold">
-                    {price !== undefined ? NGN(price) : '₦0'}
-                  </p>
+                  <p className="mt-1 font-bold">{price !== undefined ? NGN(price) : '₦0'}</p>
                   <p className="mt-1 line-clamp-2 text-sm text-zinc-600">{p.desc}</p>
                 </div>
               </Link>
 
               <div className="mt-4 flex gap-3">
-                {/* Auto-disables & changes label when out of stock */}
                 <AddToCartButton product={p} />
                 <Link href={`/p/${encodeURIComponent(p.slug || p.sku)}`} className="btn btn-outline">
                   View
