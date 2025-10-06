@@ -1,13 +1,23 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
-import { NGN, isOutOfStock } from '@/lib/products'; // or wherever these live
 import type { Product } from '@/lib/products';
+import { isOutOfStock } from '@/lib/products';
+import AddToCartButton from './AddToCartButton';
+
+// local currency formatter
+function NGN(n: number) {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    maximumFractionDigits: 0,
+  }).format(n);
+}
 
 export default function ProductCard({ product }: { product: Product }) {
   const out = isOutOfStock(product);
 
-  // normalize + cache-bust proof src (and a graceful fallback)
+  // avoid stale image optimizer cache + provide fallback
   const initialSrc = useMemo(() => {
     const raw = product.img?.startsWith('/') ? product.img : `/${product.img ?? ''}`;
     return encodeURI(raw || '/products/placeholder.jpg');
@@ -25,10 +35,8 @@ export default function ProductCard({ product }: { product: Product }) {
             fill
             className="object-contain"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            // important: skip the optimizer to avoid stale 404s for newly-added files
             unoptimized
             onError={() => setImgSrc('/products/placeholder.jpg')}
-            priority={false}
           />
         </div>
       </Link>
@@ -46,8 +54,8 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="mt-2 line-clamp-2 text-sm text-zinc-600">{product.desc}</p>
 
         <div className="mt-4 flex gap-3">
-          {/* your AddToCartButton already auto-disables when out */}
-          <AddToCartButton product={product} className="btn" />
+          {/* AddToCartButton auto-disables when out of stock */}
+          <AddToCartButton product={product} />
           <Link href={`/p/${encodeURIComponent(product.slug || product.sku)}`} className="btn btn-outline">
             View
           </Link>
