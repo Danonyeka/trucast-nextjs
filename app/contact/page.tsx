@@ -2,10 +2,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-export const dynamic = 'force-dynamic'; // skip SSG to prevent prerender errors
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.trucast-ng.com';
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://www.trucast-ng.com';
 const PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '2347026921633';
 const WA_CHAT = `https://wa.me/${PHONE}?text=${encodeURIComponent(
   'Hello Trucast! I need assistance.'
@@ -52,7 +53,14 @@ const contactJsonLd = {
   },
 };
 
-export default function ContactPage() {
+export default function ContactPage({
+  searchParams,
+}: {
+  searchParams?: { sent?: string; error?: string };
+}) {
+  const sent = searchParams?.sent === '1';
+  const err = searchParams?.error;
+
   return (
     <>
       {/* SEO: JSON-LD */}
@@ -63,7 +71,28 @@ export default function ContactPage() {
 
       <section className="container py-12">
         <h1 className="text-3xl font-bold">Contact Trucast</h1>
-        <p className="mt-2 max-w-2xl text-zinc-600">We’d love to hear from you.</p>
+        <p className="mt-2 max-w-2xl text-zinc-600">
+          We’d love to hear from you.
+        </p>
+
+        {sent && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800"
+          >
+            Thanks! Your message was sent. We’ll get back to you shortly.
+          </div>
+        )}
+
+        {err && (
+          <div
+            role="alert"
+            className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800"
+          >
+            {decodeURIComponent(err)}
+          </div>
+        )}
 
         {/* Quick options */}
         <div className="mt-5 flex flex-wrap gap-3">
@@ -84,15 +113,25 @@ export default function ContactPage() {
           </Link>
         </div>
 
-        {/* Contact form (no JS; hook up to /api/contact later if desired) */}
+        {/* Minimal, no-JS form */}
         <form
           className="mt-8 grid max-w-2xl gap-5"
           method="post"
-          action="/api/contact" // optional: create this route to handle submits
+          action="/api/contact"
           noValidate
         >
-          {/* Honeypot for spam bots */}
-          <input type="text" name="website" className="hidden" tabIndex={-1} autoComplete="off" />
+          {/* Where the API should redirect on success */}
+          <input type="hidden" name="redirect" value="/contact?sent=1" />
+
+          {/* Honeypot (spam trap) */}
+          <input
+            type="text"
+            name="website"
+            className="hidden"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+          />
 
           <label className="block">
             <span className="text-sm font-medium text-zinc-800">Your name</span>
@@ -108,15 +147,28 @@ export default function ContactPage() {
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-zinc-800">Your email or phone</span>
+            <span className="text-sm font-medium text-zinc-800">Email</span>
             <input
-              type="text"
-              name="contact"
+              type="email"
+              name="email"
               required
               autoComplete="email"
               className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
-              placeholder="you@example.com or +234…"
+              placeholder="you@example.com"
               aria-required="true"
+            />
+          </label>
+
+          <label className="block">
+            <span className="text-sm font-medium text-zinc-800">
+              Phone (optional)
+            </span>
+            <input
+              type="tel"
+              name="phone"
+              autoComplete="tel"
+              className="mt-2 w-full rounded-xl border border-zinc-300 bg-white px-4 py-3 text-zinc-900 placeholder-zinc-400 shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
+              placeholder="+234…"
             />
           </label>
 
@@ -141,10 +193,14 @@ export default function ContactPage() {
             </button>
           </div>
 
-          {/* Fallback text */}
           <p className="text-xs text-zinc-500">
             Prefer WhatsApp?{' '}
-            <a className="text-emerald-700 underline" href={WA_CHAT} target="_blank" rel="noreferrer noopener">
+            <a
+              className="text-emerald-700 underline"
+              href={WA_CHAT}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
               Click here
             </a>{' '}
             for a quick chat.
