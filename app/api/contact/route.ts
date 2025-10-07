@@ -1,81 +1,65 @@
-import { NextResponse } from 'next/server';
+// app/api/contact/route.ts
+import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-export const runtime = 'nodejs';        // use Node runtime (NOT edge)
-export const dynamic = 'force-dynamic'; // avoid caching
+export const runtime = 'nodejs';        // ensure Node runtime (Resend SDK compatible)
+export const dynamic = 'force-dynamic'; // don't prerender
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-function isEmail(s: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+const CONTACT_TO =
+  process.env.CONTACT_TO || 'sales@trucast-ng.com';
+const CONTACT_FROM =
+  process.env.CONTACT_FROM || 'Trucast Website <noreply@trucast-ng.com>';
+
+function pick(s: unknown, max = 2000) {
+  return String(s ?? '').toString().trim().slice(0, max);
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const ct = req.headers.get('content-type') || '';
+    let name = '', contact = '', message = '';
 
-    // Support both classic forms and JSON
-    let name = '', contact = '', message = '', website = '';
     if (ct.includes('application/json')) {
       const body = await req.json();
-      name = String(body?.name ?? '');
-      contact = String(body?.contact ?? '');
-      message = String(body?.message ?? '');
-      website = String(body?.website ?? '');
+      name = pick(body.name);
+      contact = pick(body.contact);
+      message = pick(body.message, 8000);
     } else {
-      const fd = await req.formData();
-      name = String(fd.get('name') ?? '');
-      contact = String(fd.get('contact') ?? '');
-      message = String(fd.get('message') ?? '');
-      website = String(fd.get('website') ?? '');
+      const form = await req.formData();
+      // basic honeypot
+      if (pick(form.get('website'))) {
+        return NextResponse.json({ ok: true });
+      }
+      name = pick(form.get('name'));
+      contact = pick(form.get('contact'));
+      message = pick(form.get('message'), 8000);
     }
-
-    // Honeypot: real users leave this blank
-    if (website) return NextResponse.json({ ok: true });
 
     if (!name || !contact || !message) {
-      return NextResponse.json({ ok: false, error: 'Missing fields' }, { status: 422 });
+      return NextResponse.json({ ok: false, error: 'Missing fields' }, { status: 400 });
     }
 
-    const to = (process.env.CONTACT_TO || '').split(',').map(s => s.trim()).filter(Boolean);
-    if (!to.length) {
-      console.error('CONTACT_TO is not set');
-      return NextResponse.json({ ok: false, error: 'Server not configured' }, { status: 500 });
-    }
-
-    const from = process.env.CONTACT_FROM || 'Trucast <onboarding@resend.dev>';
-    const subject = `New contact form: ${name}`;
-    const reply_to = isEmail(contact) ? contact : undefined;
-
-    const text =
-`Name: ${name}
-Contact: ${contact}
-
-${message}
-
-IP: ${req.headers.get('x-forwarded-for') || 'unknown'}`;
-
-    const { data, error } = await resend.emails.send({
-      from,
-      to,
-      subject,
-      text,
-      reply_to,
+    const { error } = await resend.emails.send({
+      from: CONTACT_FROM,
+      to: CONTACT_TO.split(',').map(s => s.trim()).filter(Boolean),
+      subject: `New contact from ${name}`,
+      reply_to: contact,
+      text: `Name: ${name}\nContact: ${contact}\n\n${message}`,
     });
 
     if (error) {
-      console.error('Resend error:', error);
-      return NextResponse.json({ ok: false, error: String(error) }, { status: 500 });
+      return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
     }
 
-    // Redirect back with a success flag for a no-JS form UX
-    return NextResponse.redirect(new URL('/contact?sent=1', req.url), 303);
-  } catch (err: any) {
-    console.error('Contact POST error:', err);
-    return NextResponse.json({ ok: false, error: err?.message || 'Unknown error' }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: e?.message || 'Server error' }, { status: 500 });
   }
 }
 
+// Optional: a health-check
 export async function GET() {
-  return NextResponse.json({ ok: true, message: 'POST your form here.' });
+  return NextResponse.json({ ok: false, error: 'Use POST' }, { status: 400 });
 }
