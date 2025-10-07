@@ -2,11 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
+
+// Keep FROM as a verified sender in Resend (domain must be verified)
 const FROM = process.env.RESEND_FROM || 'Trucast <noreply@your-domain.com>';
-const TO =
+
+// Allow comma-separated recipients in CONTACT_TO/RESEND_TO
+const rawTo =
   process.env.CONTACT_TO ||
   process.env.RESEND_TO ||
   'sales@trucast-ng.com';
+const TO = rawTo.split(',').map(s => s.trim()).filter(Boolean);
 
 export async function POST(req: NextRequest) {
   const ct = req.headers.get('content-type') || '';
@@ -41,15 +46,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Missing fields' }, { status: 400 });
   }
 
+  // Only set replyTo if "contact" looks like an email
+  const isEmail = /\S+@\S+\.\S+/.test(contact);
+
   try {
     const send = await resend.emails.send({
       from: FROM,
-      to: [TO],
+      to: TO, // string[] is fine
       subject: `Contact form: ${name}`,
-      reply_to: contact,
+      replyTo: isEmail ? contact : undefined, // <-- fixed key (camelCase)
       text: `Name: ${name}\nContact: ${contact}\n\n${message}`,
     });
+
+    // Resend throws on failure; extra guard just in case
     if ((send as any)?.error) throw (send as any).error;
+
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     return NextResponse.json(
