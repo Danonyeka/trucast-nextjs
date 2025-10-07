@@ -1,64 +1,64 @@
-// app/api/contact/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-export const runtime = 'nodejs';        // ensure Node runtime (Resend SDK compatible)
-export const dynamic = 'force-dynamic'; // don't prerender
+const resend = new Resend(process.env.RESEND_API_KEY!);
+const FROM = process.env.RESEND_FROM || 'Trucast <noreply@your-domain.com>';
+const TO =
+  process.env.CONTACT_TO ||
+  process.env.RESEND_TO ||
+  'sales@trucast-ng.com';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const CONTACT_TO =
-  process.env.CONTACT_TO || 'sales@trucast-ng.com';
-const CONTACT_FROM =
-  process.env.CONTACT_FROM || 'Trucast Website <noreply@trucast-ng.com>';
-
-function pick(s: unknown, max = 2000) {
-  return String(s ?? '').toString().trim().slice(0, max);
-}
 export async function POST(req: NextRequest) {
+  const ct = req.headers.get('content-type') || '';
+  let data: Record<string, any> = {};
+
   try {
-    const ct = req.headers.get('content-type') || '';
-    let name = '', contact = '', message = '';
-
     if (ct.includes('application/json')) {
-      const body = await req.json();
-      name = pick(body.name);
-      contact = pick(body.contact);
-      message = pick(body.message, 8000);
-    } else {
+      data = await req.json();
+    } else if (ct.includes('application/x-www-form-urlencoded') || ct.includes('multipart/form-data')) {
       const form = await req.formData();
-      // basic honeypot
-      if (pick(form.get('website'))) {
-        return NextResponse.json({ ok: true });
-      }
-      name = pick(form.get('name'));
-      contact = pick(form.get('contact'));
-      message = pick(form.get('message'), 8000);
+      data = Object.fromEntries(form.entries());
+    } else {
+      return NextResponse.json(
+        { ok: false, error: 'Use JSON or form-encoded body' },
+        { status: 400 }
+      );
     }
+  } catch {
+    return NextResponse.json({ ok: false, error: 'Bad request' }, { status: 400 });
+  }
 
-    if (!name || !contact || !message) {
-      return NextResponse.json({ ok: false, error: 'Missing fields' }, { status: 400 });
-    }
+  // Honeypot field: bots fill this
+  if ((data.website ?? '').toString().trim()) {
+    return NextResponse.json({ ok: true });
+  }
 
-    const { error } = await resend.emails.send({
-      from: CONTACT_FROM,
-      to: CONTACT_TO.split(',').map(s => s.trim()).filter(Boolean),
-      subject: `New contact from ${name}`,
+  const name = (data.name ?? '').toString().trim();
+  const contact = (data.contact ?? '').toString().trim();
+  const message = (data.message ?? '').toString().trim();
+
+  if (!name || !contact || !message) {
+    return NextResponse.json({ ok: false, error: 'Missing fields' }, { status: 400 });
+  }
+
+  try {
+    const send = await resend.emails.send({
+      from: FROM,
+      to: [TO],
+      subject: `Contact form: ${name}`,
       reply_to: contact,
       text: `Name: ${name}\nContact: ${contact}\n\n${message}`,
     });
-
-    if (error) {
-      return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
-    }
-
+    if ((send as any)?.error) throw (send as any).error;
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || 'Server error' }, { status: 500 });
+  } catch (err: any) {
+    return NextResponse.json(
+      { ok: false, error: err?.message || 'Send failed' },
+      { status: 500 }
+    );
   }
 }
 
-// Optional: a health-check
 export async function GET() {
-  return NextResponse.json({ ok: false, error: 'Use POST' }, { status: 400 });
+  return NextResponse.json({ ok: false, error: 'Use POST with JSON or form data' });
 }
