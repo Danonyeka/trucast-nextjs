@@ -3,10 +3,10 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
-// Keep FROM as a verified sender in Resend (domain must be verified)
+// Use a VERIFIED sender in Resend (domain verified)
 const FROM = process.env.RESEND_FROM || 'Trucast <noreply@your-domain.com>';
 
-// Allow comma-separated recipients in CONTACT_TO/RESEND_TO
+// Allow comma-separated recipients in env
 const rawTo =
   process.env.CONTACT_TO ||
   process.env.RESEND_TO ||
@@ -20,7 +20,10 @@ export async function POST(req: NextRequest) {
   try {
     if (ct.includes('application/json')) {
       data = await req.json();
-    } else if (ct.includes('application/x-www-form-urlencoded') || ct.includes('multipart/form-data')) {
+    } else if (
+      ct.includes('application/x-www-form-urlencoded') ||
+      ct.includes('multipart/form-data')
+    ) {
       const form = await req.formData();
       data = Object.fromEntries(form.entries());
     } else {
@@ -33,43 +36,58 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Bad request' }, { status: 400 });
   }
 
-  // Honeypot field: bots fill this
+  // Honeypot: if filled, quietly accept
   if ((data.website ?? '').toString().trim()) {
-    return NextResponse.json({ ok: true });
+    return respondOk(data.redirect as string | undefined, 'Thanks!');
   }
 
+  // Map your form fields (name/email/phone/message)
   const name = (data.name ?? '').toString().trim();
-  const contact = (data.contact ?? '').toString().trim();
+  const email = (data.email ?? '').toString().trim();
+  const phone = (data.phone ?? '').toString().trim();
   const message = (data.message ?? '').toString().trim();
 
-  if (!name || !contact || !message) {
-    return NextResponse.json({ ok: false, error: 'Missing fields' }, { status: 400 });
+  // Compose a human "contact" line for the email body
+  const contactLine = [email, phone].filter(Boolean).join(' | ');
+
+  if (!name || (!email && !phone) || !message) {
+    return respondErr(
+      data.redirect as string | undefined,
+      'Missing fields',
+      400
+    );
   }
 
-  // Only set replyTo if "contact" looks like an email
-  const isEmail = /\S+@\S+\.\S+/.test(contact);
+  // Only set replyTo if we have an email
+  const isEmail = /\S+@\S+\.\S+/.test(email);
 
   try {
     const send = await resend.emails.send({
       from: FROM,
-      to: TO, // string[] is fine
+      to: TO,
       subject: `Contact form: ${name}`,
-      replyTo: isEmail ? contact : undefined, // <-- fixed key (camelCase)
-      text: `Name: ${name}\nContact: ${contact}\n\n${message}`,
+      replyTo: isEmail ? email : undefined,   // <-- correct camelCase key
+      text: `Name: ${name}\nContact: ${contactLine}\n\n${message}`,
     });
 
-    // Resend throws on failure; extra guard just in case
     if ((send as any)?.error) throw (send as any).error;
 
-    return NextResponse.json({ ok: true });
+    return respondOk(data.redirect as string | undefined);
   } catch (err: any) {
-    return NextResponse.json(
-      { ok: false, error: err?.message || 'Send failed' },
-      { status: 500 }
+    return respondErr(
+      data.redirect as string | undefined,
+      err?.message || 'Send failed',
+      500
     );
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ ok: false, error: 'Use POST with JSON or form data' });
+  // People opening the URL in a browser will see this (no body sent)
+  return NextResponse.json({
+    ok: false,
+    error: 'Use POST with form fields: name, email/phone, message.',
+  });
 }
+
+/** Helpers: redirect if ?redirect= is provided; otherwise JSON**
