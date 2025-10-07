@@ -15,7 +15,6 @@ const CONTACT_FROM =
 function pick(s: unknown, max = 2000) {
   return String(s ?? '').toString().trim().slice(0, max);
 }
-
 export async function POST(req: NextRequest) {
   try {
     const ct = req.headers.get('content-type') || '';
