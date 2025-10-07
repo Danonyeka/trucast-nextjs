@@ -1,67 +1,95 @@
 // app/api/contact/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
-function redirectOrJson(req: NextRequest, data: any, status = 200) {
-  const accept = req.headers.get('accept') || '';
-  // If a browser posted a form, it'll usually accept HTML — redirect for nicer UX
-  if (accept.includes('text/html')) {
-    const url = new URL('/contact?sent=1', req.url);
-    return NextResponse.redirect(url, { status: 303 });
-  }
-  return NextResponse.json(data, { status });
+function isForm(req: Request) {
+  const ct = req.headers.get('content-type') || '';
+  return (
+    ct.includes('application/x-www-form-urlencoded') ||
+    ct.includes('multipart/form-data')
+  );
 }
 
-export async function GET() {
-  return NextResponse.json({ ok: true, message: 'POST here with JSON or form data.' });
-}
-
-export async function POST(req: NextRequest) {
-  const ctype = req.headers.get('content-type') || '';
-  let name = '', email = '', message = '';
+export async function POST(req: Request) {
+  let name = '', email = '', phone = '', message = '', website = '', redirect = '';
 
   try {
-    if (ctype.includes('application/json')) {
-      const body = await req.json();
-      name = body?.name ?? '';
-      email = body?.email ?? '';
-      message = body?.message ?? '';
-    } else {
-      // Handles application/x-www-form-urlencoded and multipart/form-data
+    if (isForm(req)) {
       const fd = await req.formData();
-      name = String(fd.get('name') ?? '');
-      email = String(fd.get('email') ?? '');
-      message = String(fd.get('message') ?? '');
-      // Optional honeypot to block bots:
-      if (fd.get('website')) return redirectOrJson(req, { ok: true }); // silently ignore
+      name = String(fd.get('name') || '');
+      email = String(fd.get('email') || '');
+      phone = String(fd.get('phone') || '');
+      message = String(fd.get('message') || '');
+      website = String(fd.get('website') || '');
+      redirect = String(fd.get('redirect') || '/contact?sent=1');
+    } else {
+      const body = await req.json().catch(() => ({} as any));
+      name = body.name || '';
+      email = body.email || '';
+      phone = body.phone || '';
+      message = body.message || '';
+      website = body.website || '';
+      redirect = body.redirect || '/contact?sent=1';
     }
-  } catch {
-    return NextResponse.json({ ok: false, error: 'Invalid body' }, { status: 400 });
+
+    // Honeypot
+    if (website) {
+      return isForm(req)
+        ? NextResponse.redirect(new URL('/contact?sent=1', req.url), 303)
+        : NextResponse.json({ ok: true });
+    }
+
+    if (!name || !email || !message) {
+      if (isForm(req)) {
+        const params = new URLSearchParams({ error: 'Fill required fields' });
+        return NextResponse.redirect(new URL('/contact?' + params, req.url), 303);
+      }
+      return NextResponse.json({ ok: false, error: 'Missing fields' }, { status: 400 });
+    }
+
+    const TO = process.env.CONTACT_TO || 'sales@trucast-ng.com';
+    const FROM = process.env.CONTACT_FROM || 'no-reply@trucast-ng.com';
+    const API = process.env.RESEND_API_KEY;
+
+    // Send email (or log if key not set)
+    if (API) {
+      const { Resend } = await import('resend');
+      const resend = new Resend(API);
+      await resend.emails.send({
+        from: FROM,
+        to: TO,
+        reply_to: email,
+        subject: `New contact form — ${name}`,
+        text: `Name: ${name}
+Email: ${email}
+Phone: ${phone || '—'}
+
+Message:
+${message}
+`,
+      });
+    } else {
+      console.log('CONTACT FORM (no RESEND_API_KEY set):', {
+        name, email, phone, message,
+      });
+    }
+
+    if (isForm(req)) {
+      return NextResponse.redirect(new URL(redirect, req.url), 303);
+    }
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error('CONTACT_ERROR', err);
+    if (isForm(req)) {
+      const params = new URLSearchParams({ error: 'Something went wrong' });
+      return NextResponse.redirect(new URL('/contact?' + params, req.url), 303);
+    }
+    return NextResponse.json({ ok: false, error: 'Server error' }, { status: 500 });
   }
-
-  if (!name || !email || !message) {
-    return NextResponse.json(
-      { ok: false, error: 'Missing fields: name, email, message' },
-      { status: 400 }
-    );
-  }
-
-  // TODO: send an email / store in DB
-  // await sendEmail({ name, email, message });
-
-  return redirectOrJson(req, { ok: true, received: { name, email, message } });
 }
 
-export function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  });
+export function GET() {
+  return NextResponse.json(
+    { ok: false, error: 'Use POST with form or JSON body' },
+    { status: 405 }
+  );
 }
