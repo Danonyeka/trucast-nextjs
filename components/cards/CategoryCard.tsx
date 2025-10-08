@@ -1,4 +1,3 @@
-// components/cards/CategoryCard.tsx
 import Link from 'next/link';
 import SmartImage from '@/components/SmartImage';
 import type { StaticImageData } from 'next/image';
@@ -6,11 +5,11 @@ import type { StaticImageData } from 'next/image';
 type Props = {
   href: string;
   title: string;
-  image: StaticImageData | string;     // primary image
+  image: StaticImageData | string;       // primary image
   hoverImage?: StaticImageData | string; // optional alternate image shown on hover/focus
-  subtitle?: string;                   // optional small text under title
-  count?: number;                      // optional items count (e.g., 24 products)
-  badge?: string;                      // optional small badge (e.g., "New", "Sale")
+  subtitle?: string;                     // optional small text under title
+  count?: number;                        // optional items count (e.g., 24 products)
+  badge?: string;                        // optional small badge (e.g., "New", "Sale")
 };
 
 export default function CategoryCard({
@@ -26,6 +25,11 @@ export default function CategoryCard({
     typeof count === 'number'
       ? `${count} item${count === 1 ? '' : 's'}`
       : subtitle;
+
+  // Only treat hoverImage as present when it's a real, non-empty value
+  const hasHover =
+    (typeof hoverImage === 'string' && hoverImage.trim().length > 0) ||
+    (!!hoverImage && typeof hoverImage !== 'string');
 
   return (
     <Link
@@ -48,16 +52,18 @@ export default function CategoryCard({
           alt={title}
           fill
           sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
-          className={`object-cover transition-opacity duration-300 ${hoverImage ? 'opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0' : ''}`}
+          className={`object-cover transition-opacity duration-300 ${
+            hasHover ? 'opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0' : ''
+          }`}
           loading="lazy"
           quality={70}
           priority={false}
         />
 
-        {/* Hover/Fallback image (only rendered when provided) */}
-        {hoverImage && (
+        {/* Hover/Fallback image (only rendered when we truly have one) */}
+        {hasHover && (
           <SmartImage
-            src={hoverImage}
+            src={hoverImage as any}
             alt={`${title} alternate view`}
             fill
             sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
