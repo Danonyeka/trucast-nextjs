@@ -13,11 +13,11 @@ import CategoryCard from '@/components/cards/CategoryCard'
 // hero (slide 1 as static import for blur/LCP)
 import hero1 from '@/public/images/hero/hero-1.png'
 
-// category cover images
-import catSwitches   from '@/public/images/categories/switches.png'
-import catSockets    from '@/public/images/categories/sockets.png'
-import catSmartLocks from '@/public/images/categories/smart-locks.png'
-import catPanelLight from '@/public/images/categories/panel-light.png'
+// ✅ Removed static imports for category images
+// import catSwitches   from '@/public/images/categories/switches.png'
+// import catSockets    from '@/public/images/categories/sockets.png'
+// import catSmartLocks from '@/public/images/categories/smart-locks.png'
+// import catPanelLight from '@/public/images/categories/panel-light.png'
 
 function HeroSlider() {
   const slides: { src: StaticImageData | string; alt: string }[] = useMemo(() => ([
@@ -35,7 +35,7 @@ function HeroSlider() {
 
   const [i, setI] = useState(0)
   const [reduced, setReduced] = useState(false)
-  const [paused, setPaused] = useState(false) // NEW: pause on hover
+  const [paused, setPaused] = useState(false)
 
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)')
@@ -46,7 +46,7 @@ function HeroSlider() {
   }, [])
 
   useEffect(() => {
-    if (reduced || paused) return // respect reduced motion & pause state
+    if (reduced || paused) return
     const id = setInterval(() => setI((p) => (p + 1) % slides.length), 6000)
     return () => clearInterval(id)
   }, [reduced, paused, slides.length])
@@ -57,8 +57,8 @@ function HeroSlider() {
   return (
     <div
       className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-lg bg-white"
-      onMouseEnter={() => setPaused(true)}   // NEW: pause when hovered
-      onMouseLeave={() => setPaused(false)}  // NEW: resume when not hovered
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
     >
       {visible.map((idx) => {
         const s = slides[idx]
@@ -82,7 +82,6 @@ function HeroSlider() {
         )
       })}
 
-      {/* NEW: Prev / Next arrows */}
       <button
         type="button"
         aria-label="Previous slide"
@@ -123,11 +122,12 @@ function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default function HomeClient() {
+  // ✅ Use explicit string paths for category images
   const categories = [
-    { href: '/categories/switches',       title: 'Switches',            image: catSwitches },
-    { href: '/categories/sockets',        title: 'Sockets',             image: catSockets },
-    { href: '/categories/smart-lock',     title: 'Smart Locks',         image: catSmartLocks },
-    { href: '/categories/recessed-light', title: 'POP / Panel Lights',  image: catPanelLight },
+    { href: '/categories/switches',       title: 'Switches',           image: '/images/categories/switches.png' },
+    { href: '/categories/sockets',        title: 'Sockets',            image: '/images/categories/sockets.png' },
+    { href: '/categories/smart-locks',    title: 'Smart Locks',        image: '/images/categories/smart-locks.png' }, // slug fixed to plural
+    { href: '/categories/recessed-light', title: 'POP / Panel Lights', image: '/images/categories/panel-light.png' },
   ]
 
   const tel = (site as any).phone ?? '+2347026921633'
@@ -314,7 +314,6 @@ export default function HomeClient() {
                 We partner with builders, facility managers, and homeowners to deliver dependable products and support.
               </p>
 
-              {/* NEW: link to About page */}
               <p className="mt-3">
                 <Link href="/about" className="link inline-flex items-center text-sm font-medium" aria-label="Read more about Trucast">
                   <span aria-hidden className="mr-1">{'>>>'}</span>
