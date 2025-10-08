@@ -13,11 +13,7 @@ import CategoryCard from '@/components/cards/CategoryCard'
 // hero (slide 1 as static import for blur/LCP)
 import hero1 from '@/public/images/hero/hero-1.png'
 
-// ✅ Removed static imports for category images
-// import catSwitches   from '@/public/images/categories/switches.png'
-// import catSockets    from '@/public/images/categories/sockets.png'
-// import catSmartLocks from '@/public/images/categories/smart-locks.png'
-// import catPanelLight from '@/public/images/categories/panel-light.png'
+// (Important) Use string paths for category images to avoid StaticImageData issues
 
 function HeroSlider() {
   const slides: { src: StaticImageData | string; alt: string }[] = useMemo(() => ([
@@ -122,7 +118,7 @@ function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default function HomeClient() {
-  // ✅ Use explicit string paths for category images
+  // Use explicit string paths for category images
   const categories = [
     { href: '/categories/switches',       title: 'Switches',           image: '/images/categories/switches.png' },
     { href: '/categories/sockets',        title: 'Sockets',            image: '/images/categories/sockets.png' },
@@ -134,7 +130,7 @@ export default function HomeClient() {
 
   return (
     <>
-      {/* JSON-LD (use canonical www domain for consistency) */}
+      {/* JSON-LD */}
       <OrganizationLd
         name={site.legalName}
         url="https://www.trucast-ng.com"
