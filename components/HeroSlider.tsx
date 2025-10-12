@@ -1,14 +1,8 @@
-// app/HomeClient.tsx (CLIENT COMPONENT)
+// components/HeroSlider.tsx (CLIENT COMPONENT)
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
+import { useEffect, useMemo, useState, type SVGProps } from 'react'
 import Image, { type StaticImageData } from 'next/image'
-import { OrganizationLd, LocalBusinessLd } from '@/components/seo/JsonLd'
-import { site } from '@/lib/site'
-import { track } from '@/lib/analytics'
-
-import CategoryCard from '@/components/cards/CategoryCard'
 
 // hero (slide 1 as static import for blur/LCP)
 import hero1 from '@/public/images/hero/hero-1@1920.webp'
@@ -109,4 +103,18 @@ function HeroSlider() {
   )
 }
 
-function CheckIcon(props: React.SVGProps<SVGSVGEle
+function CheckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden="true"
+      className="h-4 w-4 text-brand"
+      {...props}
+    >
+      <path d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.6a1 1 0 0 1 1.4-1.4l3.3 3.3 6.8-6.8a1 1 0 0 1 1.4 0Z" />
+    </svg>
+  )
+}
+
+export default HeroSlider
