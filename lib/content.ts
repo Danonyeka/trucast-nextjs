@@ -83,24 +83,56 @@ Talk to our sales team for a tailored quote.`,
     // cover: '/images/blog/bulk-pricing.jpg',
   },
   {
-    slug: 'why-trucast-switches',
-    title: 'Why Electricians Prefer Trucast Switches & Sockets',
-    excerpt:
-      'Safe, durable, reliable — discover what makes our fittings a favorite among installers.',
-    content: `From materials to design, **Trucast** switches and sockets are engineered
-for safety and longevity. Certified and trusted nationwide.
+  slug: 'why-trucast-switches',
+  title: 'Why Electricians Prefer Trucast Switches & Sockets',
+  excerpt:
+    'Electricians across Nigeria trust Trucast for reliability, safety, and modern design — see why our switches and sockets stand out.',
+  content: `
+From materials to design, **Trucast** switches and sockets are engineered with electricians in mind — combining safety, reliability, and style. Every product is crafted to meet international standards and certified for use across Nigeria, making Trucast one of the most trusted names in electrical fittings.
 
-- Robust internal components  
-- Clean, modern styling  
-- Excellent value`,
-    body:
-      `From materials to design, Trucast switches and sockets are engineered for safety and longevity. Certified and trusted nationwide.`,
-    date: '2025-07-10',
-    updated: '2025-07-15', // optional
-    author: 'Trucast Team',
-    tags: ['product', 'quality'],
-    // cover: '/images/blog/why-switches.jpg',
-  },
+Electricians know that high-quality electrical accessories make their work easier, faster, and safer. That’s why Trucast switches and sockets are becoming the top choice on residential, commercial, and industrial projects nationwide.
+
+---
+
+### 1. Robust Internal Components  
+Behind the clean exterior is superior engineering. Trucast switches and sockets are built with **high-conductivity copper contacts**, **flame-retardant housings**, and **precision-molded parts** that ensure firm connections and consistent performance.  
+Once installed, these fittings deliver long-term reliability even in demanding conditions.
+
+---
+
+### 2. Clean, Modern Styling  
+Beyond performance, Trucast products bring aesthetic appeal to any space. The sleek, minimalist design blends seamlessly with both **modern and traditional interiors**, giving customers a refined finish that enhances the overall look of their homes and offices.  
+Available in **matte white, brushed silver, and glossy finishes**, the range offers design flexibility for architects and interior designers.
+
+---
+
+### 3. Certified for Safety  
+All Trucast switches and sockets undergo **rigorous quality testing** — from electrical endurance to insulation resistance — before they reach the market. Each product meets **Nigerian and international safety standards**, ensuring peace of mind for installers and end users alike.  
+This commitment to quality reduces rework, callbacks, and site failures — saving electricians both time and reputation.
+
+---
+
+### 4. Excellent Value for Professionals and Homeowners  
+Trucast combines premium quality with affordability, giving electricians and project owners excellent value for money. Bulk orders and wholesale options help contractors manage costs without compromising on performance or appearance.  
+Whether wiring a new development or upgrading an existing property, Trucast provides the balance of **durability, beauty, and cost-efficiency** that professionals demand.
+
+---
+
+### 5. Trusted Nationwide  
+From Lagos to Port Harcourt, Abuja to Enugu, Trucast products are distributed through authorized dealers and online platforms. Our growing reputation is built on consistent quality, responsive support, and a genuine understanding of what electricians need in the field.
+
+---
+
+### The Trucast Promise  
+At Trucast Nigeria Limited, we believe in empowering electricians with products that make their work safer, smarter, and more rewarding. Every switch, socket, and fitting reflects our promise of **quality you can trust — for years to come.**
+`,
+  body: `Trucast switches and sockets are trusted by electricians across Nigeria for their reliability, safety, and style. Built with high-quality materials and certified to international standards, they deliver lasting performance and value on every project.`,
+  date: '2025-07-10',
+  updated: '2025-07-15',
+  author: 'Trucast Team',
+  tags: ['product', 'quality'],
+  cover: '/images/blog/why-switches.jpg',
+}
     {
     slug: "smart-lighting-nigeria",
     title: "Transforming Nigerian Homes and Businesses with Smart Lighting",
