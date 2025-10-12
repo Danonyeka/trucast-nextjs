@@ -32,8 +32,6 @@ export default function HeroSlider() {
   const prev = () => go(i - 1);
 
   useEffect(() => {
-    if (!slides.length) return;
-
     if (typeof window !== 'undefined') {
       reducedMotion.current =
         window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches || false;
@@ -48,31 +46,17 @@ export default function HeroSlider() {
         }
       }, SLIDE_INTERVAL);
     };
-
-    const stop = () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-
-    const onVisibility = () => {
-      if (document.visibilityState === 'hidden') stop();
-      else start();
-    };
+    const stop = () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
+    const onVisibility = () => { if (document.visibilityState === 'hidden') stop(); else start(); };
 
     start();
     document.addEventListener('visibilitychange', onVisibility);
-    return () => {
-      stop();
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
+    return () => { stop(); document.removeEventListener('visibilitychange', onVisibility); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slides.length]);
 
   const onMouseEnter = () => { hoveringRef.current = true; };
   const onMouseLeave = () => { hoveringRef.current = false; };
-
   const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
   const onTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current == null) return;
@@ -87,8 +71,8 @@ export default function HeroSlider() {
   };
 
   return (
-    // Constrain width + center on page
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    // ✅ Centered container + hard height cap
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
       <section
         role="region"
         aria-label="Homepage promotions"
@@ -101,10 +85,8 @@ export default function HeroSlider() {
         className="
           relative overflow-hidden rounded-2xl shadow-lg outline-none
           w-full
-          aspect-[16/9]        /* keeps a clean ratio on mobile */
-          sm:aspect-[16/8]
-          lg:aspect-[16/7]
-          xl:aspect-[16/6.5]
+          h-[42vh] sm:h-[46vh] md:h-[50vh] lg:h-[54vh] xl:h-[56vh]
+          max-h-[640px] min-h-[220px]
         "
       >
         {/* Slides */}
@@ -121,7 +103,7 @@ export default function HeroSlider() {
                 src={s.src}
                 alt={s.alt}
                 fill
-                sizes="100vw"
+                sizes="(max-width: 1024px) 100vw, 1200px"
                 priority={idx < 2}
                 className="object-cover"
               />
@@ -148,7 +130,7 @@ export default function HeroSlider() {
           ›
         </button>
 
-        {/* Navigation dots */}
+        {/* Dots */}
         <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
           {slides.map((_, idx) => (
             <button
