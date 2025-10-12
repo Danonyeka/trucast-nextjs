@@ -10,23 +10,25 @@ import { track } from '@/lib/analytics'
 
 import CategoryCard from '@/components/cards/CategoryCard'
 
-// hero (slide 1 as static import for blur/LCP)
-import hero1 from '@/public/images/hero/hero-1.png'
+// ✅ Use static import of the main (slide 1) WEBP for LCP + built-in blur placeholder
+//    Make sure /public/images/hero/hero-1@3840.webp exists (from the optimized pack)
+import hero1 from '@/public/images/hero/hero-1@3840.webp'
 
 // (Important) Use string paths for category images to avoid StaticImageData issues
 
 function HeroSlider() {
+  // ✅ Use the 3840px master WEBP for each slide; Next.js will downscale via ?w=&q=75
   const slides: { src: StaticImageData | string; alt: string }[] = useMemo(() => ([
-    { src: hero1, alt: 'Premium Trucast switches' },
-    { src: '/images/hero/hero-2.png', alt: 'Sockets and panels' },
-    { src: '/images/hero/hero-3.png', alt: 'Discount promotion' },
-    { src: '/images/hero/hero-4.png', alt: 'Wall switches showcase' },
-    { src: '/images/hero/hero-5.png', alt: 'Panel lights and bulbs' },
-    { src: '/images/hero/hero-6.png', alt: 'POP panel lights' },
-    { src: '/images/hero/hero-7.png', alt: 'LED strips and bulbs' },
-    { src: '/images/hero/hero-8.png', alt: 'Special sales promotion' },
-    { src: '/images/hero/hero-9.png', alt: 'SON certified quality' },
-    { src: '/images/hero/hero-10.png', alt: 'Trucast smart devices' },
+    { src: hero1,                               alt: 'Premium Trucast switches' },          // static import = blur + priority
+    { src: '/images/hero/hero-2@3840.webp',     alt: 'Sockets and panels' },
+    { src: '/images/hero/hero-3@3840.webp',     alt: 'Discount promotion' },
+    { src: '/images/hero/hero-4@3840.webp',     alt: 'Wall switches showcase' },
+    { src: '/images/hero/hero-5@3840.webp',     alt: 'Panel lights and bulbs' },
+    { src: '/images/hero/hero-6@3840.webp',     alt: 'POP panel lights' },
+    { src: '/images/hero/hero-7@3840.webp',     alt: 'LED strips and bulbs' },
+    { src: '/images/hero/hero-8@3840.webp',     alt: 'Special sales promotion' },
+    { src: '/images/hero/hero-9@3840.webp',     alt: 'SON certified quality' },
+    { src: '/images/hero/hero-10@3840.webp',    alt: 'Trucast smart devices' },
   ]), [])
 
   const [i, setI] = useState(0)
@@ -48,7 +50,7 @@ function HeroSlider() {
   }, [reduced, paused, slides.length])
 
   const next = (i + 1) % slides.length
-  const visible = [i, next]
+  const visible = [i, next] // render current + next for smooth fade
 
   return (
     <div
@@ -56,13 +58,14 @@ function HeroSlider() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {visible.map((idx) => {
-        const s = slides[idx]
-        const isActive = idx === i
+      {visible.map((slideIdx) => {
+        const s = slides[slideIdx]
+        const isActive = slideIdx === i
+        const isFirstSlide = slideIdx === 0 // ✅ only the very first slide gets priority for LCP
 
         return (
           <div
-            key={`${idx}-${typeof s.src === 'string' ? s.src : 'static'}`}
+            key={`${slideIdx}-${typeof s.src === 'string' ? s.src : 'static'}`}
             className={`absolute inset-0 transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`}
           >
             <Image
@@ -70,9 +73,15 @@ function HeroSlider() {
               alt={s.alt}
               fill
               className="object-cover"
+              // Full-bleed hero: allow browser to request only what it needs.
               sizes="100vw"
-              quality={75}
-              {...(idx === 0 ? { priority: true, placeholder: 'blur' as const } : { loading: 'lazy' })}
+              // Keep default q=75; Next.js will emit modern formats (if enabled in next.config.js).
+              // quality={75}
+              // ✅ LCP: only the first slide should be priority + blur
+              {...(isFirstSlide
+                ? { priority: true, placeholder: 'blur' as const }
+                : { loading: 'lazy' as const })}
+              decoding="async"
             />
           </div>
         )
