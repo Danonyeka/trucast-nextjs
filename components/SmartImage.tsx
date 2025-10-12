@@ -13,7 +13,7 @@ function safeDecode(s: string) {
 
 function normalizeProductImagePath(src: string): string {
   const dir = '/images/products/';
-  if (!src || typeof src !== 'string') return src;
+  if (!src || typeof src !== 'string') return src as unknown as string;
   if (!src.startsWith(dir)) return src;
 
   // Split query/hash so we only normalize the filename itself
@@ -51,13 +51,10 @@ export default function SmartImage(props: ImageProps) {
       ? resolvedSrc
       : '/og.jpg';
 
-  const isLocal = typeof safeSrc === 'string' && safeSrc.startsWith('/');
-
   return (
     <Image
-      // local /public files → serve directly, no optimizer
-      unoptimized={isLocal}
-      // provide a default sizes when using `fill`
+      // ✅ Let Next.js optimize local images (no `unoptimized` override)
+      // Provide a default sizes when using `fill`
       sizes={('fill' in rest && (rest as any).fill && !sizes) ? '100vw' : sizes}
       src={safeSrc}
       alt={alt || 'image'}
