@@ -82,7 +82,7 @@ Talk to our sales team for a tailored quote.`,
     tags: ['promotions', 'pricing'],
     // cover: '/images/blog/bulk-pricing.jpg',
   },
-  // ...above items
+// ...previous posts above
 
 {
   slug: 'why-trucast-switches',
@@ -135,44 +135,58 @@ At Trucast Nigeria Limited, we believe in empowering electricians with products 
   author: 'Trucast Team',
   tags: ['product', 'quality'],
   cover: '/images/blog/why-switches.jpg',
-}, // <— add this comma
+},
 {
   slug: 'smart-lighting-nigeria',
   title: 'Transforming Nigerian Homes and Businesses with Smart Lighting',
   excerpt:
     'Discover how Trucast’s smart lighting solutions save energy, enhance comfort, and modernize spaces.',
-  // ...rest of this post
-}
+  content: `
+**Smart lighting** is changing how Nigerians live and work — delivering lower energy bills, better comfort, and modern style.
 
-    {
-    slug: "smart-lighting-nigeria",
-    title: "Transforming Nigerian Homes and Businesses with Smart Lighting",
-    excerpt:
-      "Discover how Trucast’s smart lighting solutions save energy, enhance comfort, and bring modern style to Nigerian spaces.",
-    content:
-      "Trucast Nigeria Limited is redefining home and business environments with premium smart lighting and electrical accessories. From energy efficiency to convenience, smart lighting is shaping the future of modern living in Nigeria.",
-    body: `
-In today’s fast-paced world, lighting is no longer just about brightness — it’s about creating comfort, efficiency, and style. At **Trucast Nigeria Limited**, we believe every Nigerian home and business deserves access to world-class lighting and electrical solutions.
+---
 
-### Why Smart Lighting Matters
-Smart lighting allows you to control your lights with ease — from your smartphone, a remote, or even voice assistants. This means you can set the right mood, save energy, and enhance security with just a tap or a voice command.
+### Why Smart Lighting?
+- **Energy Savings:** LEDs and sensors reduce waste and cut monthly costs.  
+- **Convenience:** Control lights via app, remote, or voice assistants.  
+- **Security:** Schedule scenes and simulate occupancy when away.  
+- **Ambience:** Dimmable and tunable-white options set the perfect mood.
 
-### Benefits of Smart Lighting
-- **Energy Savings:** LED smart bulbs and panels use less power, helping reduce electricity bills.
-- **Convenience:** Control lighting from anywhere — home, office, or on the go.
-- **Security:** Program lights to turn on/off automatically, giving the impression of occupancy when away.
-- **Style & Ambience:** From warm to cool tones, tailor the feel of your space.
+---
 
-### Trucast’s Promise
-We’re committed to **reliable, affordable, and stylish** solutions for Nigeria’s growing demand for modern living. Whether you’re a homeowner, facility manager, or builder, our range of smart devices, switches, and LED lighting is designed to meet your needs.
+### Trucast Solutions
+- **LED Bulbs & Panels:** High lumen-per-watt, long lifespan.  
+- **Recessed Downlights:** Clean ceilings, smooth dimming.  
+- **Motion Sensors & Smart Switches:** Automation without rewiring your whole home.  
+- **Smart Plugs:** Make legacy lamps and devices “smart” instantly.
 
-**Bulk buyers save up to 20%**. Reach out to the Trucast Team for wholesale pricing.
+---
+
+### Where It Fits Best
+Homes, offices, hotels, retail, schools — anywhere lighting impacts comfort and productivity.
+
+---
+
+### Getting Started
+1. Begin with high-usage areas (living room, lobby, corridors).  
+2. Add sensors and smart switches for automation.  
+3. Use scenes (e.g., *Work*, *Relax*, *Night*) for one-tap control.
+
+---
+
+### The Trucast Advantage
+Quality components, local support, and fair pricing — all backed by our nationwide distribution.
 `,
-    date: "2025-10-01",
-    updated: "2025-10-01",
-    author: "Trucast Team",
-    tags: ["Smart Lighting", "Energy Savings", "Home Automation", "LED Solutions", "Nigeria"],
-  },
+  body:
+    `Trucast smart lighting delivers energy efficiency, convenience, and modern style for homes and businesses in Nigeria. From LED panels and recessed downlights to motion sensors and smart switches, our solutions make spaces smarter and more comfortable.`,
+  date: '2025-07-01',
+  author: 'Trucast Team',
+  tags: ['product', 'smart-lighting'],
+  cover: '/images/blog/smart-lighting.jpg',
+},
+
+// ...next posts below
+
   {
     slug: "smart-switches-nigeria",
     title: "Smart Switches and Sockets — Modern Control for Every Nigerian Home",
