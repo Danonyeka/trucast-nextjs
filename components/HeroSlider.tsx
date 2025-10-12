@@ -8,6 +8,7 @@ type Slide = { src: string; alt: string; href?: string };
 const SLIDE_INTERVAL = 6000; // ms
 
 export default function HeroSlider() {
+  // Files in /public/images/hero
   const slides: Slide[] = [
     { src: '/images/hero/hero-1@1920.webp',  alt: 'Premium Trucast switches' },
     { src: '/images/hero/hero-2@1920.webp',  alt: 'Sockets and panels' },
@@ -27,7 +28,7 @@ export default function HeroSlider() {
   const touchStartX = useRef<number | null>(null);
   const reducedMotion = useRef(false);
 
-  const go = (next: number) => setI((p) => (next + slides.length) % slides.length);
+  const go = (next: number) => setI(p => (next + slides.length) % slides.length);
   const next = () => go(i + 1);
   const prev = () => go(i - 1);
 
@@ -44,34 +45,22 @@ export default function HeroSlider() {
       stop();
       timerRef.current = setInterval(() => {
         if (!hoveringRef.current && document.visibilityState === 'visible') {
-          setI((p) => (p + 1) % slides.length);
+          setI(p => (p + 1) % slides.length);
         }
       }, SLIDE_INTERVAL);
     };
-
-    const stop = () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-
-    const onVisibility = () => {
-      if (document.visibilityState === 'hidden') stop();
-      else start();
-    };
+    const stop = () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
+    const onVisibility = () => { if (document.visibilityState === 'hidden') stop(); else start(); };
 
     start();
     document.addEventListener('visibilitychange', onVisibility);
-    return () => {
-      stop();
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
+    return () => { stop(); document.removeEventListener('visibilitychange', onVisibility); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slides.length]);
 
   const onMouseEnter = () => { hoveringRef.current = true; };
   const onMouseLeave = () => { hoveringRef.current = false; };
+
   const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
   const onTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current == null) return;
@@ -80,6 +69,7 @@ export default function HeroSlider() {
     if (Math.abs(delta) < 50) return;
     if (delta < 0) next(); else prev();
   };
+
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
@@ -97,6 +87,7 @@ export default function HeroSlider() {
       onTouchEnd={onTouchEnd}
       className="relative aspect-[16/9] overflow-hidden rounded-2xl shadow-lg outline-none"
     >
+      {/* Slides */}
       <div className="relative h-full w-full">
         {slides.map((s, idx) => (
           <div
@@ -111,8 +102,7 @@ export default function HeroSlider() {
               alt={s.alt}
               fill
               sizes="100vw"
-              // Preload first two to verify they both render
-              priority={idx < 2}
+              priority={idx < 2}          {/* preload first two to confirm slide 2 loads */}
               className="object-cover"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
@@ -120,6 +110,7 @@ export default function HeroSlider() {
         ))}
       </div>
 
+      {/* Prev / Next arrows */}
       <button
         type="button"
         aria-label="Previous slide"
@@ -137,6 +128,7 @@ export default function HeroSlider() {
         ›
       </button>
 
+      {/* Navigation dots */}
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
         {slides.map((_, idx) => (
           <button
