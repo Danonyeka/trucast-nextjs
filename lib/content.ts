@@ -82,7 +82,9 @@ Talk to our sales team for a tailored quote.`,
     tags: ['promotions', 'pricing'],
     // cover: '/images/blog/bulk-pricing.jpg',
   },
-  {
+  // ...above items
+
+{
   slug: 'why-trucast-switches',
   title: 'Why Electricians Prefer Trucast Switches & Sockets',
   excerpt:
@@ -126,13 +128,22 @@ From Lagos to Port Harcourt, Abuja to Enugu, Trucast products are distributed th
 ### The Trucast Promise  
 At Trucast Nigeria Limited, we believe in empowering electricians with products that make their work safer, smarter, and more rewarding. Every switch, socket, and fitting reflects our promise of **quality you can trust — for years to come.**
 `,
-  body: `Trucast switches and sockets are trusted by electricians across Nigeria for their reliability, safety, and style. Built with high-quality materials and certified to international standards, they deliver lasting performance and value on every project.`,
+  body:
+    `Trucast switches and sockets are trusted by electricians across Nigeria for their reliability, safety, and style. Built with high-quality materials and certified to international standards, they deliver lasting performance and value on every project.`,
   date: '2025-07-10',
   updated: '2025-07-15',
   author: 'Trucast Team',
   tags: ['product', 'quality'],
   cover: '/images/blog/why-switches.jpg',
+}, // <— add this comma
+{
+  slug: 'smart-lighting-nigeria',
+  title: 'Transforming Nigerian Homes and Businesses with Smart Lighting',
+  excerpt:
+    'Discover how Trucast’s smart lighting solutions save energy, enhance comfort, and modernize spaces.',
+  // ...rest of this post
 }
+
     {
     slug: "smart-lighting-nigeria",
     title: "Transforming Nigerian Homes and Businesses with Smart Lighting",
