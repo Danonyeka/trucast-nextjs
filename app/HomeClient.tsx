@@ -10,25 +10,22 @@ import { track } from '@/lib/analytics'
 
 import CategoryCard from '@/components/cards/CategoryCard'
 
-// ✅ Use static import of the main (slide 1) WEBP for LCP + built-in blur placeholder
-//    Make sure /public/images/hero/hero-1@3840.webp exists (from the optimized pack)
-import hero1 from '@/public/images/hero/hero-1@3840.webp'
-
-// (Important) Use string paths for category images to avoid StaticImageData issues
+// ✅ LCP slide: static-import the 1920px WEBP (present in your repo)
+import hero1 from '@/public/images/hero/hero-1@1920.webp'
 
 function HeroSlider() {
-  // ✅ Use the 3840px master WEBP for each slide; Next.js will downscale via ?w=&q=75
+  // ✅ Point slides at the @1920.webp masters you uploaded
   const slides: { src: StaticImageData | string; alt: string }[] = useMemo(() => ([
-    { src: hero1,                               alt: 'Premium Trucast switches' },          // static import = blur + priority
-    { src: '/images/hero/hero-2@3840.webp',     alt: 'Sockets and panels' },
-    { src: '/images/hero/hero-3@3840.webp',     alt: 'Discount promotion' },
-    { src: '/images/hero/hero-4@3840.webp',     alt: 'Wall switches showcase' },
-    { src: '/images/hero/hero-5@3840.webp',     alt: 'Panel lights and bulbs' },
-    { src: '/images/hero/hero-6@3840.webp',     alt: 'POP panel lights' },
-    { src: '/images/hero/hero-7@3840.webp',     alt: 'LED strips and bulbs' },
-    { src: '/images/hero/hero-8@3840.webp',     alt: 'Special sales promotion' },
-    { src: '/images/hero/hero-9@3840.webp',     alt: 'SON certified quality' },
-    { src: '/images/hero/hero-10@3840.webp',    alt: 'Trucast smart devices' },
+    { src: hero1,                             alt: 'Premium Trucast switches' }, // static import = blur + priority
+    { src: '/images/hero/hero-2@1920.webp',   alt: 'Sockets and panels' },
+    { src: '/images/hero/hero-3@1920.webp',   alt: 'Discount promotion' },
+    { src: '/images/hero/hero-4@1920.webp',   alt: 'Wall switches showcase' },
+    { src: '/images/hero/hero-5@1920.webp',   alt: 'Panel lights and bulbs' },
+    { src: '/images/hero/hero-6@1920.webp',   alt: 'POP panel lights' },
+    { src: '/images/hero/hero-7@1920.webp',   alt: 'LED strips and bulbs' },
+    { src: '/images/hero/hero-8@1920.webp',   alt: 'Special sales promotion' },
+    { src: '/images/hero/hero-9@1920.webp',   alt: 'SON certified quality' },
+    { src: '/images/hero/hero-10@1920.webp',  alt: 'Trucast smart devices' },
   ]), [])
 
   const [i, setI] = useState(0)
@@ -50,7 +47,7 @@ function HeroSlider() {
   }, [reduced, paused, slides.length])
 
   const next = (i + 1) % slides.length
-  const visible = [i, next] // render current + next for smooth fade
+  const visible = [i, next]
 
   return (
     <div
@@ -58,14 +55,14 @@ function HeroSlider() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {visible.map((slideIdx) => {
-        const s = slides[slideIdx]
-        const isActive = slideIdx === i
-        const isFirstSlide = slideIdx === 0 // ✅ only the very first slide gets priority for LCP
+      {visible.map((idx) => {
+        const s = slides[idx]
+        const isActive = idx === i
+        const isFirstSlide = idx === 0
 
         return (
           <div
-            key={`${slideIdx}-${typeof s.src === 'string' ? s.src : 'static'}`}
+            key={`${idx}-${typeof s.src === 'string' ? s.src : 'static'}`}
             className={`absolute inset-0 transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`}
           >
             <Image
@@ -73,11 +70,7 @@ function HeroSlider() {
               alt={s.alt}
               fill
               className="object-cover"
-              // Full-bleed hero: allow browser to request only what it needs.
-              sizes="100vw"
-              // Keep default q=75; Next.js will emit modern formats (if enabled in next.config.js).
-              // quality={75}
-              // ✅ LCP: only the first slide should be priority + blur
+              sizes="100vw"            // full-bleed hero; let Next.js pick the right width
               {...(isFirstSlide
                 ? { priority: true, placeholder: 'blur' as const }
                 : { loading: 'lazy' as const })}
@@ -127,11 +120,10 @@ function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default function HomeClient() {
-  // Use explicit string paths for category images
   const categories = [
     { href: '/categories/switches',       title: 'Switches',           image: '/images/categories/switches.png' },
     { href: '/categories/sockets',        title: 'Sockets',            image: '/images/categories/sockets.png' },
-    { href: '/categories/smart-locks',    title: 'Smart Locks',        image: '/images/categories/smart-locks.png' }, // slug fixed to plural
+    { href: '/categories/smart-locks',    title: 'Smart Locks',        image: '/images/categories/smart-locks.png' },
     { href: '/categories/recessed-light', title: 'POP / Panel Lights', image: '/images/categories/panel-light.png' },
   ]
 
@@ -140,12 +132,7 @@ export default function HomeClient() {
   return (
     <>
       {/* JSON-LD */}
-      <OrganizationLd
-        name={site.legalName}
-        url="https://www.trucast-ng.com"
-        logo="/og.jpg"
-        sameAs={[]}
-      />
+      <OrganizationLd name={site.legalName} url="https://www.trucast-ng.com" logo="/og.jpg" sameAs={[]} />
       <LocalBusinessLd
         name={site.legalName}
         url="https://www.trucast-ng.com"
@@ -171,29 +158,14 @@ export default function HomeClient() {
                 Retail and <strong>wholesale</strong> support with fast nationwide fulfillment.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/categories" className="btn-primary" onClick={() => track('shop_now_click', { place: 'hero' })}>
-                  Shop Now
-                </Link>
-                <Link href="/wholesale" className="btn-outline" onClick={() => track('wholesale_enquiry_click', { place: 'hero' })}>
-                  Wholesale &amp; Bulk
-                </Link>
-                <Link href="/contact" className="btn-outline" onClick={() => track('contact_sales_click', { place: 'hero' })}>
-                  Contact Sales
-                </Link>
+                <Link href="/categories" className="btn-primary" onClick={() => track('shop_now_click', { place: 'hero' })}>Shop Now</Link>
+                <Link href="/wholesale" className="btn-outline" onClick={() => track('wholesale_enquiry_click', { place: 'hero' })}>Wholesale &amp; Bulk</Link>
+                <Link href="/contact" className="btn-outline" onClick={() => track('contact_sales_click', { place: 'hero' })}>Contact Sales</Link>
               </div>
               <div className="mt-6 grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="text-2xl font-bold">10k+</p>
-                  <p className="text-xs text-zinc-600">Units shipped</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">100+</p>
-                  <p className="text-xs text-zinc-600">Projects serviced</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">24–72h</p>
-                  <p className="text-xs text-zinc-600">Fulfillment window</p>
-                </div>
+                <div><p className="text-2xl font-bold">10k+</p><p className="text-xs text-zinc-600">Units shipped</p></div>
+                <div><p className="text-2xl font-bold">100+</p><p className="text-xs text-zinc-600">Projects serviced</p></div>
+                <div><p className="text-2xl font-bold">24–72h</p><p className="text-xs text-zinc-600">Fulfillment window</p></div>
               </div>
             </div>
 
@@ -205,28 +177,15 @@ export default function HomeClient() {
         <section className="container py-6">
           <div className="card p-6 flex flex-col sm:flex-row items-center gap-6">
             <div className="shrink-0">
-              <Image
-                src="/images/qr/catalog.png"
-                alt="Scan to view the Trucast product catalog"
-                width={140}
-                height={140}
-                priority
-                className="rounded-md bg-white"
-              />
+              <Image src="/images/qr/catalog.png" alt="Scan to view the Trucast product catalog" width={140} height={140} priority className="rounded-md bg-white" />
             </div>
             <div className="space-y-2">
               <h3 className="text-xl font-semibold">View our catalog</h3>
-              <p className="text-sm text-zinc-600">
-                Scan the QR with your phone, or click the button to open the digital flipbook.
-              </p>
+              <p className="text-sm text-zinc-600">Scan the QR with your phone, or click the button to open the digital flipbook.</p>
               <div className="flex flex-wrap gap-3">
-                <Link href="/go/catalog" className="btn-primary" onClick={() => track('catalog_open_click', { place: 'home_qr' })}>
-                  Open Catalog
-                </Link>
+                <Link href="/go/catalog" className="btn-primary" onClick={() => track('catalog_open_click', { place: 'home_qr' })}>Open Catalog</Link>
               </div>
-              <p className="text-xs text-zinc-500">
-                Short link: <span className="font-mono">trucast-ng.com/go/catalog</span>
-              </p>
+              <p className="text-xs text-zinc-500">Short link: <span className="font-mono">trucast-ng.com/go/catalog</span></p>
             </div>
           </div>
         </section>
@@ -237,13 +196,7 @@ export default function HomeClient() {
             <p id="trust" className="text-sm text-zinc-600 shrink-0">Brands &amp; certifications</p>
             <ul className="flex items-center gap-6">
               <li aria-label="Standards Organisation of Nigeria (SON) compliant">
-                <Image
-                  src="/images/certs/son.png"
-                  alt="Standards Organisation of Nigeria (SON) compliant"
-                  width={96}
-                  height={96}
-                  className="h-10 w-auto sm:h-12"
-                />
+                <Image src="/images/certs/son.png" alt="Standards Organisation of Nigeria (SON) compliant" width={96} height={96} className="h-10 w-auto sm:h-12" />
               </li>
             </ul>
           </div>
@@ -253,22 +206,10 @@ export default function HomeClient() {
         <section className="container py-14">
           <h2 className="text-2xl font-semibold">Why Choose Trucast</h2>
           <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div className="card p-5">
-              <p className="font-semibold">Project-Grade Quality</p>
-              <p className="text-sm text-zinc-600 mt-1">Durable materials, robust terminals, clean finishing.</p>
-            </div>
-            <div className="card p-5">
-              <p className="font-semibold">Energy-Efficient Lighting</p>
-              <p className="text-sm text-zinc-600 mt-1">POP panels, downlights, bulbs & floodlights with low-glare drivers.</p>
-            </div>
-            <div className="card p-5">
-              <p className="font-semibold">Wholesale Pricing</p>
-              <p className="text-sm text-zinc-600 mt-1">Competitive bulk rates and distributor support nationwide.</p>
-            </div>
-            <div className="card p-5">
-              <p className="font-semibold">Responsive Support</p>
-              <p className="text-sm text-zinc-600 mt-1">Quick assistance via WhatsApp, phone, and email.</p>
-            </div>
+            <div className="card p-5"><p className="font-semibold">Project-Grade Quality</p><p className="text-sm text-zinc-600 mt-1">Durable materials, robust terminals, clean finishing.</p></div>
+            <div className="card p-5"><p className="font-semibold">Energy-Efficient Lighting</p><p className="text-sm text-zinc-600 mt-1">POP panels, downlights, bulbs & floodlights with low-glare drivers.</p></div>
+            <div className="card p-5"><p className="font-semibold">Wholesale Pricing</p><p className="text-sm text-zinc-600 mt-1">Competitive bulk rates and distributor support nationwide.</p></div>
+            <div className="card p-5"><p className="font-semibold">Responsive Support</p><p className="text-sm text-zinc-600 mt-1">Quick assistance via WhatsApp, phone, and email.</p></div>
           </div>
         </section>
 
@@ -284,15 +225,12 @@ export default function HomeClient() {
                 <li className="flex items-start gap-2"><CheckIcon /> Pay on delivery in select locations</li>
               </ul>
             </div>
-
             <div className="card p-5">
               <p className="font-semibold mb-3">Why shop with Trucast</p>
               <ul className="space-y-2 text-sm text-zinc-700">
                 <li className="flex items-start gap-2"><CheckIcon /> Genuine products, SON compliant</li>
                 <li className="flex items-start gap-2"><CheckIcon /> Warranty: 12-month limited warranty on select items</li>
-                <li className="flex items-start gap-2">
-                  <CheckIcon /> 7-day returns — <Link href="/returns" className="link">see policy</Link>
-                </li>
+                <li className="flex items-start gap-2"><CheckIcon /> 7-day returns — <Link href="/returns" className="link">see policy</Link></li>
                 <li className="flex items-start gap-2"><CheckIcon /> Dedicated support for projects & wholesale</li>
               </ul>
             </div>
@@ -303,9 +241,7 @@ export default function HomeClient() {
         <section className="container pb-14">
           <h2 className="text-2xl font-semibold">Top Categories</h2>
           <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {categories.map((c) => (
-              <CategoryCard key={c.href} {...c} />
-            ))}
+            {categories.map((c) => (<CategoryCard key={c.href} {...c} />))}
           </div>
         </section>
 
@@ -318,7 +254,6 @@ export default function HomeClient() {
                 Trucast Nigeria Limited is an electricals and lighting distributor focused on quality, value, and service.
                 We partner with builders, facility managers, and homeowners to deliver dependable products and support.
               </p>
-
               <p className="mt-3">
                 <Link href="/about" className="link inline-flex items-center text-sm font-medium" aria-label="Read more about Trucast">
                   <span aria-hidden className="mr-1">{'>>>'}</span>
@@ -326,24 +261,11 @@ export default function HomeClient() {
                 </Link>
               </p>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
-              <div className="card p-4">
-                <p className="text-sm text-zinc-600">Coverage</p>
-                <p className="font-semibold mt-1">Nationwide delivery</p>
-              </div>
-              <div className="card p-4">
-                <p className="text-sm text-zinc-600">Returns</p>
-                <p className="font-semibold mt-1">Hassle-free exchanges</p>
-              </div>
-              <div className="card p-4">
-                <p className="text-sm text-zinc-600">Support</p>
-                <p className="font-semibold mt-1">WhatsApp &amp; Email</p>
-              </div>
-              <div className="card p-4">
-                <p className="text-sm text-zinc-600">Pricing</p>
-                <p className="font-semibold mt-1">Transparent quotes</p>
-              </div>
+              <div className="card p-4"><p className="text-sm text-zinc-600">Coverage</p><p className="font-semibold mt-1">Nationwide delivery</p></div>
+              <div className="card p-4"><p className="text-sm text-zinc-600">Returns</p><p className="font-semibold mt-1">Hassle-free exchanges</p></div>
+              <div className="card p-4"><p className="text-sm text-zinc-600">Support</p><p className="font-semibold mt-1">WhatsApp &amp; Email</p></div>
+              <div className="card p-4"><p className="text-sm text-zinc-600">Pricing</p><p className="font-semibold mt-1">Transparent quotes</p></div>
             </div>
           </div>
         </section>
@@ -357,23 +279,8 @@ export default function HomeClient() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link className="btn-primary" href="/wholesale">Wholesale Enquiry</Link>
-              <a
-                className="btn-outline"
-                href={site.waLink}
-                target="_blank"
-                rel="noopener"
-                onClick={() => track('whatsapp_click', { place: 'cta' })}
-              >
-                Chat on WhatsApp
-              </a>
-              <a
-                className="btn-outline md:hidden"
-                href={`tel:${tel}`}
-                aria-label="Call Trucast Nigeria"
-                onClick={() => track('call_click', { place: 'cta' })}
-              >
-                Call
-              </a>
+              <a className="btn-outline" href={site.waLink} target="_blank" rel="noopener" onClick={() => track('whatsapp_click', { place: 'cta' })}>Chat on WhatsApp</a>
+              <a className="btn-outline md:hidden" href={`tel:${tel}`} aria-label="Call Trucast Nigeria" onClick={() => track('call_click', { place: 'cta' })}>Call</a>
             </div>
           </div>
         </section>
