@@ -1,150 +1,112 @@
-'use client';
+// app/HomeClient.tsx (CLIENT COMPONENT)
+'use client'
 
-import { useEffect, useRef, useState } from 'react';
-import SmartImage from '@/components/SmartImage';
+import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
+import Image, { type StaticImageData } from 'next/image'
+import { OrganizationLd, LocalBusinessLd } from '@/components/seo/JsonLd'
+import { site } from '@/lib/site'
+import { track } from '@/lib/analytics'
 
-type Slide = { src: string; alt: string; href?: string };
+import CategoryCard from '@/components/cards/CategoryCard'
 
-const SLIDE_INTERVAL = 6000; // ms
+// hero (slide 1 as static import for blur/LCP)
+import hero1 from '@/public/images/hero/hero-1@1920.webp'
 
-export default function HeroSlider() {
-  const slides: Slide[] = [
-    { src: '/images/hero/hero-1@1920.webp',  alt: 'Premium Trucast switches' },
-    { src: '/images/hero/hero-2@1920.webp',  alt: 'Sockets and panels' },
-    { src: '/images/hero/hero-3@1920.webp',  alt: 'Discount promotion' },
-    { src: '/images/hero/hero-4@1920.webp',  alt: 'Wall switches showcase' },
-    { src: '/images/hero/hero-5@1920.webp',  alt: 'Panel lights and bulbs' },
-    { src: '/images/hero/hero-6@1920.webp',  alt: 'POP panel lights' },
-    { src: '/images/hero/hero-7@1920.webp',  alt: 'LED strips and bulbs' },
-    { src: '/images/hero/hero-8@1920.webp',  alt: 'Special sales promotion' },
-    { src: '/images/hero/hero-9@1920.webp',  alt: 'SON certified quality' },
-    { src: '/images/hero/hero-10@1920.webp', alt: 'Trucast smart devices' },
-  ];
+// (Important) Use string paths for category images to avoid StaticImageData issues
 
-  const [i, setI] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const hoveringRef = useRef(false);
-  const touchStartX = useRef<number | null>(null);
-  const reducedMotion = useRef(false);
+function HeroSlider() {
+  const slides: { src: StaticImageData | string; alt: string }[] = useMemo(() => ([
+    { src: hero1,                               alt: 'Premium Trucast switches' },
+    { src: '/images/hero/hero-2@1920.webp',     alt: 'Sockets and panels' },
+    { src: '/images/hero/hero-3@1920.webp',     alt: 'Discount promotion' },
+    { src: '/images/hero/hero-4@1920.webp',     alt: 'Wall switches showcase' },
+    { src: '/images/hero/hero-5@1920.webp',     alt: 'Panel lights and bulbs' },
+    { src: '/images/hero/hero-6@1920.webp',     alt: 'POP panel lights' },
+    { src: '/images/hero/hero-7@1920.webp',     alt: 'LED strips and bulbs' },
+    { src: '/images/hero/hero-8@1920.webp',     alt: 'Special sales promotion' },
+    { src: '/images/hero/hero-9@1920.webp',     alt: 'SON certified quality' },
+    { src: '/images/hero/hero-10@1920.webp',    alt: 'Trucast smart devices' },
+  ]), [])
 
-  const go = (next: number) => setI((p) => (next + slides.length) % slides.length);
-  const next = () => go(i + 1);
-  const prev = () => go(i - 1);
+  const [i, setI] = useState(0)
+  const [reduced, setReduced] = useState(false)
+  const [paused, setPaused] = useState(false)
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      reducedMotion.current =
-        window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches || false;
-    }
-    if (reducedMotion.current) return;
+    const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)')
+    const update = () => setReduced(!!mq?.matches)
+    update()
+    mq?.addEventListener?.('change', update)
+    return () => mq?.removeEventListener?.('change', update)
+  }, [])
 
-    const start = () => {
-      stop();
-      timerRef.current = setInterval(() => {
-        if (!hoveringRef.current && document.visibilityState === 'visible') {
-          setI((p) => (p + 1) % slides.length);
-        }
-      }, SLIDE_INTERVAL);
-    };
-    const stop = () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
-    const onVisibility = () => { if (document.visibilityState === 'hidden') stop(); else start(); };
+  useEffect(() => {
+    if (reduced || paused) return
+    const id = setInterval(() => setI((p) => (p + 1) % slides.length), 6000)
+    return () => clearInterval(id)
+  }, [reduced, paused, slides.length])
 
-    start();
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => { stop(); document.removeEventListener('visibilitychange', onVisibility); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slides.length]);
-
-  const onMouseEnter = () => { hoveringRef.current = true; };
-  const onMouseLeave = () => { hoveringRef.current = false; };
-  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX.current == null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
-    touchStartX.current = null;
-    if (Math.abs(delta) < 50) return;
-    if (delta < 0) next(); else prev();
-  };
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
-    else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
-  };
+  const next = (i + 1) % slides.length
+  const visible = [i, next]
 
   return (
-    // ✅ Centered container + hard height cap
-    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-      <section
-        role="region"
-        aria-label="Homepage promotions"
-        tabIndex={0}
-        onKeyDown={onKeyDown}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-        className="
-          relative overflow-hidden rounded-2xl shadow-lg outline-none
-          w-full
-          h-[42vh] sm:h-[46vh] md:h-[50vh] lg:h-[54vh] xl:h-[56vh]
-          max-h-[640px] min-h-[220px]
-        "
-      >
-        {/* Slides */}
-        <div className="relative h-full w-full">
-          {slides.map((s, idx) => (
-            <div
-              key={s.src}
-              className={`absolute inset-0 ${reducedMotion.current ? '' : 'transition-opacity duration-700'} ${
-                idx === i ? 'opacity-100' : 'opacity-0'
-              }`}
-              aria-hidden={idx !== i}
-            >
-              <SmartImage
-                src={s.src}
-                alt={s.alt}
-                fill
-                sizes="(max-width: 1024px) 100vw, 1200px"
-                priority={idx < 2}
-                className="object-cover"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-            </div>
-          ))}
-        </div>
+    <div
+      className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-lg bg-white"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {visible.map((idx) => {
+        const s = slides[idx]
+        const isActive = idx === i
 
-        {/* Prev / Next arrows */}
-        <button
-          type="button"
-          aria-label="Previous slide"
-          onClick={prev}
-          className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/35 p-2 text-white backdrop-blur hover:bg-black/50 focus:outline-none focus:ring-4 focus:ring-white/40"
-        >
-          ‹
-        </button>
-        <button
-          type="button"
-          aria-label="Next slide"
-          onClick={next}
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/35 p-2 text-white backdrop-blur hover:bg-black/50 focus:outline-none focus:ring-4 focus:ring-white/40"
-        >
-          ›
-        </button>
-
-        {/* Dots */}
-        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-          {slides.map((_, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => setI(idx)}
-              className={`h-2.5 w-2.5 rounded-full ring-1 ring-black/30 ${
-                idx === i ? 'bg-white' : 'bg-white/50 hover:bg-white/75'
-              }`}
-              aria-label={`Go to slide ${idx + 1}`}
+        return (
+          <div
+            key={`${idx}-${typeof s.src === 'string' ? s.src : 'static'}`}
+            className={`absolute inset-0 transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <Image
+              src={s.src}
+              alt={s.alt}
+              fill
+              className="object-cover"
+              sizes="100vw"
+              quality={75}
+              {...(idx === 0 ? { priority: true, placeholder: 'blur' as const } : { loading: 'lazy' })}
             />
-          ))}
-        </div>
-      </section>
+          </div>
+        )
+      })}
+
+      <button
+        type="button"
+        aria-label="Previous slide"
+        onClick={() => setI((p) => (p - 1 + slides.length) % slides.length)}
+        className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-2 hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        aria-label="Next slide"
+        onClick={() => setI((p) => (p + 1) % slides.length)}
+        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-2 hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+      >
+        ›
+      </button>
+
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        {slides.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setI(idx)}
+            className={`h-3 w-3 rounded-full ${idx === i ? 'bg-white' : 'bg-white/40'} ring-1 ring-black/20`}
+            aria-label={`Go to slide ${idx + 1}`}
+          />
+        ))}
+      </div>
     </div>
-  );
+  )
 }
+
+function CheckIcon(props: React.SVGProps<SVGSVGEle
