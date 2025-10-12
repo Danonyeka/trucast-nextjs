@@ -39,20 +39,27 @@ function mdToHtml(src: string): string {
 function isoDate(d: string) {
   return new Date(d).toISOString().split('T')[0]
 }
-function summarize(text: string, fallback = 'Trucast Nigeria blog post') {
+const clamp = (s: string, max = 160) =>
+  s.length <= max ? s : s.slice(0, max - 1).replace(/\s+\S*$/, '') + '…'
+function summarize(text: string, fallback = 'Helpful guide from Trucast Nigeria') {
   const plain = text.replace(/[#*_>`~\-]/g, ' ').replace(/\s+/g, ' ').trim()
   return (plain || fallback).slice(0, 160)
 }
 
 type PageProps = { params: { slug: string } }
 
-/** SEO metadata per post */
+/** SEO metadata per post (unique description per article) */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const post = getPost(params.slug)
-  if (!post) return { title: 'Blog | Trucast Nigeria' }
+  if (!post) return { title: 'Blog | Trucast Nigeria', description: 'Guides and updates from Trucast Nigeria.' }
 
   const canonical = `${SITE_URL}/blog/${params.slug}`
-  const description = post.excerpt || summarize(post.content)
+
+  // Build a unique, content-led description
+  const base = (post.excerpt || summarize(post.content)).trim()
+  const tagLine = post.tags?.length ? ` Key topics: ${post.tags.slice(0, 2).join(', ')}.` : ''
+  const description = clamp(`${base}${tagLine}`)
+
   const img = post.cover || '/og.jpg'
   const title = `${post.title} | Trucast Nigeria`
 
@@ -82,7 +89,7 @@ export default function BlogDetailPage({ params }: PageProps) {
 
   const canonical = `${SITE_URL}/blog/${params.slug}`
   const image = post.cover || '/og.jpg'
-  const description = post.excerpt || summarize(post.content)
+  const description = (post.excerpt || summarize(post.content)).trim()
   const dateStr = new Date(post.date).toLocaleDateString()
 
   return (
