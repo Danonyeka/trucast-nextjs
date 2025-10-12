@@ -1,29 +1,27 @@
 // components/HeroSlider.tsx
 'use client'
 
-import { useEffect, useMemo, useState, type SVGProps } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Image, { type StaticImageData } from 'next/image'
-
-// LCP slide as static import (blur-ready)
 import hero1 from '@/public/images/hero/hero-1@1920.webp'
 
-function HeroSlider() {
+export default function HeroSlider() {
   const slides: { src: StaticImageData | string; alt: string }[] = useMemo(() => ([
-    { src: hero1,                               alt: 'Premium Trucast switches' },
-    { src: '/images/hero/hero-2@1920.webp',     alt: 'Sockets and panels' },
-    { src: '/images/hero/hero-3@1920.webp',     alt: 'Discount promotion' },
-    { src: '/images/hero/hero-4@1920.webp',     alt: 'Wall switches showcase' },
-    { src: '/images/hero/hero-5@1920.webp',     alt: 'Panel lights and bulbs' },
-    { src: '/images/hero/hero-6@1920.webp',     alt: 'POP panel lights' },
-    { src: '/images/hero/hero-7@1920.webp',     alt: 'LED strips and bulbs' },
-    { src: '/images/hero/hero-8@1920.webp',     alt: 'Special sales promotion' },
-    { src: '/images/hero/hero-9@1920.webp',     alt: 'SON certified quality' },
-    { src: '/images/hero/hero-10@1920.webp',    alt: 'Trucast smart devices' },
+    { src: hero1,                           alt: 'Premium Trucast switches' },
+    { src: '/images/hero/hero-2@1920.webp', alt: 'Sockets and panels' },
+    { src: '/images/hero/hero-3@1920.webp', alt: 'Discount promotion' },
+    { src: '/images/hero/hero-4@1920.webp', alt: 'Wall switches showcase' },
+    { src: '/images/hero/hero-5@1920.webp', alt: 'Panel lights and bulbs' },
+    { src: '/images/hero/hero-6@1920.webp', alt: 'POP panel lights' },
+    { src: '/images/hero/hero-7@1920.webp', alt: 'LED strips and bulbs' },
+    { src: '/images/hero/hero-8@1920.webp', alt: 'Special sales promotion' },
+    { src: '/images/hero/hero-9@1920.webp', alt: 'SON certified quality' },
+    { src: '/images/hero/hero-10@1920.webp',alt: 'Trucast smart devices' },
   ]), [])
 
   const [i, setI] = useState(0)
-  const [reduced, setReduced] = useState(false)
   const [paused, setPaused] = useState(false)
+  const [reduced, setReduced] = useState(false)
 
   useEffect(() => {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)')
@@ -35,12 +33,11 @@ function HeroSlider() {
 
   useEffect(() => {
     if (reduced || paused) return
-    const id = setInterval(() => setI((p) => (p + 1) % slides.length), 6000)
+    const id = setInterval(() => setI(p => (p + 1) % slides.length), 6000)
     return () => clearInterval(id)
   }, [reduced, paused, slides.length])
 
-  const next = (i + 1) % slides.length
-  const visible = [i, next]
+  const visible = [i, (i + 1) % slides.length]
 
   return (
     <div
@@ -51,7 +48,6 @@ function HeroSlider() {
       {visible.map((idx) => {
         const s = slides[idx]
         const isActive = idx === i
-
         return (
           <div
             key={`${idx}-${typeof s.src === 'string' ? s.src : 'static'}`}
@@ -62,8 +58,7 @@ function HeroSlider() {
               alt={s.alt}
               fill
               className="object-cover"
-              // Match your lg:grid-cols-2 layout: 50% width on lg+, 100% below
-              sizes="(min-width:1024px) 50vw, 100vw"
+              sizes="(min-width:1024px) 50vw, 100vw"  // 50% of container at lg+, full width below
               {...(idx === 0
                 ? { priority: true, placeholder: 'blur' as const }
                 : { loading: 'lazy' as const })}
@@ -77,7 +72,7 @@ function HeroSlider() {
       <button
         type="button"
         aria-label="Previous slide"
-        onClick={() => setI((p) => (p - 1 + slides.length) % slides.length)}
+        onClick={() => setI(p => (p - 1 + slides.length) % slides.length)}
         className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-2 hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
       >
         ‹
@@ -85,7 +80,7 @@ function HeroSlider() {
       <button
         type="button"
         aria-label="Next slide"
-        onClick={() => setI((p) => (p + 1) % slides.length)}
+        onClick={() => setI(p => (p + 1) % slides.length)}
         className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-2 hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
       >
         ›
@@ -105,5 +100,3 @@ function HeroSlider() {
     </div>
   )
 }
-
-export default HeroSlider
