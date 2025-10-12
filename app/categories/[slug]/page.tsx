@@ -1,4 +1,5 @@
 // app/categories/[slug]/page.tsx
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import nextDynamic from 'next/dynamic';
@@ -24,6 +25,39 @@ function NGN(n: number) {
 
 const imgSrc = (s?: string) =>
   !s ? '/products/placeholder.png' : /^(https?:)?\//.test(s) ? s : `/${s}`;
+
+// ---------- UNIQUE META ----------
+const clamp = (s: string, max = 160) =>
+  s.length <= max ? s : s.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
+
+const toTitle = (s: string) =>
+  s.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const slug = params.slug;
+  const titleBase = toTitle(slug);
+
+  // Pull a few product names to hint the range
+  let names: string[] = [];
+  try {
+    names = (byCategory(slug) ?? []).slice(0, 3).map((p) => p.name);
+  } catch {
+    names = [];
+  }
+
+  const extras = names.length ? ` Popular picks: ${names.join(', ')}.` : '';
+  const description = clamp(
+    `${titleBase}: Shop SON-compliant, project-grade options with wholesale pricing and fast nationwide delivery.${extras}`
+  );
+
+  return {
+    title: `${titleBase} | Trucast`,
+    description,
+    openGraph: { title: `${titleBase} | Trucast`, description },
+    twitter: { title: `${titleBase} | Trucast`, description },
+  };
+}
+// ----------------------------------
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
   let products: Product[] = [];
