@@ -38,7 +38,7 @@ function normalizeProductImagePath(src: string): string {
 }
 
 export default function SmartImage(props: ImageProps) {
-  const { src, sizes, alt, ...rest } = props;
+  const { src, sizes, alt, onError, ...rest } = props;
 
   const resolvedSrc =
     typeof src === 'string'
@@ -51,6 +51,21 @@ export default function SmartImage(props: ImageProps) {
       ? resolvedSrc
       : '/og.jpg';
 
+  const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    try {
+      const el = e.target as HTMLImageElement | null;
+      // Log both the intended path and the actual requested URL from the optimizer
+      // This helps catch 404s, case-mismatch, or corrupt uploads
+      // eslint-disable-next-line no-console
+      console.error('[SmartImage] Failed to load:', {
+        src: safeSrc,
+        currentSrc: el?.currentSrc || '',
+      });
+    } catch {}
+    // Preserve any consumer-provided onError
+    if (typeof onError === 'function') onError(e);
+  };
+
   return (
     <Image
       // ✅ Let Next.js optimize local images (no `unoptimized` override)
@@ -58,6 +73,7 @@ export default function SmartImage(props: ImageProps) {
       sizes={('fill' in rest && (rest as any).fill && !sizes) ? '100vw' : sizes}
       src={safeSrc}
       alt={alt || 'image'}
+      onError={handleError}
       {...rest}
     />
   );
