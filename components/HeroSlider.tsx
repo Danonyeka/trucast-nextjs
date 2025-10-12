@@ -1,23 +1,24 @@
 'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import SmartImage from '@/components/SmartImage';
 
-type Slide = { src: string; alt: string; href?: string; };
+type Slide = { src: string; alt: string; href?: string };
 
 const SLIDE_INTERVAL = 6000; // ms
 
 export default function HeroSlider() {
   const slides: Slide[] = [
-    { src: '/images/hero/hero-1.png', alt: 'Premium Trucast switches' },
-    { src: '/images/hero/hero-2.png', alt: 'Sockets and panels' },
-    { src: '/images/hero/hero-3.png', alt: 'Discount promotion' },
-    { src: '/images/hero/hero-4.png', alt: 'Wall switches showcase' },
-    { src: '/images/hero/hero-5.png', alt: 'Panel lights and bulbs' },
-    { src: '/images/hero/hero-6.png', alt: 'POP panel lights' },
-    { src: '/images/hero/hero-7.png', alt: 'LED strips and bulbs' },
-    { src: '/images/hero/hero-8.png', alt: 'Special sales promotion' },
-    { src: '/images/hero/hero-9.png', alt: 'SON certified quality' },
-    { src: '/images/hero/hero-10.png', alt: 'Trucast smart devices' },
+    { src: '/images/hero/hero-1@1920.webp',  alt: 'Premium Trucast switches' },
+    { src: '/images/hero/hero-2@1920.webp',  alt: 'Sockets and panels' },
+    { src: '/images/hero/hero-3@1920.webp',  alt: 'Discount promotion' },
+    { src: '/images/hero/hero-4@1920.webp',  alt: 'Wall switches showcase' },
+    { src: '/images/hero/hero-5@1920.webp',  alt: 'Panel lights and bulbs' },
+    { src: '/images/hero/hero-6@1920.webp',  alt: 'POP panel lights' },
+    { src: '/images/hero/hero-7@1920.webp',  alt: 'LED strips and bulbs' },
+    { src: '/images/hero/hero-8@1920.webp',  alt: 'Special sales promotion' },
+    { src: '/images/hero/hero-9@1920.webp',  alt: 'SON certified quality' },
+    { src: '/images/hero/hero-10@1920.webp', alt: 'Trucast smart devices' },
   ];
 
   const [i, setI] = useState(0);
@@ -30,18 +31,17 @@ export default function HeroSlider() {
   const next = () => go(i + 1);
   const prev = () => go(i - 1);
 
-  // Auto-play (respects hover, tab visibility, and reduced motion)
   useEffect(() => {
     if (!slides.length) return;
 
-    // respect prefers-reduced-motion
     if (typeof window !== 'undefined') {
-      reducedMotion.current = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches || false;
+      reducedMotion.current =
+        window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches || false;
     }
     if (reducedMotion.current) return;
 
     const start = () => {
-      stop(); // clear any existing
+      stop();
       timerRef.current = setInterval(() => {
         if (!hoveringRef.current && document.visibilityState === 'visible') {
           setI((p) => (p + 1) % slides.length);
@@ -67,40 +67,22 @@ export default function HeroSlider() {
       stop();
       document.removeEventListener('visibilitychange', onVisibility);
     };
-    // Only depend on slides length; interval is constant
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slides.length]);
 
-  // Hover pause
-  const onMouseEnter = () => {
-    hoveringRef.current = true;
-  };
-  const onMouseLeave = () => {
-    hoveringRef.current = false;
-  };
-
-  // Touch swipe
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
+  const onMouseEnter = () => { hoveringRef.current = true; };
+  const onMouseLeave = () => { hoveringRef.current = false; };
+  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
   const onTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current == null) return;
     const delta = e.changedTouches[0].clientX - touchStartX.current;
     touchStartX.current = null;
-    if (Math.abs(delta) < 50) return; // small swipe ignored
-    if (delta < 0) next();
-    else prev();
+    if (Math.abs(delta) < 50) return;
+    if (delta < 0) next(); else prev();
   };
-
-  // Keyboard navigation
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      next();
-    } else if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      prev();
-    }
+    if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
   };
 
   return (
@@ -115,31 +97,29 @@ export default function HeroSlider() {
       onTouchEnd={onTouchEnd}
       className="relative aspect-[16/9] overflow-hidden rounded-2xl shadow-lg outline-none"
     >
-      {/* Slides */}
       <div className="relative h-full w-full">
         {slides.map((s, idx) => (
           <div
             key={s.src}
-            className={`absolute inset-0 ${reducedMotion.current ? '' : 'transition-opacity duration-700'} ${
-              idx === i ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`absolute inset-0 ${
+              reducedMotion.current ? '' : 'transition-opacity duration-700'
+            } ${idx === i ? 'opacity-100' : 'opacity-0'}`}
             aria-hidden={idx !== i}
           >
-            {/* If you add s.href later, wrap SmartImage with <a href={s.href} /> */}
             <SmartImage
               src={s.src}
               alt={s.alt}
               fill
-              priority={idx === 0}
+              sizes="100vw"
+              // Preload first two to verify they both render
+              priority={idx < 2}
               className="object-cover"
             />
-            {/* Optional soft gradient for text legibility if you add captions later */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
           </div>
         ))}
       </div>
 
-      {/* Prev / Next arrows */}
       <button
         type="button"
         aria-label="Previous slide"
@@ -157,7 +137,6 @@ export default function HeroSlider() {
         ›
       </button>
 
-      {/* Navigation dots */}
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
         {slides.map((_, idx) => (
           <button
