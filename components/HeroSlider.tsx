@@ -1,102 +1,164 @@
 // components/HeroSlider.tsx
-'use client'
+'use client';
 
-import { useEffect, useMemo, useState } from 'react'
-import Image, { type StaticImageData } from 'next/image'
-import hero1 from '@/public/images/hero/hero-1@1920.webp'
+import { useEffect, useRef, useState } from 'react';
+import SmartImage from '@/components/SmartImage';
+
+type Slide = { src: string; alt: string; href?: string };
+const SLIDE_INTERVAL = 6000; // ms
 
 export default function HeroSlider() {
-  const slides: { src: StaticImageData | string; alt: string }[] = useMemo(() => ([
-    { src: hero1,                           alt: 'Premium Trucast switches' },
-    { src: '/images/hero/hero-2@1920.webp', alt: 'Sockets and panels' },
-    { src: '/images/hero/hero-3@1920.webp', alt: 'Discount promotion' },
-    { src: '/images/hero/hero-4@1920.webp', alt: 'Wall switches showcase' },
-    { src: '/images/hero/hero-5@1920.webp', alt: 'Panel lights and bulbs' },
-    { src: '/images/hero/hero-6@1920.webp', alt: 'POP panel lights' },
-    { src: '/images/hero/hero-7@1920.webp', alt: 'LED strips and bulbs' },
-    { src: '/images/hero/hero-8@1920.webp', alt: 'Special sales promotion' },
-    { src: '/images/hero/hero-9@1920.webp', alt: 'SON certified quality' },
-    { src: '/images/hero/hero-10@1920.webp',alt: 'Trucast smart devices' },
-  ]), [])
+  const slides: Slide[] = [
+    { src: '/images/hero/hero-1@1920.webp',  alt: 'Premium Trucast switches' },
+    { src: '/images/hero/hero-2@1920.webp',  alt: 'Sockets and panels' },
+    { src: '/images/hero/hero-3@1920.webp',  alt: 'Discount promotion' },
+    { src: '/images/hero/hero-4@1920.webp',  alt: 'Wall switches showcase' },
+    { src: '/images/hero/hero-5@1920.webp',  alt: 'Panel lights and bulbs' },
+    { src: '/images/hero/hero-6@1920.webp',  alt: 'POP panel lights' },
+    { src: '/images/hero/hero-7@1920.webp',  alt: 'LED strips and bulbs' },
+    { src: '/images/hero/hero-8@1920.webp',  alt: 'Special sales promotion' },
+    { src: '/images/hero/hero-9@1920.webp',  alt: 'SON certified quality' },
+    { src: '/images/hero/hero-10@1920.webp', alt: 'Trucast smart devices' },
+  ];
 
-  const [i, setI] = useState(0)
-  const [paused, setPaused] = useState(false)
-  const [reduced, setReduced] = useState(false)
+  const [i, setI] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hoveringRef = useRef(false);
+  const touchStartX = useRef<number | null>(null);
+  const reducedMotion = useRef(false);
 
-  useEffect(() => {
-    const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)')
-    const update = () => setReduced(!!mq?.matches)
-    update()
-    mq?.addEventListener?.('change', update)
-    return () => mq?.removeEventListener?.('change', update)
-  }, [])
+  const go = (next: number) => setI((p) => (next + slides.length) % slides.length);
+  const next = () => go(i + 1);
+  const prev = () => go(i - 1);
 
   useEffect(() => {
-    if (reduced || paused) return
-    const id = setInterval(() => setI(p => (p + 1) % slides.length), 6000)
-    return () => clearInterval(id)
-  }, [reduced, paused, slides.length])
+    if (!slides.length) return;
 
-  const visible = [i, (i + 1) % slides.length]
+    if (typeof window !== 'undefined') {
+      reducedMotion.current =
+        window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches || false;
+    }
+    if (reducedMotion.current) return;
+
+    const start = () => {
+      stop();
+      timerRef.current = setInterval(() => {
+        if (!hoveringRef.current && document.visibilityState === 'visible') {
+          setI((p) => (p + 1) % slides.length);
+        }
+      }, SLIDE_INTERVAL);
+    };
+
+    const stop = () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') stop();
+      else start();
+    };
+
+    start();
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      stop();
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slides.length]);
+
+  const onMouseEnter = () => { hoveringRef.current = true; };
+  const onMouseLeave = () => { hoveringRef.current = false; };
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current == null) return;
+    const delta = e.changedTouches[0].clientX - (touchStartX.current ?? 0);
+    touchStartX.current = null;
+    if (Math.abs(delta) < 50) return;
+    if (delta < 0) next(); else prev();
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  };
+
+  const visible = [i, (i + 1) % slides.length];
 
   return (
-    <div
-      className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-lg bg-white"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+    <section
+      role="region"
+      aria-label="Homepage promotions"
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl shadow-lg outline-none"
     >
-      {visible.map((idx) => {
-        const s = slides[idx]
-        const isActive = idx === i
-        return (
+      {/* Slides */}
+      <div className="relative h-full w-full">
+        {slides.map((s, idx) => (
           <div
-            key={`${idx}-${typeof s.src === 'string' ? s.src : 'static'}`}
-            className={`absolute inset-0 transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`}
+            key={s.src}
+            className={`absolute inset-0 ${
+              reducedMotion.current ? '' : 'transition-opacity duration-700'
+            } ${idx === i ? 'opacity-100' : 'opacity-0'}`}
+            aria-hidden={idx !== i}
           >
-            <Image
+            <SmartImage
               src={s.src}
               alt={s.alt}
               fill
+              priority={idx === 0}
+              // KEY: half of viewport on lg+, full width below
+              sizes="(min-width:1024px) 50vw, 100vw"
               className="object-cover"
-              sizes="(min-width:1024px) 50vw, 100vw"  // 50% of container at lg+, full width below
-              {...(idx === 0
-                ? { priority: true, placeholder: 'blur' as const }
-                : { loading: 'lazy' as const })}
-              decoding="async"
             />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
           </div>
-        )
-      })}
+        ))}
+      </div>
 
-      {/* Controls */}
+      {/* Prev / Next arrows */}
       <button
         type="button"
         aria-label="Previous slide"
-        onClick={() => setI(p => (p - 1 + slides.length) % slides.length)}
-        className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-2 hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        onClick={prev}
+        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/35 p-2 text-white backdrop-blur hover:bg-black/50 focus:outline-none focus:ring-4 focus:ring-white/40"
       >
         ‹
       </button>
       <button
         type="button"
         aria-label="Next slide"
-        onClick={() => setI(p => (p + 1) % slides.length)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 text-white p-2 hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        onClick={next}
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/35 p-2 text-white backdrop-blur hover:bg-black/50 focus:outline-none focus:ring-4 focus:ring-white/40"
       >
         ›
       </button>
 
       {/* Dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
         {slides.map((_, idx) => (
           <button
             key={idx}
+            type="button"
             onClick={() => setI(idx)}
-            className={`h-3 w-3 rounded-full ${idx === i ? 'bg-white' : 'bg-white/40'} ring-1 ring-black/20`}
+            className={`h-2.5 w-2.5 rounded-full ring-1 ring-black/30 ${
+              idx === i ? 'bg-white' : 'bg-white/50 hover:bg-white/75'
+            }`}
             aria-label={`Go to slide ${idx + 1}`}
           />
         ))}
       </div>
-    </div>
-  )
+    </section>
+  );
 }
