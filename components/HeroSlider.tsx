@@ -1,13 +1,11 @@
-// components/HeroSlider.tsx (CLIENT COMPONENT)
+// components/HeroSlider.tsx
 'use client'
 
 import { useEffect, useMemo, useState, type SVGProps } from 'react'
 import Image, { type StaticImageData } from 'next/image'
 
-// hero (slide 1 as static import for blur/LCP)
+// LCP slide as static import (blur-ready)
 import hero1 from '@/public/images/hero/hero-1@1920.webp'
-
-// (Important) Use string paths for category images to avoid StaticImageData issues
 
 function HeroSlider() {
   const slides: { src: StaticImageData | string; alt: string }[] = useMemo(() => ([
@@ -64,14 +62,18 @@ function HeroSlider() {
               alt={s.alt}
               fill
               className="object-cover"
-              sizes="100vw"
-              quality={75}
-              {...(idx === 0 ? { priority: true, placeholder: 'blur' as const } : { loading: 'lazy' })}
+              // Match your lg:grid-cols-2 layout: 50% width on lg+, 100% below
+              sizes="(min-width:1024px) 50vw, 100vw"
+              {...(idx === 0
+                ? { priority: true, placeholder: 'blur' as const }
+                : { loading: 'lazy' as const })}
+              decoding="async"
             />
           </div>
         )
       })}
 
+      {/* Controls */}
       <button
         type="button"
         aria-label="Previous slide"
@@ -89,6 +91,7 @@ function HeroSlider() {
         ›
       </button>
 
+      {/* Dots */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
         {slides.map((_, idx) => (
           <button
@@ -100,20 +103,6 @@ function HeroSlider() {
         ))}
       </div>
     </div>
-  )
-}
-
-function CheckIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      aria-hidden="true"
-      className="h-4 w-4 text-brand"
-      {...props}
-    >
-      <path d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.6a1 1 0 0 1 1.4-1.4l3.3 3.3 6.8-6.8a1 1 0 0 1 1.4 0Z" />
-    </svg>
   )
 }
 
