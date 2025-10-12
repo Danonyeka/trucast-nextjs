@@ -73,90 +73,96 @@ export default function HeroSlider() {
   const onMouseEnter = () => { hoveringRef.current = true; };
   const onMouseLeave = () => { hoveringRef.current = false; };
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
+  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; };
   const onTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current == null) return;
     const delta = e.changedTouches[0].clientX - touchStartX.current;
     touchStartX.current = null;
     if (Math.abs(delta) < 50) return;
-    if (delta < 0) next();
-    else prev();
+    if (delta < 0) next(); else prev();
   };
-
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
   };
 
   return (
-    <section
-      role="region"
-      aria-label="Homepage promotions"
-      tabIndex={0}
-      onKeyDown={onKeyDown}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
-      className="relative aspect-[16/9] overflow-hidden rounded-2xl shadow-lg outline-none"
-    >
-      {/* Slides */}
-      <div className="relative h-full w-full">
-        {slides.map((s, idx) => (
-          <div
-            key={s.src}
-            className={`absolute inset-0 ${
-              reducedMotion.current ? '' : 'transition-opacity duration-700'
-            } ${idx === i ? 'opacity-100' : 'opacity-0'}`}
-            aria-hidden={idx !== i}
-          >
-            <SmartImage
-              src={s.src}
-              alt={s.alt}
-              fill
-              sizes="100vw"
-              priority={idx < 2}
-              className="object-cover"
+    // Constrain width + center on page
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section
+        role="region"
+        aria-label="Homepage promotions"
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        className="
+          relative overflow-hidden rounded-2xl shadow-lg outline-none
+          w-full
+          aspect-[16/9]        /* keeps a clean ratio on mobile */
+          sm:aspect-[16/8]
+          lg:aspect-[16/7]
+          xl:aspect-[16/6.5]
+        "
+      >
+        {/* Slides */}
+        <div className="relative h-full w-full">
+          {slides.map((s, idx) => (
+            <div
+              key={s.src}
+              className={`absolute inset-0 ${reducedMotion.current ? '' : 'transition-opacity duration-700'} ${
+                idx === i ? 'opacity-100' : 'opacity-0'
+              }`}
+              aria-hidden={idx !== i}
+            >
+              <SmartImage
+                src={s.src}
+                alt={s.alt}
+                fill
+                sizes="100vw"
+                priority={idx < 2}
+                className="object-cover"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+            </div>
+          ))}
+        </div>
+
+        {/* Prev / Next arrows */}
+        <button
+          type="button"
+          aria-label="Previous slide"
+          onClick={prev}
+          className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/35 p-2 text-white backdrop-blur hover:bg-black/50 focus:outline-none focus:ring-4 focus:ring-white/40"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          aria-label="Next slide"
+          onClick={next}
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/35 p-2 text-white backdrop-blur hover:bg-black/50 focus:outline-none focus:ring-4 focus:ring-white/40"
+        >
+          ›
+        </button>
+
+        {/* Navigation dots */}
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setI(idx)}
+              className={`h-2.5 w-2.5 rounded-full ring-1 ring-black/30 ${
+                idx === i ? 'bg-white' : 'bg-white/50 hover:bg-white/75'
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-          </div>
-        ))}
-      </div>
-
-      {/* Prev / Next arrows */}
-      <button
-        type="button"
-        aria-label="Previous slide"
-        onClick={prev}
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/35 p-2 text-white backdrop-blur hover:bg-black/50 focus:outline-none focus:ring-4 focus:ring-white/40"
-      >
-        ‹
-      </button>
-      <button
-        type="button"
-        aria-label="Next slide"
-        onClick={next}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/35 p-2 text-white backdrop-blur hover:bg-black/50 focus:outline-none focus:ring-4 focus:ring-white/40"
-      >
-        ›
-      </button>
-
-      {/* Navigation dots */}
-      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-        {slides.map((_, idx) => (
-          <button
-            key={idx}
-            type="button"
-            onClick={() => setI(idx)}
-            className={`h-2.5 w-2.5 rounded-full ring-1 ring-black/30 ${
-              idx === i ? 'bg-white' : 'bg-white/50 hover:bg-white/75'
-            }`}
-            aria-label={`Go to slide ${idx + 1}`}
-          />
-        ))}
-      </div>
-    </section>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
