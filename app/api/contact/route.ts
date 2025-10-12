@@ -1,18 +1,9 @@
 // /app/api/contact/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-export const runtime = 'nodejs';            // <-- ensure Node runtime (Resend SDK needs Node)
-export const dynamic = 'force-dynamic';     // avoid caching on some hosts
-
-const resend = new Resend(process.env.RESEND_API_KEY!);
-
-// Use your verified domain here once ready, else it falls back to onboarding
-const FROM = process.env.RESEND_FROM || 'Trucast <onboarding@resend.dev>';
-const TO =
-  process.env.CONTACT_TO ||
-  process.env.RESEND_TO ||
-  'sales@trucast-ng.com';
+export const runtime = 'nodejs';         // SMTP requires Node runtime
+export const dynamic = 'force-dynamic';  // no caching for API route
 
 function isEmail(s: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim());
@@ -26,11 +17,8 @@ function esc(s: string) {
 
 async function readBody(req: NextRequest) {
   const ctype = req.headers.get('content-type') || '';
-  if (ctype.includes('application/json')) {
-    return (await req.json()) as Record<string, unknown>;
-  }
-  // supports x-www-form-urlencoded & multipart/form-data
-  const fd = await req.formData();
+  if (ctype.includes('application/json')) return (await req.json()) as Record<string, unknown>;
+  const fd = await req.formData(); // supports urlencoded & multipart
   return Object.fromEntries(fd.entries());
 }
 
@@ -49,9 +37,7 @@ export async function POST(req: NextRequest) {
   // Honeypot (spam trap). If filled, pretend success.
   const honeypot = String(data.company || data.website || '').trim();
   if (honeypot) {
-    if (redirect.startsWith('/')) {
-      return NextResponse.redirect(new URL(redirect, req.url));
-    }
+    if (redirect.startsWith('/')) return NextResponse.redirect(new URL(redirect, req.url));
     return NextResponse.json({ ok: true });
   }
 
@@ -60,20 +46,15 @@ export async function POST(req: NextRequest) {
   const phone = String(data.phone || '').trim().slice(0, 40);
   const message = String(data.message || '').trim();
 
-  if (!name) {
-    return NextResponse.json({ ok: false, error: 'Name is required' }, { status: 422 });
-  }
-  if (!isEmail(email)) {
-    return NextResponse.json({ ok: false, error: 'Valid email is required' }, { status: 422 });
-  }
+  if (!name) return NextResponse.json({ ok: false, error: 'Name is required' }, { status: 422 });
+  if (!isEmail(email)) return NextResponse.json({ ok: false, error: 'Valid email is required' }, { status: 422 });
   if (!message || message.length < 5) {
     return NextResponse.json({ ok: false, error: 'Message is too short' }, { status: 422 });
   }
 
   const subject = `New contact form: ${name}`;
   const plain =
-    `Name: ${name}\n` +
-    `Email: ${email}\n` +
+    `Name: ${name}\nEmail: ${email}\n` +
     (phone ? `Phone: ${phone}\n` : '') +
     `\nMessage:\n${message}\n`;
 
@@ -88,31 +69,41 @@ export async function POST(req: NextRequest) {
       <p style="color:#6b7280;font-size:12px">Sent from trucast-ng.com contact form</p>
     </div>`;
 
+  // SMTP settings from Vercel env
+  const host = process.env.SMTP_HOST || 'smtp-relay.brevo.com';
+  const port = Number(process.env.SMTP_PORT || 587);
+  const secure = String(process.env.SMTP_SECURE || 'false') === 'true'; // 465=true, 587=false
+  const user = process.env.SMTP_USER!;
+  const pass = process.env.SMTP_PASS!;
+  const to = (process.env.CONTACT_TO || 'yourname@gmail.com') as string;
+  const from = (process.env.CONTACT_FROM || user) as string;
+
   try {
-    const { error } = await resend.emails.send({
-      from: FROM,           // e.g., 'Trucast <hello@trucast-ng.com>' (must be verified domain)
-      to: [TO],             // where you want to receive the message
-      subject,
-      html,
-      text: plain,
-      reply_to: email,      // lets you reply directly to the sender
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: { user, pass },
     });
 
-    if (error) {
-      throw new Error(error.message || 'Email send failed');
-    }
+    await transporter.sendMail({
+      from,           // e.g., 'Trucast <sales@trucast-ng.com>'
+      to,             // your inbox (Gmail or wherever)
+      subject,
+      text: plain,
+      html,
+      replyTo: email, // <- correct key (camelCase)
+    });
 
-    if (redirect.startsWith('/')) {
-      return NextResponse.redirect(new URL(redirect, req.url));
-    }
+    if (redirect.startsWith('/')) return NextResponse.redirect(new URL(redirect, req.url));
     return NextResponse.json({ ok: true });
   } catch (err: any) {
     const msg = err?.message || 'Send failed';
-    // Show a friendly error on the contact page if redirect is local
     if (redirect.startsWith('/')) {
-      const url = new URL(redirect.replace('sent=1', ''), req.url);
-      url.searchParams.set('error', encodeURIComponent(msg));
-      return NextResponse.redirect(url);
+      const u = new URL(redirect, req.url);
+      u.searchParams.delete('sent');
+      u.searchParams.set('error', msg);
+      return NextResponse.redirect(u);
     }
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
   }
