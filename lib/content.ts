@@ -9,7 +9,6 @@ export type Guide = {
   category?: string;
 };
 
-
 export type BlogPost = {
   slug: string;
   title: string;
