@@ -134,7 +134,7 @@ At Trucast Nigeria Limited, we believe in empowering electricians with products 
   updated: '2025-07-15',
   author: 'Trucast Team',
   tags: ['product', 'quality'],
-  cover: '/images/blog/why-switches.jpg',
+  //cover: '/images/blog/why-switches.jpg',
 },
 {
   slug: 'smart-lighting-nigeria',
@@ -182,7 +182,7 @@ Quality components, local support, and fair pricing — all backed by our nation
   date: '2025-07-01',
   author: 'Trucast Team',
   tags: ['product', 'smart-lighting'],
-  cover: '/images/blog/smart-lighting.jpg',
+  //cover: '/images/blog/smart-lighting.jpg',
 },
 
 // ...next posts below
