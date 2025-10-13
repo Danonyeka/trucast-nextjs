@@ -128,9 +128,9 @@ export default function AboutPage() {
           <div className="container py-12">
             <h2 className="text-2xl font-semibold">Our Story</h2>
             <ul className="mt-4 space-y-3 text-zinc-700">
-              <li><strong>Founded:</strong> Built to solve the reliability gap in everyday electricals and lighting.</li>
-              <li><strong>Focus:</strong> Consistent quality for residential and commercial projects, nationwide.</li>
-              <li><strong>Today:</strong> 10k+ units shipped, 100+ projects serviced, 24–72h fulfillment window.</li>
+              <li><strong>Founded:</strong> Built to close the reliability gap in everyday electricals and lighting—so projects don’t fail on the basics.</li>
+              <li><strong>Focus:</strong> Consistent, spec-true quality for residential and commercial builds nationwide, with products that are screened, stress-tested, and ready for site conditions.</li>
+              <li><strong>Today:</strong> 10k+ units shipped, 100+ projects serviced, and a fast 24–72h fulfillment window—with responsive support and clear warranties to back it up.</li>
             </ul>
           </div>
         </section>
