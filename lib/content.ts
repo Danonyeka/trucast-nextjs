@@ -63,20 +63,50 @@ export const posts: BlogPost[] = [
     title: 'Save More with Bulk Purchase (Up to 15% Off)',
     excerpt:
       'Get discounted pricing on switches, sockets, LED panels and more when you buy in volume.',
-    content: `Planning a project or outfitting a property? **Trucast** offers tiered discounts
-for bulk purchases across our premium electrical accessories and lighting.
-
-- Switches & sockets  
-- LED panels & strip lights  
-- Accessories
-
-> Talk to our sales team for a tailored quote.`,
+    content: `**Smarter Savings for Every Project**
+Planning a new project, renovation, or property upgrade? **Trucast** helps contractors, retailers, and project owners save more through our **tiered bulk-purchase program.** The more you buy, the more you save — **up to 15% off** on our premium electrical accessories and lighting solutions.
+Whether you’re equipping a new development or restocking for resale, Trucast’s bulk pricing ensures you get **high performance, reliable supply, and unbeatable value.**
+________________________________________
+**Eligible Product Categories**
+Our bulk discount program covers nearly all Trucast product lines, giving you flexibility to build a complete solution for your project:
+⚡ **Switches & Sockets**
+Durable, stylish, and certified for safety. Choose from classic to modern flat-plate designs, all engineered for long life and easy installation.
+💡 **LED Lighting**
+Energy-efficient **LED bulbs, downlights, recessed lights, panel lights**, and **strip lights** that deliver bright, consistent illumination while reducing energy costs.
+🧠 **Smart Home Devices**
+Bring intelligence to every space with **smart switches, smart plugs, motion sensors, Wi-Fi relays**, and **smart locks** — all compatible with major automation platforms.
+🔌 **Electrical Accessories**
+High-quality **extension cords, connectors, cable clips, switch boxes**, and **mounting accessories** — everything you need for clean, reliable installation.
+🧱 **Aluminium Profiles & Strip Housings**
+Perfect for LED strip integration — our Alu profiles enhance aesthetics, heat dissipation, and longevity, ideal for retail, residential, and hospitality lighting designs.
+________________________________________
+**Tiered Discount Structure**
+We offer progressive discounts based on your total purchase volume
+For recurring customers and project-based partnerships, Trucast offers **custom quotes** and **dedicated account support** to simplify your procurement process.
+________________________________________
+**Why Buy in Bulk from Trucast**
+**•	Guaranteed Stock Availability:** Avoid project delays with our ready-to-ship inventory.
+**•	Nationwide Delivery:** We deliver anywhere in Nigeria within 24–72 hours.
+**•	Verified Quality:** Every item passes internal QC before dispatch.
+**•	After-Sales Support:** Our technical team is always available for product guidance.
+________________________________________
+**How to Order**
+Bulk orders can be placed directly through:
+📞 **WhatsApp Chat**
+📧 **Email:** sales@trucast-ng.com
+Or simply fill the **Contact Form** on our website, and our sales team will send a **tailored quotation** within 24 hours.
+________________________________________
+**Power Every Project with Trucast**
+At **Trucast Nigeria Limited**, we understand that professionals need both performance and price advantage. Our bulk purchase program empowers electricians, retailers, and contractors to stay competitive while maintaining the highest standards of safety and style.
+**Smart Homes. Smart Living.**
+**Save more — build better with Trucast.**
+`,
     body:
       `Planning a project or outfitting a property? Trucast offers tiered discounts for bulk purchases across our premium electrical accessories and lighting.
 
 Talk to our sales team for a tailored quote.`,
-    date: '2025-08-20',
-    updated: '2025-09-01', // optional; remove or change as needed
+    date: '2025-10-13',
+    updated: '2025-10-13', // optional; remove or change as needed
     author: 'Trucast Team',
     tags: ['promotions', 'pricing'],
     // cover: '/images/blog/bulk-pricing.jpg',
