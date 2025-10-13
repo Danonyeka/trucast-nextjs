@@ -94,15 +94,11 @@ From materials to design, **Trucast** switches and sockets are engineered with e
 
 Electricians know that high-quality electrical accessories make their work easier, faster, and safer. That’s why Trucast switches and sockets are becoming the top choice on residential, commercial, and industrial projects nationwide.
 
----
-
-### 1. Robust Internal Components  
+### **1. Robust Internal Components**  
 Behind the clean exterior is superior engineering. Trucast switches and sockets are built with **high-conductivity copper contacts**, **flame-retardant housings**, and **precision-molded parts** that ensure firm connections and consistent performance.  
 Once installed, these fittings deliver long-term reliability even in demanding conditions.
 
----
-
-### 2. Clean, Modern Styling  
+### **2. Clean, Modern Styling**  
 Beyond performance, Trucast products bring aesthetic appeal to any space. The sleek, minimalist design blends seamlessly with both **modern and traditional interiors**, giving customers a refined finish that enhances the overall look of their homes and offices.  
 Available in **matte white, brushed silver, and glossy finishes**, the range offers design flexibility for architects and interior designers.
 
