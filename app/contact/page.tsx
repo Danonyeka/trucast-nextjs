@@ -1,6 +1,7 @@
 // app/contact/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Script from 'next/script';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -63,6 +64,12 @@ export default function ContactPage({
 
   return (
     <>
+      {/* Turnstile loader (works without Cloudflare DNS) */}
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        strategy="afterInteractive"
+      />
+
       {/* SEO: JSON-LD */}
       <script
         type="application/ld+json"
@@ -113,7 +120,7 @@ export default function ContactPage({
           </Link>
         </div>
 
-        {/* Minimal, no-JS form */}
+        {/* Minimal, no-JS form with Turnstile + honeypot */}
         <form
           className="mt-8 grid max-w-2xl gap-5"
           method="post"
@@ -123,7 +130,7 @@ export default function ContactPage({
           {/* Where the API should redirect on success */}
           <input type="hidden" name="redirect" value="/contact?sent=1" />
 
-          {/* Honeypot (spam trap) */}
+          {/* Honeypot (spam trap) — keep name in sync with API */}
           <input
             type="text"
             name="website"
@@ -183,6 +190,21 @@ export default function ContactPage({
               aria-required="true"
             />
           </label>
+
+          {/* Cloudflare Turnstile widget
+              This injects a hidden input named `cf-turnstile-response` into the form */}
+          <div
+            className="cf-turnstile"
+            data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+            data-action="contact"
+            data-theme="auto"
+          />
+          <noscript>
+            <div className="text-sm text-zinc-600">
+              Please enable JavaScript to verify you’re human before submitting
+              this form.
+            </div>
+          </noscript>
 
           <div>
             <button
