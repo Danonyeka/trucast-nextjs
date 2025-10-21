@@ -1,65 +1,124 @@
 // /app/api/contact/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
+import { NextRequest, NextResponse } from 'next/server'
+import nodemailer from 'nodemailer'
 
-export const runtime = 'nodejs';         // SMTP requires Node runtime
-export const dynamic = 'force-dynamic';  // no caching for API route
+export const runtime = 'nodejs'         // SMTP requires Node runtime
+export const dynamic = 'force-dynamic'  // no caching for API route
 
 function isEmail(s: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim());
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim())
 }
 function esc(s: string) {
   return String(s || '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '&gt;')
 }
 
 async function readBody(req: NextRequest) {
-  const ctype = req.headers.get('content-type') || '';
-  if (ctype.includes('application/json')) return (await req.json()) as Record<string, unknown>;
-  const fd = await req.formData(); // supports urlencoded & multipart
-  return Object.fromEntries(fd.entries());
+  const ctype = req.headers.get('content-type') || ''
+  if (ctype.includes('application/json')) return (await req.json()) as Record<string, unknown>
+  const fd = await req.formData() // supports urlencoded & multipart
+  return Object.fromEntries(fd.entries())
 }
 
 export async function POST(req: NextRequest) {
-  let data: any = {};
+  let data: any = {}
   try {
-    data = await readBody(req);
+    data = await readBody(req)
   } catch {
-    return NextResponse.json({ ok: false, error: 'Invalid request body' }, { status: 400 });
+    return NextResponse.json({ ok: false, error: 'Invalid request body' }, { status: 400 })
   }
 
   // redirect back to /contact on success
   const redirect =
-    typeof data.redirect === 'string' && data.redirect ? String(data.redirect) : '/contact?sent=1';
+    typeof data.redirect === 'string' && data.redirect ? String(data.redirect) : '/contact?sent=1'
 
   // Honeypot (spam trap). If filled, pretend success.
-  const honeypot = String(data.company || data.website || '').trim();
+  const honeypot = String(data.company || data.website || '').trim()
   if (honeypot) {
-    if (redirect.startsWith('/')) return NextResponse.redirect(new URL(redirect, req.url));
-    return NextResponse.json({ ok: true });
+    if (redirect.startsWith('/')) return NextResponse.redirect(new URL(redirect, req.url))
+    return NextResponse.json({ ok: true })
   }
 
-  const name = String(data.name || '').trim().slice(0, 100);
-  const email = String(data.email || '').trim();
-  const phone = String(data.phone || '').trim().slice(0, 40);
-  const message = String(data.message || '').trim();
+  // ---- Cloudflare Turnstile verification ----
+  const token =
+    String(
+      data['cf-turnstile-response'] ??
+        data['cf_turnstile_response'] ?? // just in case some libs rename it
+        ''
+    )
 
-  if (!name) return NextResponse.json({ ok: false, error: 'Name is required' }, { status: 422 });
-  if (!isEmail(email)) return NextResponse.json({ ok: false, error: 'Valid email is required' }, { status: 422 });
+  // Fail closed if CAPTCHA token missing
+  if (!token) {
+    const errResp = { ok: false, error: 'Captcha is required' }
+    if (redirect.startsWith('/')) {
+      const u = new URL(redirect, req.url)
+      u.searchParams.delete('sent')
+      u.searchParams.set('error', 'Captcha is required')
+      return NextResponse.redirect(u)
+    }
+    return NextResponse.json(errResp, { status: 400 })
+  }
+
+  const ip =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    // @ts-ignore - not always present in Next
+    req.ip ||
+    ''
+
+  try {
+    const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        secret: process.env.TURNSTILE_SECRET_KEY || '',
+        response: token,
+        remoteip: ip,
+      }),
+    }).then(r => r.json() as Promise<{ success: boolean; ['error-codes']?: string[] }>)
+    if (!verifyRes.success) {
+      const errMsg =
+        'Captcha failed' + (verifyRes['error-codes']?.length ? ` (${verifyRes['error-codes'].join(',')})` : '')
+      if (redirect.startsWith('/')) {
+        const u = new URL(redirect, req.url)
+        u.searchParams.delete('sent')
+        u.searchParams.set('error', errMsg)
+        return NextResponse.redirect(u)
+      }
+      return NextResponse.json({ ok: false, error: errMsg }, { status: 400 })
+    }
+  } catch {
+    const errMsg = 'Captcha verification error'
+    if (redirect.startsWith('/')) {
+      const u = new URL(redirect, req.url)
+      u.searchParams.delete('sent')
+      u.searchParams.set('error', errMsg)
+      return NextResponse.redirect(u)
+    }
+    return NextResponse.json({ ok: false, error: errMsg }, { status: 400 })
+  }
+  // ---- End Turnstile verification ----
+
+  const name = String(data.name || '').trim().slice(0, 100)
+  const email = String(data.email || '').trim()
+  const phone = String(data.phone || '').trim().slice(0, 40)
+  const message = String(data.message || '').trim()
+
+  if (!name) return NextResponse.json({ ok: false, error: 'Name is required' }, { status: 422 })
+  if (!isEmail(email)) return NextResponse.json({ ok: false, error: 'Valid email is required' }, { status: 422 })
   if (!message || message.length < 5) {
-    return NextResponse.json({ ok: false, error: 'Message is too short' }, { status: 422 });
+    return NextResponse.json({ ok: false, error: 'Message is too short' }, { status: 422 })
   }
 
-  const subject = `New contact form: ${name}`;
+  const subject = `New contact form: ${name}`
   const plain =
     `Name: ${name}\nEmail: ${email}\n` +
     (phone ? `Phone: ${phone}\n` : '') +
-    `\nMessage:\n${message}\n`;
+    `\nMessage:\n${message}\n`
 
-  const html =
-    `<div style="font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu">
+  const html = `
+    <div style="font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu">
       <h2 style="margin:0 0 12px 0">New Contact Form</h2>
       <p><strong>Name:</strong> ${esc(name)}</p>
       <p><strong>Email:</strong> ${esc(email)}</p>
@@ -67,16 +126,16 @@ export async function POST(req: NextRequest) {
       <p style="white-space:pre-wrap"><strong>Message:</strong><br>${esc(message)}</p>
       <hr style="margin:16px 0;border:0;border-top:1px solid #eee" />
       <p style="color:#6b7280;font-size:12px">Sent from trucast-ng.com contact form</p>
-    </div>`;
+    </div>`
 
-  // SMTP settings from Vercel env
-  const host = process.env.SMTP_HOST || 'smtp-relay.brevo.com';
-  const port = Number(process.env.SMTP_PORT || 587);
-  const secure = String(process.env.SMTP_SECURE || 'false') === 'true'; // 465=true, 587=false
-  const user = process.env.SMTP_USER!;
-  const pass = process.env.SMTP_PASS!;
-  const to = (process.env.CONTACT_TO || 'yourname@gmail.com') as string;
-  const from = (process.env.CONTACT_FROM || user) as string;
+  // SMTP settings from env
+  const host = process.env.SMTP_HOST || 'smtp-relay.brevo.com'
+  const port = Number(process.env.SMTP_PORT || 587)
+  const secure = String(process.env.SMTP_SECURE || 'false') === 'true' // 465=true, 587=false
+  const user = process.env.SMTP_USER!
+  const pass = process.env.SMTP_PASS!
+  const to = (process.env.CONTACT_TO || 'yourname@gmail.com') as string
+  const from = (process.env.CONTACT_FROM || user) as string
 
   try {
     const transporter = nodemailer.createTransport({
@@ -84,31 +143,31 @@ export async function POST(req: NextRequest) {
       port,
       secure,
       auth: { user, pass },
-    });
+    })
 
     await transporter.sendMail({
       from,           // e.g., 'Trucast <sales@trucast-ng.com>'
-      to,             // your inbox (Gmail or wherever)
+      to,             // your inbox
       subject,
       text: plain,
       html,
-      replyTo: email, // <- correct key (camelCase)
-    });
+      replyTo: email, // camelCase key
+    })
 
-    if (redirect.startsWith('/')) return NextResponse.redirect(new URL(redirect, req.url));
-    return NextResponse.json({ ok: true });
+    if (redirect.startsWith('/')) return NextResponse.redirect(new URL(redirect, req.url))
+    return NextResponse.json({ ok: true })
   } catch (err: any) {
-    const msg = err?.message || 'Send failed';
+    const msg = err?.message || 'Send failed'
     if (redirect.startsWith('/')) {
-      const u = new URL(redirect, req.url);
-      u.searchParams.delete('sent');
-      u.searchParams.set('error', msg);
-      return NextResponse.redirect(u);
+      const u = new URL(redirect, req.url)
+      u.searchParams.delete('sent')
+      u.searchParams.set('error', msg)
+      return NextResponse.redirect(u)
     }
-    return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+    return NextResponse.json({ ok: false, error: msg }, { status: 500 })
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ ok: false, error: 'Use POST with JSON or form data' });
+  return NextResponse.json({ ok: false, error: 'Use POST with JSON or form data' })
 }
