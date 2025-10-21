@@ -1,7 +1,10 @@
 // app/contact/page.tsx
+'use client';
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Script from 'next/script';
+import { useEffect, useState } from 'react';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -62,12 +65,18 @@ export default function ContactPage({
   const sent = searchParams?.sent === '1';
   const err = searchParams?.error;
 
+  // Ensure widget renders only after script is ready (prevents “invisible” widget issues)
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
+  const [tsReady, setTsReady] = useState(false);
+  useEffect(() => setTsReady(true), []);
+
   return (
     <>
-      {/* Turnstile loader (works without Cloudflare DNS) */}
+      {/* Turnstile loader */}
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js"
         strategy="afterInteractive"
+        onReady={() => setTsReady(true)}
       />
 
       {/* SEO: JSON-LD */}
@@ -191,14 +200,20 @@ export default function ContactPage({
             />
           </label>
 
-          {/* Cloudflare Turnstile widget
-              This injects a hidden input named `cf-turnstile-response` into the form */}
-          <div
-            className="cf-turnstile"
-            data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
-            data-action="contact"
-            data-theme="auto"
-          />
+          {/* Cloudflare Turnstile widget (VISIBLE) */}
+          {!siteKey && (
+            <p className="text-sm text-red-600">
+              Captcha not configured (missing NEXT_PUBLIC_TURNSTILE_SITE_KEY).
+            </p>
+          )}
+          {siteKey && tsReady && (
+            <div
+              className="cf-turnstile"
+              data-sitekey={siteKey}
+              data-action="contact"
+              data-theme="auto"
+            />
+          )}
           <noscript>
             <div className="text-sm text-zinc-600">
               Please enable JavaScript to verify you’re human before submitting
