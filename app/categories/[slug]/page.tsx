@@ -2,19 +2,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import nextDynamic from 'next/dynamic';
+import ProductEnquiryLink from '@/components/ProductEnquiryLink';
 import { permanentRedirect } from 'next/navigation';
 import { byCategory, deriveStatus, displayPriceNGN } from '@/lib/products';
 import type { Product } from '@/lib/products';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
-
-// Load client component only on the client to avoid SSR crashes
-const AddToCartButton = nextDynamic(
-  () => import('@/components/AddToCartButton'),
-  { ssr: false, loading: () => <button className="btn" disabled>Loading…</button> }
-);
 
 function NGN(n: number) {
   return new Intl.NumberFormat('en-NG', {
@@ -104,8 +98,8 @@ export default async function CategoryPage({ params }: { params: { slug: string 
                 </div>
               </Link>
 
-              <div className="mt-4 flex gap-3">
-                <AddToCartButton product={p} />
+              <div className="mt-4 flex flex-wrap gap-3">
+                <ProductEnquiryLink product={p} />
                 <Link href={`/p/${encodeURIComponent(p.slug || p.sku)}`} className="btn btn-outline">
                   View
                 </Link>

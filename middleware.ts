@@ -14,6 +14,13 @@ export function middleware(req: NextRequest) {
   const host = req.headers.get('host') || ''
   const isProdHost = PROD_HOSTS.has(host)
 
+  // Retire saved cart and checkout links in the enquiry-only catalog.
+  if (/^\/(cart|checkout)(\/|$)/i.test(p)) {
+    url.pathname = '/categories'
+    url.search = ''
+    return NextResponse.redirect(url, 307)
+  }
+
   // Let Next handle internal runtime stuff
   if (p.startsWith('/_next') || p.startsWith('/api')) {
     return NextResponse.next()

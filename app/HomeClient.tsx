@@ -57,7 +57,7 @@ export default function HomeClient() {
                 Retail and <strong>wholesale</strong> support with fast nationwide fulfillment.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/categories" className="btn-primary" onClick={() => track('shop_now_click', { place: 'hero' })}>Shop Now</Link>
+                <Link href="/categories" className="btn-primary" onClick={() => track('browse_products_click', { place: 'hero' })}>Browse Products</Link>
                 <Link href="/wholesale" className="btn-outline" onClick={() => track('wholesale_enquiry_click', { place: 'hero' })}>Wholesale &amp; Bulk</Link>
                 <Link href="#product-enquiry" className="btn-outline" onClick={() => track('contact_sales_click', { place: 'hero' })}>Contact Sales</Link>
               </div>
@@ -130,13 +130,13 @@ export default function HomeClient() {
             <div className="card p-5">
               <p className="font-semibold mb-3">Payment &amp; Delivery</p>
               <ul className="space-y-2 text-sm text-zinc-700">
-                <li className="flex items-start gap-2"><CheckIcon /> Secure payments (Transfer / POS / Paystack)</li>
+                <li className="flex items-start gap-2"><CheckIcon /> Payment arrangements confirmed with sales</li>
                 <li className="flex items-start gap-2"><CheckIcon /> Nationwide delivery in 1–5 business days</li>
                 <li className="flex items-start gap-2"><CheckIcon /> Pay on delivery in select locations</li>
               </ul>
             </div>
             <div className="card p-5">
-              <p className="font-semibold mb-3">Why shop with Trucast</p>
+              <p className="font-semibold mb-3">Product support from Trucast</p>
               <ul className="space-y-2 text-sm text-zinc-700">
                 <li className="flex items-start gap-2"><CheckIcon /> Genuine products, SON compliant</li>
                 <li className="flex items-start gap-2"><CheckIcon /> Warranty: 12-month limited warranty on select items</li>

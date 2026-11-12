@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from 'next';
 import dynamic from 'next/dynamic';
 import './(site)/_styles/globals.css';
 import { site } from '@/lib/site';
-import { CartProvider } from '@/components/cart/CartContext';
 import { ToastProvider } from '@/components/ui/Toast';
 import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
@@ -110,7 +109,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
 
-        <CartProvider>
           <ToastProvider>
             {/* Anchor for "Back to top" links */}
             <div id="top" />
@@ -156,7 +154,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               compact
             />
           </ToastProvider>
-        </CartProvider>
       </body>
     </html>
   );

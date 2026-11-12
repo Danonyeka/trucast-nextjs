@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { catalog, findBySlugOrSku, isOutOfStock, displayPriceNGN } from '@/lib/products';
-import AddToCartButton from '@/components/AddToCartButton';
+import ProductEnquiryLink from '@/components/ProductEnquiryLink';
 
 // --- helpers (local, so we don't depend on anything else) ---
 const clamp = (s: string, max = 160) =>
@@ -69,10 +69,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
           <p className="mt-4 text-zinc-700">{p.desc}</p>
 
-          <div className="mt-6 flex items-center gap-3">
-            <AddToCartButton product={p} className="btn" />
-            <Link href="/cart" className="btn btn-outline">
-              Go to Cart
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <ProductEnquiryLink product={p} />
+            <Link href="/categories" className="btn btn-outline">
+              Browse products
             </Link>
           </div>
 

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { Product } from '@/lib/products';
 import { isOutOfStock } from '@/lib/products';
-import AddToCartButton from './AddToCartButton';
+import ProductEnquiryLink from './ProductEnquiryLink';
 
 // local currency formatter
 function NGN(n: number) {
@@ -53,9 +53,9 @@ export default function ProductCard({ product }: { product: Product }) {
 
         <p className="mt-2 line-clamp-2 text-sm text-zinc-600">{product.desc}</p>
 
-        <div className="mt-4 flex gap-3">
-          {/* AddToCartButton auto-disables when out of stock */}
-          <AddToCartButton product={product} />
+        <div className="mt-4 flex flex-wrap gap-3">
+
+          <ProductEnquiryLink product={product} />
           <Link href={`/p/${encodeURIComponent(product.slug || product.sku)}`} className="btn btn-outline">
             View
           </Link>

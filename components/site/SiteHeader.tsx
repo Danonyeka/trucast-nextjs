@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import SmartImage from '@/components/SmartImage';
-import CartButton from '@/components/cart/CartButton';
 import { site } from '@/lib/site';
 
 export default function SiteHeader() {
@@ -31,13 +30,12 @@ export default function SiteHeader() {
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-5 text-sm">
           <Link href="/" className="link">Home</Link>
-          <Link href="/categories" className="link">Shop</Link>
+          <Link href="/categories" className="link">Products</Link>
           <Link href="/search" className="link">Search</Link>
           <Link href="/wholesale" className="link">Wholesale</Link>
           <Link href="/guides" className="link">Guides</Link>
           <Link href="/workflowkits" className="link">WorkflowKits</Link>
           <Link href="/contact" className="link">Contact</Link>
-          <CartButton />
         </nav>
 
         {/* Mobile menu button */}
@@ -60,15 +58,12 @@ export default function SiteHeader() {
         <div id="mobile-navigation" className="lg:hidden border-t border-zinc-200 bg-white shadow-sm">
           <div className="container py-3 grid gap-3 text-sm">
             <Link href="/" className="link" onClick={() => setOpen(false)}>Home</Link>
-            <Link href="/categories" className="link" onClick={() => setOpen(false)}>Shop</Link>
+            <Link href="/categories" className="link" onClick={() => setOpen(false)}>Products</Link>
             <Link href="/search" className="link" onClick={() => setOpen(false)}>Search</Link>
             <Link href="/wholesale" className="link" onClick={() => setOpen(false)}>Wholesale</Link>
             <Link href="/guides" className="link" onClick={() => setOpen(false)}>Guides</Link>
             <Link href="/workflowkits" className="link" onClick={() => setOpen(false)}>WorkflowKits</Link>
             <Link href="/contact" className="link" onClick={() => setOpen(false)}>Contact</Link>
-            <div className="pt-2">
-              <CartButton />
-            </div>
           </div>
         </div>
       )}
