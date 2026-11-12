@@ -11,6 +11,7 @@ const url = (path: string) => `${BASE_URL}${path}`
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
+    { url: url('/workflowkits'), lastModified: BUILD_TIME, changeFrequency: 'monthly', priority: 0.6 },
     { url: url('/'),              lastModified: BUILD_TIME, changeFrequency: 'weekly',  priority: 1.0 },
     { url: url('/about'),         lastModified: BUILD_TIME, changeFrequency: 'yearly',  priority: 0.6 },
     { url: url('/categories'),    lastModified: BUILD_TIME, changeFrequency: 'weekly',  priority: 0.8 },

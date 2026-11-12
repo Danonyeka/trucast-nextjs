@@ -6,12 +6,12 @@ export const dynamic = 'force-dynamic'; // avoid SSG crash
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: 'Shop by Category | Trucast Nigeria',
+  title: 'Product Catalog | Trucast Nigeria',
   description:
-    'Shop by category: electrical accessories in Nigeria—switches, sockets, LED lighting, smart devices and more. Secure checkout and fast nationwide delivery.',
+    'Browse product categories: electrical accessories in Nigeria—switches, sockets, LED lighting, smart devices and more. Enquire on WhatsApp for pricing, availability and delivery.',
   alternates: { canonical: '/categories' },
   openGraph: {
-    title: 'Shop by Category | Trucast Nigeria',
+    title: 'Product Catalog | Trucast Nigeria',
     description:
       'Explore Trucast product categories for retail and wholesale orders.',
     url: '/categories',
@@ -102,8 +102,8 @@ export default async function CategoriesIndex() {
       />
 
       <div className="container py-16">
-        <h1 className="text-3xl font-bold">Shop by Category</h1>
-        <p className="mt-2 text-zinc-600">Browse our most requested ranges.</p>
+        <h1 className="text-3xl font-bold">Product Catalog</h1><Link className="btn-primary mt-4" href="/search">Search &amp; filter all products ↗</Link>
+        <p className="mt-2 text-zinc-600">Choose a category or search across the complete product catalog.</p>
 
         {list.length === 0 ? (
           <p className="mt-6 text-sm text-zinc-600">

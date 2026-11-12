@@ -91,7 +91,7 @@ export default function ContactForm() {
         {/* Turnstile widget (VISIBLE). This injects a hidden input named `cf-turnstile-response`. */}
         {!siteKey && (
           <p className="text-sm text-red-600">
-            Captcha not configured (missing NEXT_PUBLIC_TURNSTILE_SITE_KEY).
+            The online form is temporarily unavailable. Please contact sales by WhatsApp or email.
           </p>
         )}
         {siteKey && tsReady && (
@@ -112,6 +112,7 @@ export default function ContactForm() {
         <div>
           <button
             type="submit"
+            disabled={!siteKey}
             className="inline-flex items-center rounded-xl bg-brand px-5 py-3 font-semibold text-white hover:bg-brand/90 focus:outline-none focus:ring-2 focus:ring-brand/40"
           >
             Send

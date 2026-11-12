@@ -1,3 +1,4 @@
+import ProjectQuoteForm from '@/components/ProjectQuoteForm';
 // app/wholesale/page.tsx
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function WholesalePage() {
+export default function WholesalePage({ searchParams }: { searchParams?: { sku?: string } }) {
   return (
     <div className="container">
       {/* Hero */}
@@ -32,7 +33,7 @@ export default function WholesalePage() {
           Wholesale &amp; Bulk Orders
         </h1>
         <p className="mt-3 text-zinc-600 max-w-2xl">
-          Get factory-level pricing on LED lights, switches, sockets and fittings.
+          Prepare a tailored quote for LED lights, switches, sockets and smart-home products.
           Ideal for contractors, distributors and large projects.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
@@ -50,6 +51,8 @@ export default function WholesalePage() {
           </a>
         </div>
       </section>
+
+      <section className="pb-10" id="project-quote"><ProjectQuoteForm initialSku={searchParams?.sku || ''} /></section>
 
       {/* Value props */}
       <section className="grid md:grid-cols-3 gap-4">
@@ -79,7 +82,7 @@ export default function WholesalePage() {
           <div>
             <h3 className="font-semibold">Ready to place a bulk order?</h3>
             <p className="text-sm text-zinc-600 mt-1">
-              Send your BOQ or list to get a same-day quote.
+              Send your BOQ or list so sales can confirm specifications, pricing and delivery.
             </p>
           </div>
           <div className="flex gap-3">

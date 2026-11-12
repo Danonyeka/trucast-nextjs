@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import SmartImage from '@/components/SmartImage';
-import CartButton from '@/components/cart/CartButton';
 import { site } from '@/lib/site';
 
 export default function SiteHeader() {
@@ -29,21 +28,22 @@ export default function SiteHeader() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-5 text-sm">
-          <Link href="/" className="link" aria-current="page">Home</Link>
-          <Link href="/categories" className="link">Shop</Link>
+        <nav className="hidden lg:flex items-center gap-5 text-sm">
+          <Link href="/" className="link">Home</Link>
+          <Link href="/categories" className="link">Products</Link>
           <Link href="/search" className="link">Search</Link>
           <Link href="/wholesale" className="link">Wholesale</Link>
           <Link href="/guides" className="link">Guides</Link>
-          <Link href="/about" className="link">About</Link> 
+          <Link href="/workflowkits" className="link">WorkflowKits</Link>
           <Link href="/contact" className="link">Contact</Link>
-          <CartButton />
         </nav>
 
         {/* Mobile menu button */}
         <button
           type="button"
-          className="md:hidden p-2 rounded-lg border border-zinc-300"
+          className="lg:hidden p-2 rounded-lg border border-zinc-300"
+          aria-expanded={open}
+          aria-controls="mobile-navigation"
           aria-label={open ? 'Close menu' : 'Open menu'}
           onClick={() => setOpen(v => !v)}
         >
@@ -55,18 +55,15 @@ export default function SiteHeader() {
 
       {/* Mobile slide-down panel */}
       {open && (
-        <div className="md:hidden border-t border-zinc-200 bg-white shadow-sm">
+        <div id="mobile-navigation" className="lg:hidden border-t border-zinc-200 bg-white shadow-sm">
           <div className="container py-3 grid gap-3 text-sm">
             <Link href="/" className="link" onClick={() => setOpen(false)}>Home</Link>
-            <Link href="/categories" className="link" onClick={() => setOpen(false)}>Shop</Link>
+            <Link href="/categories" className="link" onClick={() => setOpen(false)}>Products</Link>
             <Link href="/search" className="link" onClick={() => setOpen(false)}>Search</Link>
             <Link href="/wholesale" className="link" onClick={() => setOpen(false)}>Wholesale</Link>
             <Link href="/guides" className="link" onClick={() => setOpen(false)}>Guides</Link>
-            <Link href="/about" className="link" onClick={() => setOpen(false)}>About</Link>
+            <Link href="/workflowkits" className="link" onClick={() => setOpen(false)}>WorkflowKits</Link>
             <Link href="/contact" className="link" onClick={() => setOpen(false)}>Contact</Link>
-            <div className="pt-2">
-              <CartButton />
-            </div>
           </div>
         </div>
       )}
