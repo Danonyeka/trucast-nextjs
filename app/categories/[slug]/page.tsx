@@ -4,19 +4,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ProductEnquiryLink from '@/components/ProductEnquiryLink';
 import { permanentRedirect } from 'next/navigation';
-import { byCategory, deriveStatus, displayPriceNGN } from '@/lib/products';
+import { byCategory, deriveStatus } from '@/lib/products';
 import type { Product } from '@/lib/products';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-function NGN(n: number) {
-  return new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-    maximumFractionDigits: 0,
-  }).format(n);
-}
 
 const imgSrc = (s?: string) =>
   !s ? '/products/placeholder.png' : /^(https?:)?\//.test(s) ? s : `/${s}`;
@@ -70,7 +63,6 @@ export default async function CategoryPage({ params }: { params: { slug: string 
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((p) => {
           const out = deriveStatus(p) !== 'in_stock';
-          const price = displayPriceNGN(p);
 
           return (
             <div key={p.sku} className="card p-5">
@@ -93,7 +85,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
                 <div className="mt-3">
                   <p className="font-semibold">{p.name}</p>
                   <p className="text-xs text-zinc-500">SKU: {p.sku}</p>
-                  <p className="mt-1 font-bold">{out ? 'Currently unavailable' : typeof price === 'number' && price > 0 ? NGN(price) : 'Ask for a quote'}</p>
+                  <p className="mt-1 font-bold">{out ? 'Currently unavailable' : 'Contact us for pricing'}</p>
                   <p className="mt-1 line-clamp-2 text-sm text-zinc-600">{p.desc}</p>
                 </div>
               </Link>

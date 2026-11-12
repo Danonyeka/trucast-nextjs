@@ -3,20 +3,13 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { catalog, findBySlugOrSku, isOutOfStock, displayPriceNGN } from '@/lib/products';
+import { catalog, findBySlugOrSku, isOutOfStock } from '@/lib/products';
 import ProductEnquiryLink from '@/components/ProductEnquiryLink';
 
 // --- helpers (local, so we don't depend on anything else) ---
 const clamp = (s: string, max = 160) =>
   s.length <= max ? s : s.slice(0, max - 1).replace(/\s+\S*$/, '') + '…';
 
-function formatNGN(n: number) {
-  return new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-    maximumFractionDigits: 0,
-  }).format(n);
-}
 
 // ✅ Unique, product-specific meta for each product page
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
@@ -29,12 +22,10 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     };
   }
 
-  const price = displayPriceNGN(p);
-  const priceText = typeof price === 'number' ? ` Price: ${formatNGN(price)}.` : '';
   const baseDesc = (p.desc || '').replace(/\s+/g, ' ').trim();
 
   const description = clamp(
-    `${p.name}: ${baseDesc}${priceText} Buy genuine Trucast electrical accessories with fast nationwide delivery.`
+    `${p.name}: ${baseDesc} Buy genuine Trucast electrical accessories with fast nationwide delivery.`
   );
 
   return {
@@ -49,7 +40,6 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const p = findBySlugOrSku(decodeURIComponent(params.slug));
   if (!p) return notFound();
 
-  const price = displayPriceNGN(p);
   const out = isOutOfStock(p);
 
   return (
@@ -63,9 +53,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <h1 className="text-4xl font-bold leading-tight">{p.name}</h1>
           <p className="mt-1 text-sm text-zinc-500">SKU: {p.sku}</p>
 
-          {price !== undefined && (
-            <p className="mt-4 text-3xl font-extrabold">{formatNGN(price)}</p>
-          )}
+<p className="mt-4 text-lg font-semibold">Contact us for pricing</p>
 
           <p className="mt-4 text-zinc-700">{p.desc}</p>
 
@@ -78,7 +66,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
           {out && (
             <p className="mt-2 text-sm text-amber-700">
-              Currently out of stock — price hidden until restock.
+              Currently out of stock — ask about availability.
             </p>
           )}
         </div>

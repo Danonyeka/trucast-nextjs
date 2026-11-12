@@ -5,14 +5,6 @@ import type { Product } from '@/lib/products';
 import { isOutOfStock } from '@/lib/products';
 import ProductEnquiryLink from './ProductEnquiryLink';
 
-// local currency formatter
-function NGN(n: number) {
-  return new Intl.NumberFormat('en-NG', {
-    style: 'currency',
-    currency: 'NGN',
-    maximumFractionDigits: 0,
-  }).format(n);
-}
 
 export default function ProductCard({ product }: { product: Product }) {
   const out = isOutOfStock(product);
@@ -48,7 +40,7 @@ export default function ProductCard({ product }: { product: Product }) {
         {out ? (
           <p className="mt-1 font-semibold text-amber-700">Out of stock</p>
         ) : (
-          <p className="mt-1 font-bold">{NGN(product.priceNGN)}</p>
+          <p className="mt-1 text-sm text-zinc-600">Contact us for pricing</p>
         )}
 
         <p className="mt-2 line-clamp-2 text-sm text-zinc-600">{product.desc}</p>
