@@ -8,6 +8,7 @@ import { site } from '@/lib/site';
 import { track } from '@/lib/analytics';
 import CategoryCard from '@/components/cards/CategoryCard';
 import ProductEnquiry from '@/components/ProductEnquiry';
+import HeroSlider from '@/components/HeroSlider';
 
 function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -64,7 +65,7 @@ export default function HomeClient() {
             </div>
 
             {/* Right column: Slider */}
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-white"><Image src="/images/hero/hero-1@1280.webp" alt="Trucast switches and electrical accessories" fill priority sizes="(max-width: 1024px) 100vw, 50vw" className="object-contain" /></div>
+            <HeroSlider />
           </div>
         </section>
 
