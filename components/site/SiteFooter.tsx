@@ -34,6 +34,7 @@ export default function SiteFooter() {
         <div>
           <p className="font-semibold">Quick links</p>
           <ul className="mt-2 space-y-2 text-sm text-zinc-300">
+            <li><Link className="footer-link" href="/about">About Trucast</Link></li>
             <li><Link className="footer-link" href="/categories">Product catalog</Link></li>
             <li><Link className="footer-link" href="/workflowkits">WorkflowKits Digital Technology</Link></li>
             <li><Link className="footer-link" href="/returns">Returns &amp; warranty</Link></li>

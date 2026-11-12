@@ -1,3 +1,4 @@
+import { site } from '@/lib/site';
 // app/contact/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -38,7 +39,7 @@ const contactJsonLd = {
         '@type': 'ContactPoint',
         contactType: 'customer service',
         telephone: `+${PHONE}`,
-        email: 'support@trucast-ng.com',
+        email: site.emailPrimary,
         areaServed: 'NG',
         availableLanguage: ['en'],
       },
@@ -91,7 +92,7 @@ export default function ContactPage({
             role="alert"
             className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800"
           >
-            {decodeURIComponent(err)}
+            {err}
           </div>
         )}
 
@@ -114,6 +115,11 @@ export default function ContactPage({
           </Link>
         </div>
 
+        <div className="mt-10 grid md:grid-cols-2 gap-6">
+          <section className="card p-6"><h2 className="text-xl font-semibold">Visit or call Trucast</h2><p className="mt-3 text-zinc-600">{site.address}</p><p className="mt-3 text-sm">Opening hours: {site.hours}</p><p className="mt-3"><a className="link" href={`tel:${site.phone}`}>{site.phoneDisplay}</a></p><a className="btn-outline mt-4" target="_blank" rel="noopener noreferrer" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.address)}`}>Find directions ↗</a></section>
+          <section className="card p-6"><h2 className="text-xl font-semibold">Choose the right enquiry</h2><ul className="mt-4 space-y-4"><li><Link className="link" href="/wholesale">Project quotes &amp; wholesale requirements ↗</Link><p className="text-sm text-zinc-600">Prepare quantities, delivery details and a BOQ.</p></li><li><Link className="link" href="/returns">Returns &amp; product support ↗</Link><p className="text-sm text-zinc-600">Check eligibility and what information to provide.</p></li><li><Link className="link" href="/workflowkits">WorkflowKits digital services ↗</Link><p className="text-sm text-zinc-600">Business processes, templates and reporting workflows.</p></li></ul></section>
+        </div>
+        <h2 className="mt-10 text-2xl font-semibold">General enquiries</h2>
         {/* Client-side form with Turnstile */}
         <ContactForm />
       </section>

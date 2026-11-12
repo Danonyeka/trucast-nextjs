@@ -102,8 +102,8 @@ export default async function CategoriesIndex() {
       />
 
       <div className="container py-16">
-        <h1 className="text-3xl font-bold">Product Catalog</h1>
-        <p className="mt-2 text-zinc-600">Browse our most requested ranges.</p>
+        <h1 className="text-3xl font-bold">Product Catalog</h1><Link className="btn-primary mt-4" href="/search">Search &amp; filter all products ↗</Link>
+        <p className="mt-2 text-zinc-600">Choose a category or search across the complete product catalog.</p>
 
         {list.length === 0 ? (
           <p className="mt-6 text-sm text-zinc-600">

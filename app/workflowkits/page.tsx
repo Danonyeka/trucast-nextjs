@@ -17,6 +17,11 @@ export default function WorkflowKitsPage() {
         <div className="mt-7 flex flex-wrap gap-4"><a href="https://workflowkits.com" className="rounded-xl bg-white text-[#183e40] px-5 py-3 font-semibold">Visit WorkflowKits ↗</a><Link href="/categories" className="rounded-xl border border-white px-5 py-3">Browse Trucast products</Link></div>
       </div>
     </section>
+    <section className="container py-12"><h2 className="text-3xl font-semibold">Focus your service enquiry</h2><p className="mt-3 text-zinc-600">Choose a starting point for discussion. The exact deliverables, tools and scope are agreed after reviewing your requirements.</p><div className="mt-6 grid md:grid-cols-3 gap-5">{[
+      ['Process documentation', 'Discuss process maps, step-by-step procedures and clearer ownership of recurring tasks.'],
+      ['Templates & reporting', 'Explore structured trackers, checklists and reporting templates that reduce repeated setup.'],
+      ['Digital workflow planning', 'Review how requests, approvals and handovers could move through a simpler digital process.'],
+    ].map(([title, text]) => <article className="card p-6" key={title}><h3 className="text-xl font-semibold">{title}</h3><p className="mt-3 text-zinc-600">{text}</p></article>)}</div><p className="mt-5 text-sm text-zinc-600">For existing templates, tools and downloads, visit <a href="https://workflowkits.com" className="link">WorkflowKits.com</a>.</p></section>
     <section className="container py-14">
       <h2 className="text-3xl font-semibold">A practical starting point</h2>
       <div className="mt-8 grid md:grid-cols-3 gap-8">

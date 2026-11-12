@@ -1,18 +1,21 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import type { Product } from '@/lib/products';
 import { isOutOfStock } from '@/lib/products';
+import { productDetails } from '@/lib/product-details';
 import ProductEnquiryLink from './ProductEnquiryLink';
 
 
 export default function ProductCard({ product }: { product: Product }) {
   const out = isOutOfStock(product);
+  const details = productDetails(product);
 
   // avoid stale image optimizer cache + provide fallback
   const initialSrc = useMemo(() => {
     const raw = product.img?.startsWith('/') ? product.img : `/${product.img ?? ''}`;
-    return encodeURI(raw || '/products/placeholder.jpg');
+    return encodeURI(raw || '/images/placeholder.png');
   }, [product.img]);
 
   const [imgSrc, setImgSrc] = useState(initialSrc);
@@ -23,18 +26,17 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="relative aspect-[4/3] bg-zinc-100">
           <Image
             src={imgSrc}
-            alt={product.name}
+            alt={details.name}
             fill
             className="object-contain"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            unoptimized
-            onError={() => setImgSrc('/products/placeholder.jpg')}
+            onError={() => setImgSrc('/images/placeholder.png')}
           />
         </div>
       </Link>
 
       <div className="p-5">
-        <h3 className="font-semibold">{product.name}</h3>
+        <h3 className="font-semibold">{details.name}</h3>
         <p className="text-xs text-zinc-500">SKU: {product.sku}</p>
 
         {out ? (
@@ -43,7 +45,7 @@ export default function ProductCard({ product }: { product: Product }) {
           <p className="mt-1 text-sm text-zinc-600">Contact us for pricing</p>
         )}
 
-        <p className="mt-2 line-clamp-2 text-sm text-zinc-600">{product.desc}</p>
+        <p className="mt-2 line-clamp-2 text-sm text-zinc-600">{details.description.split(/\n/)[0]}</p>
 
         <div className="mt-4 flex flex-wrap gap-3">
 

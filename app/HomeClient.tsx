@@ -58,7 +58,7 @@ export default function HomeClient() {
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link href="/categories" className="btn-primary" onClick={() => track('browse_products_click', { place: 'hero' })}>Browse Products</Link>
-                <Link href="/wholesale" className="btn-outline" onClick={() => track('wholesale_enquiry_click', { place: 'hero' })}>Wholesale &amp; Bulk</Link>
+                <Link href="/wholesale" className="btn-outline" onClick={() => track('wholesale_enquiry_click', { place: 'hero' })}>Request a Project Quote</Link>
                 <Link href="#product-enquiry" className="btn-outline" onClick={() => track('contact_sales_click', { place: 'hero' })}>Contact Sales</Link>
               </div>
             </div>
