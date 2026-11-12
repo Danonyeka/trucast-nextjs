@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import nextDynamic from 'next/dynamic';
+import { permanentRedirect } from 'next/navigation';
 import { byCategory, deriveStatus, displayPriceNGN } from '@/lib/products';
 import type { Product } from '@/lib/products';
 
@@ -60,6 +61,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
 // ----------------------------------
 
 export default async function CategoryPage({ params }: { params: { slug: string } }) {
+  if (params.slug === 'smart-locks') permanentRedirect('/categories/smart-lock');
   let products: Product[] = [];
   try {
     products = byCategory(params.slug) ?? [];
@@ -97,7 +99,7 @@ export default async function CategoryPage({ params }: { params: { slug: string 
                 <div className="mt-3">
                   <p className="font-semibold">{p.name}</p>
                   <p className="text-xs text-zinc-500">SKU: {p.sku}</p>
-                  <p className="mt-1 font-bold">{price !== undefined ? NGN(price) : '₦0'}</p>
+                  <p className="mt-1 font-bold">{out ? 'Currently unavailable' : typeof price === 'number' && price > 0 ? NGN(price) : 'Ask for a quote'}</p>
                   <p className="mt-1 line-clamp-2 text-sm text-zinc-600">{p.desc}</p>
                 </div>
               </Link>

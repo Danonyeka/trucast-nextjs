@@ -7,7 +7,7 @@ import { OrganizationLd, LocalBusinessLd } from '@/components/seo/JsonLd';
 import { site } from '@/lib/site';
 import { track } from '@/lib/analytics';
 import CategoryCard from '@/components/cards/CategoryCard';
-import HeroSlider from '@/components/HeroSlider'; // ✅ use the separate slider
+import ProductEnquiry from '@/components/ProductEnquiry';
 
 function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -21,7 +21,7 @@ export default function HomeClient() {
   const categories = [
     { href: '/categories/switches',       title: 'Switches',           image: '/images/categories/switches.png' },
     { href: '/categories/sockets',        title: 'Sockets',            image: '/images/categories/sockets.png' },
-    { href: '/categories/smart-locks',    title: 'Smart Locks',        image: '/images/categories/smart-locks.png' },
+    { href: '/categories/smart-lock',    title: 'Smart Locks',        image: '/images/categories/smart-locks.png' },
     { href: '/categories/recessed-light', title: 'POP / Panel Lights', image: '/images/categories/panel-light.png' },
   ];
 
@@ -43,13 +43,13 @@ export default function HomeClient() {
 
       <div>
         {/* HERO */}
-        <section className="bg-brand/10 border-b border-zinc-200">
+        <section className="bg-[#f3f5ed] border-b border-zinc-200">
           <div className="container py-8 lg:py-12 grid lg:grid-cols-2 gap-8 items-center">
             {/* Left column */}
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-brand">• Be Green, Be Smart</p>
-              <h1 className="mt-2 text-4xl font-bold leading-tight">
-                Premium Electrical Accessories, LED Lighting & Smart Devices — Built for Nigeria
+              <h1 className="mt-3 text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight">
+                Better spaces. Smarter living.
               </h1>
               <p className="mt-3 text-zinc-700 max-w-2xl">
                 We supply reliable <strong>mechanical wall switches & sockets</strong>, energy-efficient
@@ -59,17 +59,20 @@ export default function HomeClient() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link href="/categories" className="btn-primary" onClick={() => track('shop_now_click', { place: 'hero' })}>Shop Now</Link>
                 <Link href="/wholesale" className="btn-outline" onClick={() => track('wholesale_enquiry_click', { place: 'hero' })}>Wholesale &amp; Bulk</Link>
-                <Link href="/contact" className="btn-outline" onClick={() => track('contact_sales_click', { place: 'hero' })}>Contact Sales</Link>
-              </div>
-              <div className="mt-6 grid grid-cols-3 gap-4 text-center">
-                <div><p className="text-2xl font-bold">10k+</p><p className="text-xs text-zinc-600">Units shipped</p></div>
-                <div><p className="text-2xl font-bold">100+</p><p className="text-xs text-zinc-600">Projects serviced</p></div>
-                <div><p className="text-2xl font-bold">24–72h</p><p className="text-xs text-zinc-600">Fulfillment window</p></div>
+                <Link href="#product-enquiry" className="btn-outline" onClick={() => track('contact_sales_click', { place: 'hero' })}>Contact Sales</Link>
               </div>
             </div>
 
             {/* Right column: Slider */}
-            <HeroSlider />
+            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-white"><Image src="/images/hero/hero-1@1280.webp" alt="Trucast switches and electrical accessories" fill priority sizes="(max-width: 1024px) 100vw, 50vw" className="object-contain" /></div>
+          </div>
+        </section>
+
+        {/* Explore electrical, lighting &amp; smart-home products */}
+        <section className="container py-12">
+          <h2 className="text-2xl font-semibold">Explore electrical, lighting &amp; smart-home products</h2>
+          <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {categories.map((c) => (<CategoryCard key={c.href} {...c} />))}
           </div>
         </section>
 
@@ -82,7 +85,7 @@ export default function HomeClient() {
                 alt="Scan to view the Trucast product catalog"
                 width={140}
                 height={140}
-                priority
+                loading="lazy"
                 className="rounded-md bg-white"
               />
             </div>
@@ -144,11 +147,16 @@ export default function HomeClient() {
           </div>
         </section>
 
-        {/* Top Categories */}
-        <section className="container pb-14">
-          <h2 className="text-2xl font-semibold">Top Categories</h2>
-          <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {categories.map((c) => (<CategoryCard key={c.href} {...c} />))}
+        <section className="bg-[#edf4ed] border-y border-zinc-200" id="product-enquiry">
+          <div className="container py-14 grid lg:grid-cols-2 gap-10 items-start">
+            <div><p className="text-xs uppercase tracking-widest text-brand font-semibold">Retail · Wholesale · Projects</p><h2 className="mt-3 text-3xl font-semibold tracking-tight">A clearer route to your next order.</h2><p className="mt-4 text-zinc-700">Share products, quantities and your delivery location. Our sales team can confirm model specifications, pricing, stock and delivery before you order.</p><p className="mt-4 text-sm">Have a bill of quantities? <a className="link" href={`mailto:${site.emailPrimary}`}>Email your BOQ to sales</a>.</p><p className="mt-4 text-sm text-zinc-600">Visit us in Port Harcourt: {site.address}. Opening hours: {site.hours}.</p></div>
+            <ProductEnquiry />
+          </div>
+        </section>
+        <section className="container py-14">
+          <div className="rounded-3xl bg-[#183e40] text-white p-7 sm:p-10 grid md:grid-cols-2 gap-8">
+            <div><p className="text-xs uppercase tracking-widest text-green-200">A distinct digital service line</p><h2 className="mt-3 text-3xl font-semibold">Less process friction.<br />More time for business.</h2><p className="mt-4 text-green-50">WorkflowKits Digital Technology focuses on business process simplification: clearer workflows, fewer repeated tasks and easier handovers.</p></div>
+            <div className="self-center"><h3 className="text-xl font-semibold">WorkflowKits Digital Technology</h3><p className="mt-3 text-green-50">Start with one process that slows your team down. Discuss how it works today and what a simpler way forward could look like.</p><Link className="mt-5 inline-flex rounded-xl bg-white text-[#183e40] px-5 py-3 font-semibold" href="/workflowkits">Explore digital services ↗</Link></div>
           </div>
         </section>
 

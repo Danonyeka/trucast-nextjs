@@ -18,7 +18,7 @@ export default function SiteFooter() {
 
             {/* Mobile-only Call button */}
             <a
-              className="btn-outline md:hidden"
+              className="btn-outline"
               href={`tel:${(site as any).phone ?? '+2347026921633'}`}
               aria-label="Call Trucast Nigeria"
             >
@@ -34,14 +34,17 @@ export default function SiteFooter() {
         <div>
           <p className="font-semibold">Quick links</p>
           <ul className="mt-2 space-y-2 text-sm text-zinc-300">
-            <li><Link className="footer-link" href="/blog">Blog</Link></li>
+            <li><Link className="footer-link" href="/categories">Product catalog</Link></li>
+            <li><Link className="footer-link" href="/workflowkits">WorkflowKits Digital Technology</Link></li>
+            <li><Link className="footer-link" href="/returns">Returns &amp; warranty</Link></li>
+            <li><Link className="footer-link" href="/contact">Contact</Link></li>
             <li><Link className="footer-link" href="/accessibility">Accessibility Statement</Link></li>
           </ul>
         </div>
       </div>
 
       <div className="container mt-8 border-t border-zinc-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-xs sm:text-sm">© 2025 {site.legalName}. All rights reserved.</p>
+        <p className="text-xs sm:text-sm">© {new Date().getFullYear()} {site.legalName}. All rights reserved.</p>
         <div className="flex items-center gap-5">
           <Link href="#top" className="footer-link" aria-label="Back to top">↑ Back to top</Link>
         </div>
